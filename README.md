@@ -15,8 +15,8 @@ python -m http.server 8734
 ## 주요 기능
 
 - **좌측 사이드 내비게이션 (한글)** — 데스크톱 고정형, 스크롤 위치 자동 하이라이트 / 모바일·태블릿은 가로 스크롤 칩 내비
-- **다크 · 라이트 모드** — 시스템 설정 자동 감지 + 수동 토글, 선택값 저장(localStorage)
-- **상단 배너** — "Scalable Mass Production" + 회사 소개 CTA (glucklab.com)
+- **다크 모드 기본** — 다크가 기본 테마, 수동 토글로 라이트 전환 가능 (선택값 localStorage 저장)
+- **상단 배너** — Main Blue 그라데이션 + 노이즈 텍스처, "Scalable Mass Production" + 회사 소개 CTA (glucklab.com)
 - **컬러 클릭 복사 · 표준 소개문안 전문 복사**
 - **다운로드 센터** — 모든 링크가 실제 파일로 연결 (SVG·PNG·ZIP)
 
@@ -41,7 +41,7 @@ brand-assets/
 | # | 섹션 | 내용 |
 |---|---|---|
 | — | 브랜드 소개 | 워드마크 히어로 · Precision / Production / Scale |
-| 01 | 로고 | 시그니처 워드마크 · 컬러웨이 4종 · G 심볼 · 라운드/탭 아이콘 · 모노 |
+| 01 | 로고 | 시그니처 워드마크 · 컬러웨이 4종 · G 심볼 · 라운드/탭 아이콘 |
 | 02 | 브랜드 컬러 | Signature Main Blue `#0059FF` · 파생 블루 · 그레이(Draft) · 클릭 복사 |
 | 03 | 타이포그래피 | SUIT 단일 패밀리 · Type Scale 실문장 스펙시멘 |
 | 04 | 로고 사용 규정 | DO 4종 / DON'T 9종 시각 예시 · 클리어 스페이스 (Draft) |
