@@ -5,23 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GLUCK Brand Resource Center</title>
 <meta name="description" content="산업용 SLA 3D프린팅 기반 양산 제조 파트너 GLUCK의 공식 브랜드 리소스 센터. 로고, 컬러, 타이포그래피, 사용 가이드라인과 다운로드 가능한 브랜드 자산을 제공합니다.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1115" media="(prefers-color-scheme: dark)">
 <link rel="icon" type="image/png" href="brand-assets/logo/GLUCK_TabIcon_Black_1080.png">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
+<script>
+/* 테마 초기화 — 페인트 전 적용 (FOUC 방지) */
+(function () {
+  try {
+    var t = localStorage.getItem('gluck-theme');
+    if (t !== 'light' && t !== 'dark') t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  } catch (e) { document.documentElement.dataset.theme = 'light'; }
+})();
+</script>
 <style>
 /* ============================================================
-   GLUCK Brand Resource Center
+   GLUCK Brand Resource Center · v1.1
    기준: GLUCK Design System v1.1 (2026.07) + CI 가이드라인 보드
+   레이아웃: 좌측 사이드 내비(한글) · 다크/라이트 테마
    ============================================================ */
 :root {
   /* Brand Blue — 확정 (CI 보드 · Design System) */
   --blue:            #0059FF;
-  --blue-tone-up:    #337AFF;  /* hover · AA-Large 전용 */
+  --blue-tone-up:    #337AFF;
   --blue-soft:       #1A6AFF;
-  --blue-tone-down:  #0047CC;  /* pressed */
+  --blue-tone-down:  #0047CC;
   --blue-light:      #D7E1F4;
 
   /* Gray Scale — 운영 추정값 (브랜드팀 확정 시 교체) */
@@ -34,20 +48,57 @@
   --white: #FFFFFF;
   --black: #000000;
 
-  /* Semantic */
-  --bg: var(--white);
-  --bg-subtle: var(--gray-superlight);
-  --text: var(--gray-dark-3);
-  --text-2: var(--gray-dark);
-  --text-3: var(--gray);
-  --border: var(--gray-light);
-
   --font-sans: 'SUIT Variable', 'SUIT', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
-
-  --container: 1200px;
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1); /* slow · precise */
   --topbar-h: 64px;
+
+  /* ---- Light theme (기본) ---- */
+  color-scheme: light;
+  --bg: #FFFFFF;
+  --surface: #FFFFFF;
+  --surface-2: #F6F7F9;
+  --text: #1A1D24;
+  --text-2: #6B7280;
+  --border: #E6E8EC;
+  --accent-text: #0059FF;         /* 텍스트용 블루 */
+  --accent-strong: #0047CC;       /* active 텍스트 (대비 확보) */
+  --accent-bg: #D7E1F4;           /* 선택 배경 */
+  --grid-line: rgba(26,29,36,0.035);
+  --topbar-bg: rgba(255,255,255,0.9);
+  --toast-bg: #1A1D24;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0F1115;
+  --surface: #171A20;
+  --surface-2: #1D2129;
+  --text: #F2F4F8;
+  --text-2: #9AA1AD;
+  --border: #262B33;
+  --accent-text: #337AFF;
+  --accent-strong: #7AA5FF;
+  --accent-bg: rgba(51,122,255,0.16);
+  --grid-line: rgba(255,255,255,0.05);
+  --topbar-bg: rgba(15,17,21,0.86);
+  --toast-bg: #2A2F37;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0F1115;
+    --surface: #171A20;
+    --surface-2: #1D2129;
+    --text: #F2F4F8;
+    --text-2: #9AA1AD;
+    --border: #262B33;
+    --accent-text: #337AFF;
+    --accent-strong: #7AA5FF;
+    --accent-bg: rgba(51,122,255,0.16);
+    --grid-line: rgba(255,255,255,0.05);
+    --topbar-bg: rgba(15,17,21,0.86);
+    --toast-bg: #2A2F37;
+  }
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -60,6 +111,7 @@ body {
   background: var(--bg);
   word-break: keep-all;
   -webkit-font-smoothing: antialiased;
+  transition: background .25s ease, color .25s ease;
 }
 ::selection { background: var(--blue); color: #fff; }
 img, svg { display: block; max-width: 100%; }
@@ -67,24 +119,20 @@ a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 :focus-visible { outline: 2px solid var(--blue-tone-up); outline-offset: 2px; border-radius: 2px; }
 
-.container { max-width: var(--container); margin: 0 auto; padding: 0 32px; }
-
-/* Inline logo (fill 미지정 심볼 → fill 상속) */
 .lg { fill: currentColor; }
 
-/* Skip link */
 .skip { position: fixed; top: -48px; left: 16px; z-index: 200; background: var(--gray-dark-3); color: #fff; padding: 10px 16px; border-radius: 0 0 8px 8px; font-size: 13px; font-weight: 600; transition: top .2s var(--ease); }
 .skip:focus { top: 0; }
 
 /* ============ Topbar ============ */
 .topbar {
   position: sticky; top: 0; z-index: 100;
-  background: rgba(255,255,255,0.92);
+  background: var(--topbar-bg);
   backdrop-filter: saturate(1.2) blur(10px);
   border-bottom: 1px solid var(--border);
 }
 .topbar-in {
-  max-width: var(--container); margin: 0 auto; padding: 0 32px;
+  max-width: 1360px; margin: 0 auto; padding: 0 32px;
   height: var(--topbar-h);
   display: flex; align-items: center; justify-content: space-between; gap: 24px;
 }
@@ -95,44 +143,108 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-2);
   border-left: 1px solid var(--border); padding-left: 14px; white-space: nowrap;
 }
-.nav { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
-.nav::-webkit-scrollbar { display: none; }
-.nav a {
-  font-size: 13px; font-weight: 600; color: var(--text-2);
-  padding: 7px 11px; border-radius: 6px; white-space: nowrap;
-  transition: color .15s ease, background .15s ease;
+.theme-btn {
+  width: 38px; height: 38px; border: 1px solid var(--border); border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--text); transition: border-color .15s ease, background .15s ease;
 }
-.nav a:hover { color: var(--text); background: var(--gray-superlight); }
-.nav a.active { color: var(--blue-tone-down); background: var(--blue-light); }
+.theme-btn:hover { border-color: var(--gray); background: var(--surface-2); }
+.theme-btn svg { width: 17px; height: 17px; }
+:root[data-theme="dark"] .icon-moon { display: none; }
+:root:not([data-theme="dark"]) .icon-sun { display: none; }
 
-/* Mobile subnav */
+/* ============ Mobile subnav ============ */
 .subnav { display: none; position: sticky; top: var(--topbar-h); z-index: 99;
-  background: rgba(255,255,255,0.94); backdrop-filter: blur(10px);
+  background: var(--topbar-bg); backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border); }
 .subnav-in { display: flex; gap: 6px; overflow-x: auto; padding: 10px 20px; scrollbar-width: none; }
 .subnav-in::-webkit-scrollbar { display: none; }
 .subnav a {
   flex-shrink: 0; font-size: 12.5px; font-weight: 600; color: var(--text-2);
   border: 1px solid var(--border); border-radius: 999px; padding: 6px 13px;
-  transition: all .15s ease; background: #fff;
+  transition: all .15s ease; background: var(--surface);
 }
 .subnav a.active { color: #fff; background: var(--gray-dark-3); border-color: var(--gray-dark-3); }
+:root[data-theme="dark"] .subnav a.active { color: #0F1115; background: #F2F4F8; border-color: #F2F4F8; }
+
+/* ============ Shell — 사이드 내비 + 콘텐츠 ============ */
+.shell {
+  max-width: 1360px; margin: 0 auto; padding: 0 32px;
+  display: grid; grid-template-columns: 232px minmax(0, 1fr); gap: 64px;
+}
+.sidenav {
+  position: sticky; top: var(--topbar-h);
+  align-self: start;
+  max-height: calc(100vh - var(--topbar-h));
+  overflow-y: auto; scrollbar-width: thin;
+  padding: 44px 0 48px;
+}
+.sn-group { margin-bottom: 32px; }
+.sn-group .sn-title {
+  font-size: 15px; font-weight: 800; letter-spacing: -0.01em;
+  padding: 6px 12px; margin-bottom: 4px;
+}
+.sn-group a {
+  display: block; font-size: 14px; font-weight: 500; color: var(--text-2);
+  padding: 7px 12px 7px 24px; border-radius: 8px;
+  transition: color .15s ease, background .15s ease;
+}
+.sn-group a:hover { color: var(--text); background: var(--surface-2); }
+.sn-group a.active { color: var(--accent-strong); background: var(--accent-bg); font-weight: 700; }
+
+main { min-width: 0; padding-bottom: 40px; }
+
+/* ============ Top banner ============ */
+.banner {
+  margin: 36px 0 0;
+  border-radius: 6px; overflow: hidden;
+  background:
+    radial-gradient(120% 200% at 88% 130%, rgba(0,89,255,0.42), transparent 55%),
+    #12151C;
+  position: relative;
+}
+.banner::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg,  rgba(255,255,255,0.035) 0 1px, transparent 1px 40px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.035) 0 1px, transparent 1px 40px);
+}
+.banner-in {
+  position: relative; padding: 56px 40px;
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 18px;
+}
+.banner .b-eyebrow {
+  font-family: var(--font-mono); font-size: 10.5px; font-weight: 500;
+  letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.6);
+}
+.banner .b-title {
+  color: #fff; font-size: clamp(26px, 3.4vw, 38px); font-weight: 800;
+  letter-spacing: -0.03em; line-height: 1.2;
+}
+.btn-banner {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 44px; padding: 0 24px; margin-top: 6px;
+  border: 1px solid rgba(255,255,255,0.45); border-radius: 999px;
+  color: #fff; font-size: 14px; font-weight: 700;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.btn-banner:hover { background: #fff; color: #12151C; border-color: #fff; }
 
 /* ============ Section frame ============ */
-section.sec { padding: 104px 0; scroll-margin-top: calc(var(--topbar-h) + 8px); }
-section.sec.alt { background: var(--bg-subtle); }
-.sec-head { margin-bottom: 56px; }
+section.sec { padding: 92px 0 0; scroll-margin-top: calc(var(--topbar-h) + 12px); }
+h3.sub, .sub-anchor { scroll-margin-top: calc(var(--topbar-h) + 20px); }
+.sec-head { margin-bottom: 48px; }
 .sec-no {
   display: flex; align-items: baseline; gap: 16px;
-  border-top: 1px solid var(--gray-dark-3); padding-top: 20px; margin-bottom: 20px;
+  border-top: 1px solid var(--text); padding-top: 20px; margin-bottom: 20px;
 }
 .sec-no .num { font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--text); }
 .sec-no .eyebrow {
   font-family: var(--font-mono); font-size: 11px; font-weight: 500;
-  letter-spacing: 0.18em; text-transform: uppercase; color: var(--blue);
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent-text);
 }
-.sec-head h2 { font-size: 32px; line-height: 1.3; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 14px; }
-.sec-head .lead { font-size: 17px; line-height: 1.65; color: var(--text-2); max-width: 640px; }
+.sec-head h2 { font-size: 30px; line-height: 1.3; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 14px; }
+.sec-head .lead { font-size: 16.5px; line-height: 1.65; color: var(--text-2); max-width: 640px; }
 
 .badge {
   display: inline-flex; align-items: center; gap: 6px;
@@ -141,12 +253,11 @@ section.sec.alt { background: var(--bg-subtle); }
   padding: 4px 9px; border-radius: 4px; vertical-align: middle;
 }
 .badge.draft { background: #FDF4E3; color: #B45309; border: 1px solid #F3DFB8; }
-.badge.live  { background: #EAF6EE; color: #15803D; border: 1px solid #C6E6D1; }
-.badge.soon  { background: var(--gray-superlight); color: var(--text-2); border: 1px solid var(--border); }
+:root[data-theme="dark"] .badge.draft { background: rgba(180,83,9,0.16); color: #F0A860; border-color: rgba(243,223,184,0.25); }
 
-h3.sub { font-size: 21px; font-weight: 700; letter-spacing: -0.015em; margin: 72px 0 8px; }
+h3.sub { font-size: 21px; font-weight: 700; letter-spacing: -0.015em; margin: 64px 0 8px; }
 h3.sub:first-of-type { margin-top: 0; }
-.sub-lead { font-size: 15px; color: var(--text-2); margin-bottom: 28px; max-width: 640px; }
+.sub-lead { font-size: 15px; color: var(--text-2); margin-bottom: 26px; max-width: 640px; }
 
 /* ============ Buttons ============ */
 .btn {
@@ -159,47 +270,39 @@ h3.sub:first-of-type { margin-top: 0; }
 .btn-primary { background: var(--blue); color: #fff; }
 .btn-primary:hover { background: var(--blue-soft); }
 .btn-primary:active { background: var(--blue-tone-down); }
-.btn-tertiary { background: var(--gray-light); color: var(--gray-dark-3); }
-.btn-tertiary:hover { background: var(--blue-light); color: var(--blue-tone-down); }
-.btn-outline { background: #fff; border-color: var(--border); color: var(--gray-dark-3); }
+.btn-tertiary { background: var(--surface-2); color: var(--text); border-color: var(--border); }
+.btn-tertiary:hover { background: var(--accent-bg); color: var(--accent-strong); border-color: transparent; }
+.btn-outline { background: var(--surface); border-color: var(--border); color: var(--text); }
 .btn-outline:hover { border-color: var(--gray); }
 .btn-lg { height: 56px; padding: 0 28px; font-size: 16px; }
 .btn-sm { height: 34px; padding: 0 13px; font-size: 12.5px; border-radius: 7px; }
 .btn .fmt { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: .06em; opacity: .85; }
-.btn[aria-disabled="true"] { background: var(--gray-superlight); color: var(--text-2); cursor: not-allowed; border: 1px dashed var(--border); }
+.btn[aria-disabled="true"] { background: var(--surface-2); color: var(--text-2); cursor: not-allowed; border: 1px dashed var(--border); }
 
-/* ============ 01 Hero ============ */
-.hero {
-  padding: 96px 0 104px;
-  border-bottom: 1px solid var(--border);
-  background-image:
-    repeating-linear-gradient(0deg,  rgba(26,29,36,0.035) 0 1px, transparent 1px 56px),
-    repeating-linear-gradient(90deg, rgba(26,29,36,0.035) 0 1px, transparent 1px 56px);
-  background-position: center top;
-}
+/* ============ 브랜드 소개 (Hero) ============ */
+.hero { padding: 72px 0 0; }
 .hero-eyebrow {
   font-family: var(--font-mono); font-size: 11.5px; font-weight: 500;
   letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-2);
-  display: flex; align-items: center; gap: 12px; margin-bottom: 40px;
+  display: flex; align-items: center; gap: 12px; margin-bottom: 36px;
 }
 .hero-eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 0 3px rgba(0,89,255,0.22); }
-.hero-wordmark { color: var(--gray-dark-3); margin-bottom: 48px; }
-.hero-wordmark svg { width: min(680px, 86%); height: auto; }
-.hero-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 64px; align-items: end; }
-.hero-copy h1 { font-size: clamp(30px, 4vw, 44px); line-height: 1.25; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 20px; }
+.hero-wordmark { color: var(--text); margin-bottom: 44px; }
+.hero-wordmark svg { width: min(600px, 88%); height: auto; }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 56px; align-items: end; }
+.hero-copy h1 { font-size: clamp(28px, 3.4vw, 40px); line-height: 1.28; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 18px; }
 .hero-copy h1 .en { color: var(--text); }
-.hero-copy h1 .kr { color: var(--blue); }
-.hero-copy .lead { font-size: 17px; line-height: 1.7; color: var(--text-2); max-width: 560px; margin-bottom: 36px; }
+.hero-copy h1 .kr { color: var(--accent-text); }
+.hero-copy .lead { font-size: 16.5px; line-height: 1.7; color: var(--text-2); max-width: 560px; margin-bottom: 32px; }
 .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
 
-/* Build plate 애니메이션 — 반복·증식의 제조적 모션 */
-.plate { border: 1px solid var(--border); background: #fff; padding: 20px; border-radius: 2px; }
+.plate { border: 1px solid var(--border); background: var(--surface); padding: 20px; border-radius: 4px; }
 .plate-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
 .plate-head .t { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--text-2); }
 .plate-head .c { font-family: var(--font-mono); font-size: 10px; color: var(--text-2); font-variant-numeric: tabular-nums; }
 .plate-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; }
 .plate-grid i {
-  aspect-ratio: 1; background: var(--gray-superlight); border: 1px solid var(--border);
+  aspect-ratio: 1; background: var(--surface-2); border: 1px solid var(--border);
   border-radius: 1px; opacity: 0; transform: scale(0.75);
 }
 .plate.play .plate-grid i { animation: cell-in .3s var(--ease) forwards; }
@@ -208,47 +311,48 @@ h3.sub:first-of-type { margin-top: 0; }
 .plate-cap { margin-top: 14px; font-size: 12.5px; color: var(--text-2); display: flex; justify-content: space-between; gap: 12px; }
 .plate-cap .mono { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .06em; }
 
-.identity-strip { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--border); border-radius: 2px; margin-top: 88px; background: #fff; }
-.identity-strip .cell { padding: 28px 28px 26px; border-left: 1px solid var(--border); }
+.identity-strip { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--border); border-radius: 4px; margin-top: 72px; background: var(--surface); }
+.identity-strip .cell { padding: 26px 26px 24px; border-left: 1px solid var(--border); }
 .identity-strip .cell:first-child { border-left: 0; }
-.identity-strip .k { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; }
+.identity-strip .k { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--accent-text); margin-bottom: 10px; }
 .identity-strip .t { font-size: 18px; font-weight: 700; letter-spacing: -0.015em; margin-bottom: 6px; }
 .identity-strip .d { font-size: 14px; color: var(--text-2); }
-.identity-quote { margin-top: 56px; max-width: 760px; }
-.identity-quote p { font-size: clamp(20px, 2.4vw, 26px); line-height: 1.5; font-weight: 600; letter-spacing: -0.02em; }
-.identity-quote p strong { color: var(--blue); font-weight: 700; }
+.identity-quote { margin-top: 52px; max-width: 720px; }
+.identity-quote p { font-size: clamp(19px, 2.2vw, 24px); line-height: 1.5; font-weight: 600; letter-spacing: -0.02em; }
+.identity-quote p strong { color: var(--accent-text); font-weight: 700; }
 .identity-quote .src { margin-top: 14px; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-2); }
 
-/* ============ 02 Logo ============ */
-.logo-stage { border: 1px solid var(--border); border-radius: 2px; overflow: hidden; }
+/* ============ Logo ============ */
+/* 로고 프리뷰 면은 자산 시연용이므로 테마와 무관하게 고정 컬러 유지 */
+.logo-stage { border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
 .logo-stage .stage-grid { display: grid; grid-template-columns: 1fr 1fr; }
 .stage {
   position: relative; display: flex; align-items: center; justify-content: center;
-  min-height: 300px; padding: 48px;
+  min-height: 280px; padding: 44px;
 }
 .stage.light { background: #fff; }
-.stage.dark { background: var(--gray-dark-3); }
-.stage.gray { background: var(--gray-superlight); }
+.stage.dark { background: #1A1D24; }
+.stage.gray { background: #F6F7F9; }
 .stage + .stage { border-left: 1px solid var(--border); }
 .stage .tag {
   position: absolute; top: 16px; left: 16px;
   font-family: var(--font-mono); font-size: 10px; font-weight: 500;
-  letter-spacing: .12em; text-transform: uppercase; color: var(--text-2);
+  letter-spacing: .12em; text-transform: uppercase; color: #6B7280;
 }
 .stage.dark .tag { color: rgba(255,255,255,0.62); }
-.stage svg { width: min(320px, 72%); height: auto; }
-.stage.sym svg { width: min(110px, 34%); }
+.stage svg { width: min(300px, 72%); height: auto; }
+.stage.sym svg { width: min(104px, 34%); }
 .asset-bar {
   display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
-  padding: 16px 20px; border-top: 1px solid var(--border); background: #fff;
+  padding: 16px 20px; border-top: 1px solid var(--border); background: var(--surface);
 }
 .asset-bar .name { font-size: 14px; font-weight: 700; }
 .asset-bar .meta { font-family: var(--font-mono); font-size: 11px; color: var(--text-2); margin-left: 10px; font-weight: 400; }
 .asset-bar .acts { display: flex; gap: 8px; flex-wrap: wrap; }
 
-.colorway-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-.colorway { border: 1px solid var(--border); border-radius: 2px; overflow: hidden; background: #fff; }
-.colorway .cw-stage { display: flex; align-items: center; justify-content: center; height: 132px; padding: 24px; }
+.colorway-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.colorway { border: 1px solid var(--border); border-radius: 4px; overflow: hidden; background: var(--surface); }
+.colorway .cw-stage { display: flex; align-items: center; justify-content: center; height: 120px; padding: 22px; }
 .colorway .cw-stage svg { width: 76%; height: auto; }
 .colorway .cw-cap { padding: 12px 14px; border-top: 1px solid var(--border); }
 .colorway .cw-name { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
@@ -256,23 +360,23 @@ h3.sub:first-of-type { margin-top: 0; }
 
 .app-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .app-chips span {
-  font-size: 13px; font-weight: 600; color: var(--gray-dark-2);
-  border: 1px solid var(--border); background: #fff; border-radius: 999px; padding: 7px 14px;
+  font-size: 13px; font-weight: 600; color: var(--text);
+  border: 1px solid var(--border); background: var(--surface); border-radius: 999px; padding: 7px 14px;
 }
 
-/* ============ 03 Color ============ */
+/* ============ Color ============ */
 .swatch-hero {
   display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-  border: 1px solid var(--border); border-radius: 2px; overflow: hidden; background: #fff;
+  border: 1px solid var(--border); border-radius: 4px; overflow: hidden; background: var(--surface);
 }
 .swatch-hero .surface {
-  background: var(--blue); min-height: 340px; position: relative;
+  background: var(--blue); min-height: 320px; position: relative;
   display: flex; align-items: flex-end; padding: 32px;
 }
-.swatch-hero .surface svg { width: 132px; height: auto; color: #fff; }
-.swatch-hero .spec { padding: 32px; display: flex; flex-direction: column; gap: 4px; }
-.swatch-hero .spec .nm { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
-.swatch-hero .spec .ds { font-size: 14px; color: var(--text-2); margin: 6px 0 18px; }
+.swatch-hero .surface svg { width: 128px; height: auto; color: #fff; }
+.swatch-hero .spec { padding: 30px 32px; display: flex; flex-direction: column; gap: 4px; }
+.swatch-hero .spec .nm { font-size: 21px; font-weight: 800; letter-spacing: -0.02em; }
+.swatch-hero .spec .ds { font-size: 14px; color: var(--text-2); margin: 6px 0 16px; }
 .val-row {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: 11px 0; border-top: 1px solid var(--border);
@@ -284,136 +388,71 @@ h3.sub:first-of-type { margin-top: 0; }
   color: var(--text-2); border: 1px solid var(--border); border-radius: 6px;
   padding: 5px 10px; transition: all .15s ease; text-transform: uppercase;
 }
-.copy-btn:hover { color: var(--blue); border-color: var(--blue); }
+.copy-btn:hover { color: var(--accent-text); border-color: var(--accent-text); }
 .copy-btn.done { color: #fff; background: var(--gray-dark-3); border-color: var(--gray-dark-3); }
 .val-note { font-size: 12.5px; color: var(--text-2); padding-top: 12px; border-top: 1px solid var(--border); margin-top: auto; }
 
-.scale-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-.scale-card { border: 1px solid var(--border); border-radius: 2px; overflow: hidden; background: #fff; }
-.scale-card .chip { height: 116px; display: flex; align-items: flex-end; padding: 12px 14px; }
-.scale-card .chip .wcag { font-family: var(--font-mono); font-size: 9px; font-weight: 700; letter-spacing: .1em; padding: 3px 7px; border-radius: 4px; background: rgba(255,255,255,0.9); color: var(--gray-dark-2); }
+.scale-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.scale-card { border: 1px solid var(--border); border-radius: 4px; overflow: hidden; background: var(--surface); }
+.scale-card .chip { height: 108px; display: flex; align-items: flex-end; padding: 12px 14px; }
+.scale-card .chip .wcag { font-family: var(--font-mono); font-size: 9px; font-weight: 700; letter-spacing: .1em; padding: 3px 7px; border-radius: 4px; background: rgba(255,255,255,0.92); color: #2D3139; }
 .scale-card .body { padding: 14px; }
 .scale-card .nm { font-size: 13.5px; font-weight: 700; margin-bottom: 2px; }
 .scale-card .use { font-size: 12px; color: var(--text-2); min-height: 36px; line-height: 1.5; }
 .scale-card .hexline { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
 .scale-card .hex { font-family: var(--font-mono); font-size: 12px; font-weight: 500; }
 
-.gray-strip { display: grid; grid-template-columns: repeat(8, 1fr); border: 1px solid var(--border); border-radius: 2px; overflow: hidden; }
-.gray-strip .g { position: relative; }
-.gray-strip .g .fill { height: 96px; }
-.gray-strip .g .inf { padding: 10px 10px 12px; border-top: 1px solid var(--border); background: #fff; }
+.gray-strip { display: grid; grid-template-columns: repeat(8, 1fr); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+.gray-strip .g .fill { height: 88px; }
+.gray-strip .g .inf { padding: 10px 10px 12px; border-top: 1px solid var(--border); background: var(--surface); }
 .gray-strip .g .tk { font-family: var(--font-mono); font-size: 9px; font-weight: 700; letter-spacing: .04em; color: var(--text-2); margin-bottom: 3px; word-break: break-all; }
 .gray-strip .g .hx { font-family: var(--font-mono); font-size: 10.5px; color: var(--text); cursor: pointer; border: 0; padding: 0; }
-.gray-strip .g .hx:hover { color: var(--blue); }
+.gray-strip .g .hx:hover { color: var(--accent-text); }
 .gray-strip .g + .g { border-left: 1px solid var(--border); }
 
-.ratio-bar { display: flex; border-radius: 2px; overflow: hidden; border: 1px solid var(--border); height: 72px; }
+.ratio-bar { display: flex; border-radius: 4px; overflow: hidden; border: 1px solid var(--border); height: 68px; }
 .ratio-bar .r { display: flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: .08em; }
 .ratio-note { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 14px; font-size: 13px; color: var(--text-2); }
 .ratio-note b { color: var(--text); }
 
-/* ============ 04 Typography ============ */
-.type-hero { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.4fr); gap: 48px; align-items: center; border: 1px solid var(--border); border-radius: 2px; padding: 48px; background: #fff; }
-.type-hero .fname { font-size: clamp(64px, 9vw, 120px); font-weight: 800; letter-spacing: -0.045em; line-height: 1; }
+/* ============ Typography ============ */
+.type-hero { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.4fr); gap: 44px; align-items: center; border: 1px solid var(--border); border-radius: 4px; padding: 44px; background: var(--surface); }
+.type-hero .fname { font-size: clamp(60px, 8vw, 104px); font-weight: 800; letter-spacing: -0.045em; line-height: 1; }
 .type-hero .fdesc p { font-size: 15px; color: var(--text-2); margin-bottom: 14px; }
-.type-hero .fdesc .lnk { font-size: 13.5px; font-weight: 700; color: var(--blue); display: inline-flex; align-items: center; gap: 6px; }
-.type-hero .fdesc .lnk:hover { color: var(--blue-tone-down); }
-.type-hero .weights { display: flex; gap: 16px; margin-top: 20px; flex-wrap: wrap; }
+.type-hero .fdesc .lnk { font-size: 13.5px; font-weight: 700; color: var(--accent-text); display: inline-flex; align-items: center; gap: 6px; }
+.type-hero .fdesc .lnk:hover { color: var(--accent-strong); }
+.type-hero .weights { display: flex; gap: 16px; margin-top: 18px; flex-wrap: wrap; }
 .type-hero .weights span { font-size: 20px; color: var(--text); }
 
-.spec-table { border: 1px solid var(--border); border-radius: 2px; background: #fff; overflow: hidden; }
-.spec-row { display: grid; grid-template-columns: 220px 1fr; gap: 32px; padding: 26px 28px; border-top: 1px solid var(--border); align-items: center; }
+.spec-table { border: 1px solid var(--border); border-radius: 4px; background: var(--surface); overflow: hidden; }
+.spec-row { display: grid; grid-template-columns: 210px 1fr; gap: 28px; padding: 24px 26px; border-top: 1px solid var(--border); align-items: center; }
 .spec-row:first-child { border-top: 0; }
-.spec-meta .tok { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--blue); margin-bottom: 5px; }
+.spec-meta .tok { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--accent-text); margin-bottom: 5px; }
 .spec-meta .det { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-2); line-height: 1.7; }
 .spec-sample { overflow: hidden; }
-.t-display { font-size: clamp(34px, 4.4vw, 56px); line-height: 1.15; font-weight: 800; letter-spacing: -0.035em; }
-.t-h1 { font-size: clamp(28px, 3.2vw, 40px); line-height: 1.3; font-weight: 700; letter-spacing: -0.025em; }
-.t-h2 { font-size: clamp(24px, 2.6vw, 32px); line-height: 1.3; font-weight: 700; letter-spacing: -0.02em; }
-.t-h3 { font-size: 24px; line-height: 1.35; font-weight: 600; letter-spacing: -0.015em; }
+.t-display { font-size: clamp(32px, 4vw, 52px); line-height: 1.15; font-weight: 800; letter-spacing: -0.035em; }
+.t-h1 { font-size: clamp(26px, 3vw, 38px); line-height: 1.3; font-weight: 700; letter-spacing: -0.025em; }
+.t-h2 { font-size: clamp(22px, 2.4vw, 30px); line-height: 1.3; font-weight: 700; letter-spacing: -0.02em; }
+.t-h3 { font-size: 23px; line-height: 1.35; font-weight: 600; letter-spacing: -0.015em; }
 .t-bodylg { font-size: 18px; line-height: 1.6; font-weight: 500; }
 .t-body { font-size: 16px; line-height: 1.65; font-weight: 400; color: var(--text-2); max-width: 560px; }
 .t-caption { font-size: 13px; line-height: 1.55; font-weight: 500; color: var(--text-2); letter-spacing: 0; }
-.t-num { font-family: var(--font-sans); font-size: clamp(24px, 3vw, 36px); font-weight: 700; font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; letter-spacing: 0; }
-.kr-rules { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.rule-card { border: 1px solid var(--border); background: #fff; border-radius: 2px; padding: 24px; }
-.rule-card .k { font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; }
+.t-num { font-family: var(--font-sans); font-size: clamp(22px, 2.6vw, 32px); font-weight: 700; font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; letter-spacing: 0; }
+.kr-rules { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.rule-card { border: 1px solid var(--border); background: var(--surface); border-radius: 4px; padding: 24px; }
+.rule-card .k { font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-text); margin-bottom: 10px; }
 .rule-card .t { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
 .rule-card .d { font-size: 13.5px; color: var(--text-2); }
 
-/* ============ 05 Graphic Identity ============ */
-.gi-state { font-size: clamp(22px, 3vw, 32px); font-weight: 700; letter-spacing: -0.025em; line-height: 1.4; max-width: 800px; margin-bottom: 56px; }
-.gi-state em { font-style: normal; color: var(--blue); }
-.mult-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-.mult { border: 1px solid var(--border); background: #fff; border-radius: 2px; padding: 20px; }
-.mult .mg { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-bottom: 16px; min-height: 112px; align-content: start; }
-.mult .mg i { aspect-ratio: 1; border-radius: 1px; background: var(--gray-light); opacity: 0; transform: scale(.7); }
-.mult.play .mg i { animation: cell-in .25s var(--ease) forwards; }
-.mult .mg i.on { background: var(--gray-dark-3); }
-.mult .mg i.bb { background: var(--blue); }
-.mult .lab { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-.mult .sub { font-size: 12px; color: var(--text-2); margin-top: 3px; }
-.mult .arrow { color: var(--blue); font-family: var(--font-mono); }
-.motif-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.motif { border: 1px solid var(--border); background: #fff; border-radius: 2px; overflow: hidden; }
-.motif .viz { height: 150px; position: relative; overflow: hidden; background: var(--gray-superlight); }
-.viz-layer { background:
-  repeating-linear-gradient(0deg, transparent 0 9px, rgba(26,29,36,0.16) 9px 10px); }
-.viz-layer::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 34%; background: var(--blue); opacity: .92; }
-.viz-array { background:
-  radial-gradient(circle at center, var(--gray) 1.2px, transparent 1.6px);
-  background-size: 22px 22px; background-position: center; }
-.viz-array::after { content: ""; position: absolute; inset: 22% 34%; border: 1.5px solid var(--blue); }
-.viz-repeat { display: grid; grid-template-columns: repeat(6, 1fr); align-items: center; justify-items: center; padding: 0 12px; }
-.viz-repeat svg { width: 26px; height: auto; color: var(--gray); }
-.viz-repeat svg:last-child { color: var(--blue); }
-.motif .bd { padding: 18px 20px 20px; border-top: 1px solid var(--border); }
-.motif .t { font-size: 15px; font-weight: 700; margin-bottom: 5px; }
-.motif .d { font-size: 13px; color: var(--text-2); line-height: 1.6; }
-
-/* ============ 06 Photography ============ */
-.photo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
-.photo-card { border: 1px solid var(--border); border-radius: 2px; overflow: hidden; background: #fff; }
-.photo-card .ph {
-  aspect-ratio: 4 / 5; position: relative; background: var(--gray-superlight);
-  background-image:
-    repeating-linear-gradient(0deg,  rgba(26,29,36,0.05) 0 1px, transparent 1px 24px),
-    repeating-linear-gradient(90deg, rgba(26,29,36,0.05) 0 1px, transparent 1px 24px);
-  display: flex; align-items: center; justify-content: center;
-}
-.photo-card .ph .no { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: .14em; color: var(--text-2); }
-.photo-card .bd { padding: 16px; border-top: 1px solid var(--border); }
-.photo-card .t { font-size: 14.5px; font-weight: 700; margin-bottom: 4px; }
-.photo-card .d { font-size: 12.5px; color: var(--text-2); line-height: 1.55; }
-.tone-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.tone-box { border: 1px solid var(--border); background: #fff; border-radius: 2px; padding: 28px; }
-.tone-box .hd { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; margin-bottom: 16px; }
-.tone-box ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-.tone-box li { font-size: 14px; color: var(--text-2); padding-left: 22px; position: relative; }
-.tone-box li::before { position: absolute; left: 0; font-weight: 700; }
-.tone-box.do li::before { content: "✓"; color: var(--blue); }
-.tone-box.dont li::before { content: "×"; color: #B91C1C; }
-
-/* ============ 07 Manufacturing ============ */
-.mfg-table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); background: #fff; font-size: 14px; }
-.mfg-table thead th { background: var(--gray-dark-3); color: #fff; text-align: left; font-size: 12.5px; font-weight: 700; letter-spacing: .02em; padding: 13px 18px; }
-.mfg-table td, .mfg-table tbody th { border-top: 1px solid var(--border); padding: 14px 18px; vertical-align: top; }
-.mfg-table tbody th.env { font-size: 14px; font-weight: 700; white-space: nowrap; text-align: left; color: var(--text); background: transparent; }
-.mfg-table td.asset { font-family: var(--font-mono); font-size: 12px; color: var(--gray-dark-2); }
-.mfg-table td.note { color: var(--text-2); font-size: 13px; }
-.mfg-wrap { overflow-x: auto; border-radius: 2px; }
-
-/* ============ 08 Usage ============ */
-.dd-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+/* ============ Usage ============ */
+.dd-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 .dd-grid.nine { grid-template-columns: repeat(3, 1fr); }
-.dd {
-  border: 1px solid var(--border); border-radius: 2px; overflow: hidden; background: #fff;
-}
+.dd { border: 1px solid var(--border); border-radius: 4px; overflow: hidden; background: var(--surface); }
 .dd .vis {
-  height: 128px; display: flex; align-items: center; justify-content: center;
+  height: 120px; display: flex; align-items: center; justify-content: center;
   background: #fff; position: relative; overflow: hidden; padding: 20px;
 }
-.dd .vis svg { width: 62%; max-width: 170px; height: auto; color: var(--gray-dark-3); }
+.dd .vis svg { width: 62%; max-width: 160px; height: auto; color: #1A1D24; }
 .dd .cap { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-top: 1px solid var(--border); font-size: 13px; font-weight: 600; }
 .dd .cap::before { font-size: 12px; font-weight: 800; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .dd.do .cap::before { content: "✓"; background: var(--blue); color: #fff; }
@@ -422,117 +461,120 @@ h3.sub:first-of-type { margin-top: 0; }
   content: ""; position: absolute; left: -8%; right: -8%; top: 50%; height: 1.5px;
   background: #B91C1C; transform: rotate(-9deg); opacity: .85;
 }
-/* 금지 사례 시각 처리 — 실제 워드마크에 위반 상태를 적용 */
 .v-stretch svg { transform: scaleX(1.45); }
 .v-rotate svg { transform: rotate(-14deg); }
-.v-color svg { color: #21A366; }
-.v-stroke svg { fill: #fff; stroke: var(--gray-dark-3); stroke-width: 3.4px; }
+.v-color svg { color: #21A366 !important; }
+.v-stroke svg { fill: #fff; stroke: #1A1D24; stroke-width: 3.4px; }
 .v-shadow svg { filter: drop-shadow(5px 6px 4px rgba(0,0,0,0.45)); }
 .v-skew svg { transform: skewX(-18deg); }
 .v-font .mix { display: flex; align-items: baseline; gap: 10px; }
-.v-font .mix svg { width: 108px; }
-.v-font .mix em { font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-size: 26px; color: var(--gray-dark-3); }
+.v-font .mix svg { width: 104px; }
+.v-font .mix em { font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-size: 25px; color: #1A1D24; }
 .v-busy { background:
   linear-gradient(115deg, #E8590C 0%, #FAB005 22%, #40C057 47%, #228BE6 74%, #7048E8 100%) !important; }
-.v-busy svg { color: #fff; }
-.do-clear .frame { position: relative; border: 1px dashed var(--gray); padding: 26px 34px; }
+.v-busy svg { color: #fff !important; }
+.do-clear .frame { position: relative; border: 1px dashed #B3B8C2; padding: 24px 32px; }
 .do-contrast { display: flex; gap: 0; padding: 0 !important; }
 .do-contrast .half { flex: 1; display: flex; align-items: center; justify-content: center; height: 100%; }
-.do-contrast .half.d { background: var(--gray-dark-3); }
+.do-contrast .half.d { background: #1A1D24; }
 .do-contrast .half svg { width: 74%; }
 .do-colorways { display: grid !important; grid-template-columns: 1fr 1fr; gap: 0; padding: 0 !important; }
 .do-colorways span { display: flex; align-items: center; justify-content: center; }
 .dd .vis.do-colorways span svg { width: 66%; max-width: none; }
-.do-colorways .s2 { background: var(--gray-dark-3); }
-.do-colorways .s3 { background: var(--blue); }
-.do-colorways .s4 { background: #fff; border-top: 1px solid var(--border); }
-.do-colorways .s3 { border-top: 1px solid var(--blue); }
+.do-colorways .s2 { background: #1A1D24; }
+.do-colorways .s3 { background: #0059FF; border-top: 1px solid #0059FF; }
+.do-colorways .s4 { background: #fff; border-top: 1px solid #E6E8EC; }
 
-/* Clear space diagram */
-.cs-wrap { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 16px; }
-.cs-panel { border: 1px solid var(--border); background: #fff; border-radius: 2px; padding: 40px; display: flex; align-items: center; justify-content: center; min-height: 300px; }
-.cs-frame { position: relative; border: 1px dashed var(--blue-tone-up); padding: 13.5% 12%; }
-.cs-frame svg { width: min(300px, 100%); color: var(--gray-dark-3); }
+.cs-wrap { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 14px; }
+.cs-panel { border: 1px solid var(--border); background: #fff; border-radius: 4px; padding: 40px; display: flex; align-items: center; justify-content: center; min-height: 280px; }
+.cs-frame { position: relative; border: 1px dashed #337AFF; padding: 13.5% 12%; }
+.cs-frame svg { width: min(280px, 100%); color: #1A1D24; }
 .cs-frame .u {
   position: absolute; font-family: var(--font-mono); font-size: 10px; font-weight: 700;
-  color: var(--blue); background: #fff; padding: 1px 5px;
+  color: #0047CC; background: #fff; padding: 1px 5px;
 }
 .cs-frame .u.top { top: -8px; left: 50%; transform: translateX(-50%); }
 .cs-frame .u.bot { bottom: -8px; left: 50%; transform: translateX(-50%); }
 .cs-frame .u.lft { left: -14px; top: 50%; transform: translateY(-50%); }
 .cs-frame .u.rgt { right: -14px; top: 50%; transform: translateY(-50%); }
-.cs-side { border: 1px solid var(--border); background: #fff; border-radius: 2px; padding: 28px; display: flex; flex-direction: column; gap: 18px; }
+.cs-side { border: 1px solid var(--border); background: var(--surface); border-radius: 4px; padding: 26px; display: flex; flex-direction: column; gap: 18px; }
 .cs-item .k { font-size: 14px; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
 .cs-item .d { font-size: 13.5px; color: var(--text-2); line-height: 1.6; }
 
-/* ============ 09 Media Kit ============ */
-.mk-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; align-items: stretch; }
-.mk-boiler { border: 1px solid var(--border); background: #fff; border-radius: 2px; padding: 36px; display: flex; flex-direction: column; }
-.mk-boiler .en-tag { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--blue); margin-bottom: 18px; }
-.mk-boiler p.main { font-size: 19px; line-height: 1.65; font-weight: 500; margin-bottom: 16px; }
-.mk-boiler p.subp { font-size: 14.5px; line-height: 1.7; color: var(--text-2); margin-bottom: 24px; }
+/* ============ Media Kit ============ */
+.mk-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 14px; align-items: stretch; }
+.mk-boiler { border: 1px solid var(--border); background: var(--surface); border-radius: 4px; padding: 34px; display: flex; flex-direction: column; }
+.mk-boiler .en-tag { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--accent-text); margin-bottom: 18px; }
+.mk-boiler .main { font-size: 18px; line-height: 1.62; font-weight: 700; margin-bottom: 16px; }
+.mk-boiler .subp { font-size: 14.5px; line-height: 1.75; color: var(--text-2); margin-bottom: 14px; }
+.mk-boiler .subp b { color: var(--text); font-weight: 700; }
+.mk-boiler .closing { font-size: 15.5px; line-height: 1.65; font-weight: 700; color: var(--text); margin: 6px 0 22px; padding-left: 14px; border-left: 3px solid var(--blue); }
 .mk-boiler .foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .mk-boiler .src { font-size: 12px; color: var(--text-2); }
-.mk-side { display: flex; flex-direction: column; gap: 16px; }
-.mk-facts { border: 1px solid var(--border); background: #fff; border-radius: 2px; padding: 24px 28px; }
-.mk-facts .hd { font-size: 14px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.mk-side { display: flex; flex-direction: column; gap: 14px; }
+.mk-facts { border: 1px solid var(--border); background: var(--surface); border-radius: 4px; padding: 22px 26px; }
+.mk-facts .hd { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
 .fact-row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 10px 0; border-top: 1px solid var(--border); }
 .fact-row .k { font-size: 13px; color: var(--text-2); }
 .fact-row .v { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.fact-row .v .plus { color: var(--blue); }
+.fact-row .v .plus { color: var(--accent-text); }
 .mk-facts .src { font-size: 11.5px; color: var(--text-2); margin-top: 12px; line-height: 1.6; }
-.mk-ch { border: 1px solid var(--border); background: #fff; border-radius: 2px; padding: 24px 28px; }
+.mk-ch { border: 1px solid var(--border); background: var(--surface); border-radius: 4px; padding: 22px 26px; }
+.mk-ch .hd { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
 .ch-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); font-size: 13.5px; }
-.ch-row:first-of-type { border-top: 0; }
 .ch-row .k { color: var(--text-2); }
 .ch-row a.v { font-family: var(--font-mono); font-size: 12px; font-weight: 500; color: var(--text); }
-.ch-row a.v:hover { color: var(--blue); }
+.ch-row a.v:hover { color: var(--accent-text); }
 
-/* ============ 10 Downloads ============ */
-.dl-group { margin-bottom: 40px; }
+/* ============ Downloads ============ */
+.dl-group { margin-bottom: 36px; }
 .dl-group-hd { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; }
-.dl-group-hd .t { font-size: 17px; font-weight: 700; }
+.dl-group-hd .t { font-size: 16.5px; font-weight: 700; }
 .dl-group-hd .c { font-family: var(--font-mono); font-size: 11px; color: var(--text-2); }
-.dl-list { border: 1px solid var(--border); border-radius: 2px; background: #fff; overflow: hidden; }
+.dl-list { border: 1px solid var(--border); border-radius: 4px; background: var(--surface); overflow: hidden; }
 .dl-row {
   display: grid; grid-template-columns: 88px minmax(0,1fr) auto; gap: 20px; align-items: center;
   padding: 14px 20px 14px 14px; border-top: 1px solid var(--border);
 }
 .dl-row:first-child { border-top: 0; }
 .dl-prev {
-  width: 88px; height: 56px; border: 1px solid var(--border); border-radius: 2px;
+  width: 88px; height: 56px; border: 1px solid var(--border); border-radius: 3px;
   display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;
 }
 .dl-prev svg { width: 68%; height: auto; }
 .dl-prev img { width: 60%; height: auto; object-fit: contain; }
-.dl-prev.dark { background: var(--gray-dark-3); }
-.dl-prev.blue { background: var(--blue); }
+.dl-prev.dark { background: #1A1D24; }
+.dl-prev.blue { background: #0059FF; }
 .dl-prev.light { background: #fff; }
 .dl-name { font-size: 14.5px; font-weight: 700; }
 .dl-desc { font-size: 12.5px; color: var(--text-2); margin-top: 2px; }
 .dl-acts { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .dl-all {
   display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
-  border: 1px solid var(--gray-dark-3); background: var(--gray-dark-3); color: #fff;
-  border-radius: 2px; padding: 32px 36px; margin-top: 8px;
+  border: 1px solid #1A1D24; background: #1A1D24; color: #fff;
+  border-radius: 4px; padding: 30px 34px; margin-top: 8px;
 }
-.dl-all .t { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
-.dl-all .d { font-size: 13.5px; color: rgba(255,255,255,0.6); }
+:root[data-theme="dark"] .dl-all { border-color: var(--border); background: var(--surface-2); }
+.dl-all .t { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
+.dl-all .d { font-size: 13.5px; color: rgba(255,255,255,0.62); }
+:root[data-theme="dark"] .dl-all .d { color: var(--text-2); }
 .dl-note { font-size: 12.5px; color: var(--text-2); margin-top: 16px; }
-.dl-note code { font-family: var(--font-mono); font-size: 11.5px; background: var(--gray-superlight); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; }
+.dl-note code { font-family: var(--font-mono); font-size: 11.5px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; }
 
 /* ============ Footer ============ */
-footer { background: var(--gray-dark-3); color: #fff; padding: 72px 0 40px; }
+footer { background: #1A1D24; color: #fff; padding: 64px 0 36px; margin-top: 96px; }
+.ft-in { max-width: 1360px; margin: 0 auto; padding: 0 32px; }
 .ft-grid { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(0,1fr); gap: 48px; }
-.ft-logo svg { height: 26px; width: auto; color: #fff; margin-bottom: 28px; }
-.ft-info { font-size: 12.5px; line-height: 1.9; color: rgba(255,255,255,0.55); }
-.ft-info b { color: rgba(255,255,255,0.8); font-weight: 600; }
-.ft-right { display: flex; flex-direction: column; gap: 16px; font-size: 13px; color: rgba(255,255,255,0.55); }
-.ft-right .hd { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.8); }
-.ft-right a { color: rgba(255,255,255,0.75); }
+.ft-logo svg { height: 24px; width: auto; color: #fff; margin-bottom: 26px; }
+.ft-info { font-size: 12.5px; line-height: 1.9; color: rgba(255,255,255,0.58); }
+.ft-info b { color: rgba(255,255,255,0.82); font-weight: 600; }
+.ft-info a { color: rgba(255,255,255,0.75); }
+.ft-right { display: flex; flex-direction: column; gap: 14px; font-size: 13px; }
+.ft-right .hd { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.82); }
+.ft-right a { color: rgba(255,255,255,0.72); }
 .ft-right a:hover { color: #fff; }
 .ft-bottom {
-  margin-top: 56px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.12);
+  margin-top: 48px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,0.12);
   display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
   font-size: 12px; color: rgba(255,255,255,0.58);
 }
@@ -541,82 +583,76 @@ footer { background: var(--gray-dark-3); color: #fff; padding: 72px 0 40px; }
 /* Toast */
 .toast {
   position: fixed; bottom: 28px; left: 50%; transform: translate(-50%, 16px);
-  background: var(--gray-dark-3); color: #fff; font-size: 13.5px; font-weight: 600;
-  padding: 12px 20px; border-radius: 8px; box-shadow: 0 12px 32px rgba(0,0,0,0.16);
+  background: var(--toast-bg); color: #fff; font-size: 13.5px; font-weight: 600;
+  padding: 12px 20px; border-radius: 10px; box-shadow: 0 12px 32px rgba(0,0,0,0.22);
   opacity: 0; pointer-events: none; transition: opacity .25s var(--ease), transform .25s var(--ease);
   z-index: 300; display: flex; align-items: center; gap: 10px;
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
-.toast .mono { font-family: var(--font-mono); font-weight: 500; color: rgba(255,255,255,0.7); font-size: 12px; }
+.toast .mono { font-family: var(--font-mono); font-weight: 500; color: rgba(255,255,255,0.72); font-size: 12px; }
 
 /* Reveal */
-.reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
 .reveal.in { opacity: 1; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
-  .plate .plate-grid i, .mult .mg i { animation: none !important; opacity: 1; transform: none; }
+  .plate .plate-grid i { animation: none !important; opacity: 1; transform: none; }
   * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
 
 /* ============ Responsive ============ */
-@media (max-width: 1279px) {
-  .container, .topbar-in { padding-left: 28px; padding-right: 28px; }
-}
 @media (max-width: 1139px) {
-  .nav { display: none; }
+  .shell { display: block; padding: 0 28px; }
+  .sidenav { display: none; }
   .subnav { display: block; }
-  section.sec { scroll-margin-top: calc(var(--topbar-h) + 52px); }
+  section.sec { scroll-margin-top: calc(var(--topbar-h) + 56px); }
+  h3.sub, .sub-anchor { scroll-margin-top: calc(var(--topbar-h) + 62px); }
 }
 @media (max-width: 1023px) {
-  section.sec { padding: 80px 0; }
-  .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+  section.sec { padding: 76px 0 0; }
+  .hero-grid { grid-template-columns: 1fr; gap: 44px; }
   .colorway-grid, .dd-grid { grid-template-columns: repeat(2, 1fr); }
   .dd-grid.nine { grid-template-columns: repeat(2, 1fr); }
   .scale-grid { grid-template-columns: repeat(2, 1fr); }
-  .photo-grid { grid-template-columns: repeat(3, 1fr); }
-  .mult-grid { grid-template-columns: repeat(2, 1fr); }
-  .motif-grid, .kr-rules { grid-template-columns: 1fr 1fr; }
   .gray-strip { grid-template-columns: repeat(4, 1fr); }
   .gray-strip .g:nth-child(n+5) { border-top: 1px solid var(--border); }
   .gray-strip .g:nth-child(5) { border-left: 0; }
   .swatch-hero, .type-hero, .mk-grid, .cs-wrap { grid-template-columns: 1fr; }
+  .kr-rules { grid-template-columns: 1fr 1fr; }
   .ft-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 767px) {
-  .container, .topbar-in { padding-left: 20px; padding-right: 20px; }
-  section.sec { padding: 64px 0; }
-  .hero { padding: 64px 0 72px; }
-  .sec-head h2 { font-size: 26px; }
-  .stage { min-height: 220px; padding: 32px; }
+  .shell, .topbar-in, .ft-in { padding-left: 20px; padding-right: 20px; }
+  section.sec { padding: 60px 0 0; }
+  .hero { padding-top: 52px; }
+  .banner-in { padding: 44px 24px; }
+  .sec-head h2 { font-size: 25px; }
+  .stage { min-height: 210px; padding: 30px; }
   .logo-stage .stage-grid { grid-template-columns: 1fr; }
   .stage + .stage { border-left: 0; border-top: 1px solid var(--border); }
-  .stage.dark .tag { color: rgba(255,255,255,0.55); }
   .spec-row { grid-template-columns: 1fr; gap: 14px; padding: 22px 20px; }
-  .photo-grid { grid-template-columns: repeat(2, 1fr); }
   .identity-strip { grid-template-columns: 1fr; }
   .identity-strip .cell { border-left: 0; border-top: 1px solid var(--border); }
   .identity-strip .cell:first-child { border-top: 0; }
-  .motif-grid, .kr-rules, .tone-cols, .mult-grid { grid-template-columns: 1fr; }
-  .colorway-grid, .dd-grid, .dd-grid.nine, .scale-grid { grid-template-columns: 1fr; }
+  .kr-rules, .colorway-grid, .dd-grid, .dd-grid.nine, .scale-grid { grid-template-columns: 1fr; }
   .dl-row { grid-template-columns: 64px minmax(0,1fr); }
   .dl-prev { width: 64px; height: 44px; }
   .dl-acts { grid-column: 1 / -1; justify-content: flex-start; }
-  .type-hero { padding: 28px; }
-  .swatch-hero .surface { min-height: 240px; }
+  .type-hero { padding: 26px; }
+  .swatch-hero .surface { min-height: 220px; }
   .btn-lg { height: 50px; padding: 0 22px; font-size: 15px; }
   .hero-cta .btn { flex: 1 1 auto; }
 }
 @media (max-width: 420px) {
-  .photo-grid { grid-template-columns: 1fr; }
   .gray-strip { grid-template-columns: repeat(2, 1fr); }
   .gray-strip .g:nth-child(n+3) { border-top: 1px solid var(--border); }
   .gray-strip .g:nth-child(odd) { border-left: 0; }
   .brand-sub { display: none; }
 }
 </style>
-<noscript><style>.reveal { opacity: 1; transform: none; }</style></noscript>
+<noscript><style>.reveal { opacity: 1; transform: none; } .sidenav a.active { background: none; }</style></noscript>
 </head>
 <body>
 
@@ -647,819 +683,646 @@ footer { background: var(--gray-dark-3); color: #fff; padding: 72px 0 40px; }
   <div class="topbar-in">
     <a class="brand" href="#identity" aria-label="GLUCK Brand Resource Center 홈">
       <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="GLUCK"><use href="#lg-wordmark"/></svg>
-      <span class="brand-sub">Brand Resource Center</span>
+      <span class="brand-sub">Brand Resources</span>
     </a>
-    <nav class="nav" aria-label="섹션 이동">
-      <a href="#identity">Identity</a>
-      <a href="#logo">Logo</a>
-      <a href="#color">Color</a>
-      <a href="#typography">Typography</a>
-      <a href="#graphic">Graphic</a>
-      <a href="#photography">Photography</a>
-      <a href="#manufacturing">Manufacturing</a>
-      <a href="#usage">Usage</a>
-      <a href="#mediakit">Media Kit</a>
-      <a href="#downloads">Downloads</a>
-    </nav>
+    <button class="theme-btn" id="themeBtn" aria-label="다크 모드로 전환">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    </button>
   </div>
 </header>
 
-<div class="subnav" aria-hidden="false">
+<div class="subnav">
   <nav class="subnav-in" aria-label="섹션 이동 (모바일)">
-    <a href="#identity">Identity</a>
-    <a href="#logo">Logo</a>
-    <a href="#color">Color</a>
-    <a href="#typography">Typography</a>
-    <a href="#graphic">Graphic</a>
-    <a href="#photography">Photography</a>
-    <a href="#manufacturing">Manufacturing</a>
-    <a href="#usage">Usage</a>
-    <a href="#mediakit">Media Kit</a>
-    <a href="#downloads">Downloads</a>
+    <a href="#identity">브랜드 소개</a>
+    <a href="#signature">시그니처 로고</a>
+    <a href="#symbol">심볼 로고</a>
+    <a href="#round">라운드·탭 아이콘</a>
+    <a href="#mono">모노 로고</a>
+    <a href="#color">브랜드 컬러</a>
+    <a href="#typography">타이포그래피</a>
+    <a href="#usage">로고 사용 규정</a>
+    <a href="#clearspace">클리어 스페이스</a>
+    <a href="#mediakit">미디어 키트</a>
+    <a href="#downloads">다운로드</a>
   </nav>
 </div>
 
+<div class="shell">
+
+<aside class="sidenav" aria-label="섹션 이동">
+  <nav>
+    <div class="sn-group">
+      <div class="sn-title">브랜드 아이덴티티</div>
+      <a href="#identity">브랜드 소개</a>
+      <a href="#signature">시그니처 로고</a>
+      <a href="#symbol">심볼 로고</a>
+      <a href="#round">라운드·탭 아이콘</a>
+      <a href="#mono">모노 로고</a>
+      <a href="#color">브랜드 컬러</a>
+      <a href="#typography">타이포그래피</a>
+    </div>
+    <div class="sn-group">
+      <div class="sn-title">사용 규정</div>
+      <a href="#usage">로고 사용 규정</a>
+      <a href="#clearspace">클리어 스페이스</a>
+    </div>
+    <div class="sn-group">
+      <div class="sn-title">리소스</div>
+      <a href="#mediakit">미디어 키트</a>
+      <a href="#downloads">다운로드 센터</a>
+    </div>
+  </nav>
+</aside>
+
 <main>
 
-<!-- ================================================== 01 BRAND IDENTITY -->
-<section class="hero" id="identity" aria-label="Brand Identity">
-  <div class="container">
-    <p class="hero-eyebrow">GLUCK · Official Brand Resource Center</p>
-    <div class="hero-wordmark reveal">
-      <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="GLUCK 워드마크"><use href="#lg-wordmark"/></svg>
-    </div>
-    <div class="hero-grid">
-      <div class="hero-copy reveal">
-        <h1>
-          <span class="en">Industrial SLA Manufacturing.</span><br>
-          <span class="kr">산업과 브랜드를, 실제 제품으로.</span>
-        </h1>
-        <p class="lead">
-          GLUCK은 산업용 SLA 3D프린팅 기반의 고정밀 양산 제조 파트너입니다.
-          이 페이지는 GLUCK의 로고·컬러·타이포그래피와 사용 규정, 다운로드 가능한
-          브랜드 자산을 한곳에서 제공하는 공식 리소스 센터입니다.
-        </p>
-        <div class="hero-cta">
-          <a class="btn btn-primary btn-lg" href="#downloads">브랜드 자산 다운로드</a>
-          <a class="btn btn-tertiary btn-lg" href="#usage">로고 사용 가이드</a>
-        </div>
-      </div>
-      <div class="plate reveal" id="heroPlate" aria-hidden="true">
-        <div class="plate-head">
-          <span class="t">Build Plate — Batch</span>
-          <span class="c" id="plateCount">000 / 040</span>
-        </div>
-        <div class="plate-grid" id="plateGrid"></div>
-        <div class="plate-cap">
-          <span>하나의 지오메트리가 플레이트 위에서 반복 생산됩니다.</span>
-          <span class="mono">SLA · ARRAY</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="identity-strip reveal">
-      <div class="cell">
-        <div class="k">Precision</div>
-        <div class="t">정밀</div>
-        <div class="d">산업용 SLA가 만드는 표면 품질과 치수 정확도. 데이터가 곧 품질 기준이 됩니다.</div>
-      </div>
-      <div class="cell">
-        <div class="k">Production</div>
-        <div class="t">양산</div>
-        <div class="d">시제품이 아닌 제품. 금형 없는 소량~중량 양산과 후가공·조립·패키징의 일체화.</div>
-      </div>
-      <div class="cell">
-        <div class="k">Scale</div>
-        <div class="t">확장</div>
-        <div class="d">하나의 파트가 배치로, 배치가 양산으로. 디지털 데이터는 수량의 제약 없이 확장됩니다.</div>
-      </div>
-    </div>
-
-    <blockquote class="identity-quote reveal">
-      <p>정밀한 제조 신뢰감 위에, 브랜드와 산업을 실제 제품으로 전환하는
-      <strong>디지털 파운드리</strong>의 시각 언어.</p>
-      <p class="src">GLUCK Design System · Brand Identity 정의</p>
-    </blockquote>
+<!-- ================================================== 상단 배너 -->
+<div class="banner reveal">
+  <div class="banner-in">
+    <p class="b-eyebrow">GLUCK · Industrial SLA Manufacturing Partner</p>
+    <h2 class="b-title">Scalable Mass Production</h2>
+    <a class="btn-banner" href="https://glucklab.com/company/company_sub01.html?lang=ko" target="_blank" rel="noopener">회사 소개 보기</a>
   </div>
+</div>
+
+<!-- ================================================== 브랜드 소개 -->
+<section class="hero sec" id="identity" data-spy aria-label="브랜드 소개">
+  <p class="hero-eyebrow">GLUCK · Official Brand Resource Center</p>
+  <div class="hero-wordmark reveal">
+    <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="GLUCK 워드마크"><use href="#lg-wordmark"/></svg>
+  </div>
+  <div class="hero-grid">
+    <div class="hero-copy reveal">
+      <h1>
+        <span class="en">Industrial SLA Manufacturing.</span><br>
+        <span class="kr">산업과 브랜드를, 실제 제품으로.</span>
+      </h1>
+      <p class="lead">
+        GLUCK은 산업용 SLA 3D프린팅 기반의 고정밀 양산 제조 파트너입니다.
+        이 페이지는 GLUCK의 로고·컬러·타이포그래피와 사용 규정, 다운로드 가능한
+        브랜드 자산을 한곳에서 제공하는 공식 리소스 센터입니다.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary btn-lg" href="#downloads">브랜드 자산 다운로드</a>
+        <a class="btn btn-tertiary btn-lg" href="#usage">로고 사용 가이드</a>
+      </div>
+    </div>
+    <div class="plate reveal" id="heroPlate" aria-hidden="true">
+      <div class="plate-head">
+        <span class="t">Build Plate — Batch</span>
+        <span class="c" id="plateCount">000 / 040</span>
+      </div>
+      <div class="plate-grid" id="plateGrid"></div>
+      <div class="plate-cap">
+        <span>하나의 지오메트리가 플레이트 위에서 반복 생산됩니다.</span>
+        <span class="mono">SLA · ARRAY</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="identity-strip reveal">
+    <div class="cell">
+      <div class="k">Precision</div>
+      <div class="t">정밀</div>
+      <div class="d">산업용 SLA가 만드는 표면 품질과 치수 정확도. 데이터가 곧 품질 기준이 됩니다.</div>
+    </div>
+    <div class="cell">
+      <div class="k">Production</div>
+      <div class="t">양산</div>
+      <div class="d">시제품이 아닌 제품. 금형 없는 소량~중량 양산과 후가공·조립·패키징의 일체화.</div>
+    </div>
+    <div class="cell">
+      <div class="k">Scale</div>
+      <div class="t">확장</div>
+      <div class="d">하나의 파트가 배치로, 배치가 양산으로. 디지털 데이터는 수량의 제약 없이 확장됩니다.</div>
+    </div>
+  </div>
+
+  <blockquote class="identity-quote reveal">
+    <p>정밀한 제조 신뢰감 위에, 브랜드와 산업을 실제 제품으로 전환하는
+    <strong>디지털 파운드리</strong>의 시각 언어.</p>
+    <p class="src">GLUCK Design System · Brand Identity 정의</p>
+  </blockquote>
 </section>
 
-<!-- ================================================== 02 LOGO -->
+<!-- ================================================== 01 로고 -->
 <section class="sec" id="logo">
-  <div class="container">
-    <div class="sec-head reveal">
-      <div class="sec-no"><span class="num">01</span><span class="eyebrow">Logo</span></div>
-      <h2>로고</h2>
-      <p class="lead">
-        GLUCK의 시그니처 로고는 <b>워드마크 단독형</b>입니다. 현재 CI 자산 체계에 심볼 결합형 시그니처는 별도로 존재하지 않으며,
-        워드마크의 첫 글자인 <b>G 심볼</b>이 파비콘·앱 아이콘 등 아이콘 컨텍스트에서 사용됩니다.
-        모든 파일은 CI 가이드라인 보드의 원본 벡터에서 추출되었습니다.
-      </p>
-    </div>
-
-    <h3 class="sub reveal">Signature — Wordmark</h3>
-    <p class="sub-lead reveal">기본 로고. 항상 수평으로 사용하며, 비율(약 4.68 : 1)을 유지합니다.</p>
-    <div class="logo-stage reveal">
-      <div class="stage-grid">
-        <div class="stage light">
-          <span class="tag">On Light</span>
-          <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="GLUCK 워드마크 — 라이트 배경" style="color:#000"><use href="#lg-wordmark"/></svg>
-        </div>
-        <div class="stage dark">
-          <span class="tag">On Dark</span>
-          <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="GLUCK 워드마크 — 다크 배경" style="color:#fff"><use href="#lg-wordmark"/></svg>
-        </div>
-      </div>
-      <div class="asset-bar">
-        <div class="name">GLUCK_Wordmark<span class="meta">SVG · PNG (1628px)</span></div>
-        <div class="acts">
-          <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Wordmark_Black.svg" download>Black <span class="fmt">SVG</span></a>
-          <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Wordmark_Black.png" download>Black <span class="fmt">PNG</span></a>
-          <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Wordmark_White.svg" download>White <span class="fmt">SVG</span></a>
-          <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Wordmark_White.png" download>White <span class="fmt">PNG</span></a>
-          <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Wordmark_Blue.svg" download>Blue <span class="fmt">SVG</span></a>
-          <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Wordmark_Blue.png" download>Blue <span class="fmt">PNG</span></a>
-        </div>
-      </div>
-    </div>
-
-    <h3 class="sub reveal">공식 컬러웨이</h3>
-    <p class="sub-lead reveal">CI 가이드라인 보드에 수록된 4가지 조합만 사용합니다. 임의의 색상 조합은 허용되지 않습니다.</p>
-    <div class="colorway-grid reveal">
-      <div class="colorway">
-        <div class="cw-stage" style="background:#fff">
-          <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="블랙 워드마크 — 화이트 배경" style="color:#000"><use href="#lg-wordmark"/></svg>
-        </div>
-        <div class="cw-cap">
-          <div class="cw-name">GLUCK Black</div>
-          <div class="cw-spec">C100 M100 Y100 K100<br>R0 G0 B0</div>
-        </div>
-      </div>
-      <div class="colorway">
-        <div class="cw-stage" style="background:#000">
-          <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="화이트 워드마크 — 블랙 배경" style="color:#fff"><use href="#lg-wordmark"/></svg>
-        </div>
-        <div class="cw-cap">
-          <div class="cw-name">GLUCK White</div>
-          <div class="cw-spec">C0 M0 Y0 K0<br>R255 G255 B255</div>
-        </div>
-      </div>
-      <div class="colorway">
-        <div class="cw-stage" style="background:#0059FF">
-          <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="화이트 워드마크 — 블루 배경" style="color:#fff"><use href="#lg-wordmark"/></svg>
-        </div>
-        <div class="cw-cap">
-          <div class="cw-name">White on Main Blue</div>
-          <div class="cw-spec">BG #0059FF<br>C86 M63 Y0 K0</div>
-        </div>
-      </div>
-      <div class="colorway">
-        <div class="cw-stage" style="background:#fff">
-          <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="블루 워드마크 — 화이트 배경" style="color:#0059FF"><use href="#lg-wordmark"/></svg>
-        </div>
-        <div class="cw-cap">
-          <div class="cw-name">Signature Main Blue</div>
-          <div class="cw-spec">#0059FF<br>R0 G89 B255</div>
-        </div>
-      </div>
-    </div>
-
-    <h3 class="sub reveal">Symbol — G</h3>
-    <p class="sub-lead reveal">워드마크의 G를 단독 사용하는 심볼. 파비콘, 앱 아이콘, 소면적 마킹 등 워드마크를 판독할 수 없는 크기에서 사용합니다.</p>
-    <div class="logo-stage reveal">
-      <div class="stage-grid">
-        <div class="stage light sym">
-          <span class="tag">Symbol · On Light</span>
-          <svg class="lg" viewBox="0 0 81 87" role="img" aria-label="G 심볼 — 라이트 배경" style="color:#000"><use href="#lg-symbol"/></svg>
-        </div>
-        <div class="stage dark sym">
-          <span class="tag">Symbol · On Dark</span>
-          <svg class="lg" viewBox="0 0 81 87" role="img" aria-label="G 심볼 — 다크 배경" style="color:#fff"><use href="#lg-symbol"/></svg>
-        </div>
-      </div>
-      <div class="asset-bar">
-        <div class="name">GLUCK_Symbol<span class="meta">SVG · PNG (648px)</span></div>
-        <div class="acts">
-          <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Symbol_Black.svg" download>Black <span class="fmt">SVG</span></a>
-          <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Symbol_Black.png" download>Black <span class="fmt">PNG</span></a>
-          <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Symbol_White.svg" download>White <span class="fmt">SVG</span></a>
-          <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Symbol_White.png" download>White <span class="fmt">PNG</span></a>
-        </div>
-      </div>
-    </div>
-
-    <h3 class="sub reveal">Round Logo · Tab Icon</h3>
-    <p class="sub-lead reveal">CI 가이드라인이 지정하는 두 가지 아이콘 컨테이너 — 원형(워드마크)과 라운드 스퀘어(G 심볼). 각각 포지티브/네거티브 두 형태로 수록되어 있으며, 이 형태 그대로 사용합니다.</p>
-    <div class="logo-stage reveal">
-      <div class="stage-grid">
-        <div class="stage gray">
-          <span class="tag">Round Logo</span>
-          <div style="display:flex; gap:24px; align-items:center; flex-wrap:wrap; justify-content:center">
-            <img src="brand-assets/logo/GLUCK_RoundLogo_Black.png" alt="라운드 로고 — 블랙 서클, 화이트 워드마크" width="132" height="132" style="width:132px">
-            <img src="brand-assets/logo/GLUCK_RoundLogo_White.png" alt="라운드 로고 — 화이트 서클, 블랙 워드마크" width="132" height="132" style="width:132px">
-          </div>
-        </div>
-        <div class="stage gray">
-          <span class="tag">Tab Icon</span>
-          <div style="display:flex; gap:24px; align-items:center; flex-wrap:wrap; justify-content:center">
-            <img src="brand-assets/logo/GLUCK_TabIcon_Black_1080.png" alt="탭 아이콘 — 블랙 라운드 스퀘어, 화이트 G" width="120" height="120" style="width:120px; border-radius:14px">
-            <div style="width:120px; aspect-ratio:1; background:#fff; border:1px solid var(--border); border-radius:14px; display:flex; align-items:center; justify-content:center">
-              <svg class="lg" viewBox="0 0 81 87" role="img" aria-label="탭 아이콘 — 화이트 배경, 블랙 G" style="width:58px; color:#000"><use href="#lg-symbol"/></svg>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="asset-bar">
-        <div class="name">GLUCK_RoundLogo · GLUCK_TabIcon<span class="meta">SVG · PNG</span></div>
-        <div class="acts">
-          <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_RoundLogo_Black.svg" download>Round Black <span class="fmt">SVG</span></a>
-          <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_RoundLogo_White.svg" download>Round White <span class="fmt">SVG</span></a>
-          <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_TabIcon_Black_1080.png" download>Tab Icon <span class="fmt">PNG</span></a>
-        </div>
-      </div>
-    </div>
-
-    <h3 class="sub reveal">Mono Logo — Physical Application</h3>
-    <p class="sub-lead reveal">
-      단색 환경에서는 Black 또는 White 워드마크만 사용합니다. 화면을 넘어 제조 현장의 실물 적용까지
-      동일한 기준을 적용합니다. 각인·마킹 등 소면적 적용 시에는 G 심볼 사용을 권장합니다.
-    </p>
-    <div class="app-chips reveal" role="list">
-      <span role="listitem">Equipment — 장비 외장</span>
-      <span role="listitem">Label — 제품 라벨</span>
-      <span role="listitem">Packaging — 패키징</span>
-      <span role="listitem">Document — 기술 문서</span>
-      <span role="listitem">Engraving — 각인</span>
-      <span role="listitem">Factory Signage — 사이니지</span>
-      <span role="listitem">Product Marking — 제품 마킹</span>
-    </div>
-  </div>
-</section>
-
-<!-- ================================================== 03 COLOR -->
-<section class="sec alt" id="color">
-  <div class="container">
-    <div class="sec-head reveal">
-      <div class="sec-no"><span class="num">02</span><span class="eyebrow">Brand Color</span></div>
-      <h2>브랜드 컬러</h2>
-      <p class="lead">
-        GLUCK의 키 컬러는 <b>Signature Main Blue #0059FF</b> 단일 컬러입니다.
-        페이지 안에서 블루는 핵심 액션과 강조에만 절제하여 사용합니다. 각 값은 클릭하여 복사할 수 있습니다.
-      </p>
-    </div>
-
-    <div class="swatch-hero reveal">
-      <div class="surface">
-        <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="Signature Main Blue 위 화이트 워드마크"><use href="#lg-wordmark"/></svg>
-      </div>
-      <div class="spec">
-        <div class="nm">Signature Main Blue</div>
-        <div class="ds">Primary CTA · 핵심 액센트 · 강조 텍스트. 페이지당 2~3개 컴포넌트에만 사용합니다.</div>
-        <div class="val-row"><span class="k">HEX</span><span class="v">#0059FF</span><button class="copy-btn" data-copy="#0059FF">Copy</button></div>
-        <div class="val-row"><span class="k">RGB</span><span class="v">0, 89, 255</span><button class="copy-btn" data-copy="rgb(0, 89, 255)">Copy</button></div>
-        <div class="val-row"><span class="k">CMYK</span><span class="v">86, 63, 0, 0</span><button class="copy-btn" data-copy="C86 M63 Y0 K0">Copy</button></div>
-        <div class="val-note">Pantone 공식 지정값 없음 — 지정 시 업데이트 예정 · 흰 글자 대비 5.42 : 1 (WCAG AA 통과)</div>
-      </div>
-    </div>
-
-    <h3 class="sub reveal">Blue Scale — 파생 컬러</h3>
-    <p class="sub-lead reveal">#0059FF를 기준으로 정밀 파생된 4개 값. 상태(hover·pressed)와 배경 강조에만 사용하며 임의의 새로운 블루를 만들지 않습니다.</p>
-    <div class="scale-grid reveal">
-      <div class="scale-card">
-        <div class="chip" style="background:#337AFF"><span class="wcag">AA-Large</span></div>
-        <div class="body">
-          <div class="nm">Blue Tone Up</div>
-          <div class="use">CTA hover, focus ring. 본문 텍스트 컬러로 사용 금지 (대비 3.91)</div>
-          <div class="hexline"><span class="hex">#337AFF</span><button class="copy-btn" data-copy="#337AFF">Copy</button></div>
-        </div>
-      </div>
-      <div class="scale-card">
-        <div class="chip" style="background:#1A6AFF"><span class="wcag">AA</span></div>
-        <div class="body">
-          <div class="nm">Blue Soft</div>
-          <div class="use">Primary 옆 보조 강조 버튼 등 약한 Primary</div>
-          <div class="hexline"><span class="hex">#1A6AFF</span><button class="copy-btn" data-copy="#1A6AFF">Copy</button></div>
-        </div>
-      </div>
-      <div class="scale-card">
-        <div class="chip" style="background:#0047CC"><span class="wcag">AA 7.57</span></div>
-        <div class="body">
-          <div class="nm">Blue Tone Down</div>
-          <div class="use">CTA pressed/active, 다크 배경 위 강조</div>
-          <div class="hexline"><span class="hex">#0047CC</span><button class="copy-btn" data-copy="#0047CC">Copy</button></div>
-        </div>
-      </div>
-      <div class="scale-card">
-        <div class="chip" style="background:#D7E1F4; border-bottom:1px solid var(--border)"><span class="wcag">BG Only</span></div>
-        <div class="body">
-          <div class="nm">Blue Light</div>
-          <div class="use">선택 상태·정보 배경 전용. 텍스트 컬러로 절대 사용 금지</div>
-          <div class="hexline"><span class="hex">#D7E1F4</span><button class="copy-btn" data-copy="#D7E1F4">Copy</button></div>
-        </div>
-      </div>
-    </div>
-
-    <h3 class="sub reveal">Neutral — Gray Scale <span class="badge draft">Draft · 운영 추정값</span></h3>
-    <p class="sub-lead reveal">현재 운영 중인 그레이 스케일입니다. 브랜드팀 확정 시 HEX 값이 교체될 수 있습니다.</p>
-    <div class="gray-strip reveal">
-      <div class="g"><div class="fill" style="background:#FFFFFF"></div><div class="inf"><div class="tk">white</div><button class="hx" data-copy="#FFFFFF">#FFFFFF</button></div></div>
-      <div class="g"><div class="fill" style="background:#F6F7F9"></div><div class="inf"><div class="tk">superlight</div><button class="hx" data-copy="#F6F7F9">#F6F7F9</button></div></div>
-      <div class="g"><div class="fill" style="background:#E6E8EC"></div><div class="inf"><div class="tk">light</div><button class="hx" data-copy="#E6E8EC">#E6E8EC</button></div></div>
-      <div class="g"><div class="fill" style="background:#B3B8C2"></div><div class="inf"><div class="tk">gray</div><button class="hx" data-copy="#B3B8C2">#B3B8C2</button></div></div>
-      <div class="g"><div class="fill" style="background:#6B7280"></div><div class="inf"><div class="tk">dark</div><button class="hx" data-copy="#6B7280">#6B7280</button></div></div>
-      <div class="g"><div class="fill" style="background:#2D3139"></div><div class="inf"><div class="tk">dark-2</div><button class="hx" data-copy="#2D3139">#2D3139</button></div></div>
-      <div class="g"><div class="fill" style="background:#1A1D24"></div><div class="inf"><div class="tk">dark-3</div><button class="hx" data-copy="#1A1D24">#1A1D24</button></div></div>
-      <div class="g"><div class="fill" style="background:#000000"></div><div class="inf"><div class="tk">black</div><button class="hx" data-copy="#000000">#000000</button></div></div>
-    </div>
-
-    <h3 class="sub reveal">사용 비율 — 60 · 30 · 10</h3>
-    <div class="reveal">
-      <div class="ratio-bar" role="img" aria-label="컬러 사용 비율: 화이트와 밝은 그레이 60%, 그레이 스케일 30%, 메인 블루 10%">
-        <div class="r" style="flex:6; background:#fff; color:var(--gray-dark)">60</div>
-        <div class="r" style="flex:3; background:var(--gray-dark-2); color:#fff">30</div>
-        <div class="r" style="flex:1; background:var(--blue); color:#fff">10</div>
-      </div>
-      <div class="ratio-note">
-        <span><b>60%</b> 배경 · 카드 · 여백 (White / Superlight)</span>
-        <span><b>30%</b> 본문 · 보조 UI (Gray Scale)</span>
-        <span><b>10%</b> CTA · 강조 (Main Blue)</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ================================================== 04 TYPOGRAPHY -->
-<section class="sec" id="typography">
-  <div class="container">
-    <div class="sec-head reveal">
-      <div class="sec-no"><span class="num">03</span><span class="eyebrow">Typography</span></div>
-      <h2>타이포그래피</h2>
-      <p class="lead">
-        GLUCK의 공식 서체는 <b>SUIT</b> 단일 패밀리입니다. 한글·영문·숫자 모두 SUIT를 사용하며,
-        별도의 영문 폰트 분기를 두지 않습니다. 데이터·코드 표기에는 보조로 JetBrains Mono를 사용합니다.
-      </p>
-    </div>
-
-    <div class="type-hero reveal">
-      <div class="fname">SUIT</div>
-      <div class="fdesc">
-        <p>한·영·숫자가 균일한 시각 무게를 갖는 지오메트릭 산세리프. GLUCK의 모든 매체에서 400–800 웨이트를 사용합니다.</p>
-        <div class="weights" aria-hidden="true">
-          <span style="font-weight:400">가A1</span>
-          <span style="font-weight:500">가A1</span>
-          <span style="font-weight:600">가A1</span>
-          <span style="font-weight:700">가A1</span>
-          <span style="font-weight:800">가A1</span>
-        </div>
-        <p style="margin-top:20px"><a class="lnk" href="https://sun.fo/suit/" target="_blank" rel="noopener">SUIT 공식 배포처에서 폰트 받기 ↗</a></p>
-      </div>
-    </div>
-
-    <h3 class="sub reveal">Type Scale</h3>
-    <p class="sub-lead reveal">데스크톱 기준 스케일. 모바일에서는 H1~H3를 한 단계씩 축소합니다.</p>
-    <div class="spec-table reveal">
-      <div class="spec-row">
-        <div class="spec-meta"><div class="tok">--font-display</div><div class="det">56 / 64 · W800 · -0.035em<br>Hero 카피</div></div>
-        <div class="spec-sample"><p class="t-display">정밀한 제조,<br>실제 양산.</p></div>
-      </div>
-      <div class="spec-row">
-        <div class="spec-meta"><div class="tok">--font-h1</div><div class="det">40 / 52 · W700 · -0.025em<br>페이지 타이틀</div></div>
-        <div class="spec-sample"><p class="t-h1">출력이 아니라, 제품으로 납품합니다</p></div>
-      </div>
-      <div class="spec-row">
-        <div class="spec-meta"><div class="tok">--font-h2</div><div class="det">32 / 42 · W700 · -0.02em<br>섹션 타이틀</div></div>
-        <div class="spec-sample"><p class="t-h2">금형 없는 양산, 데이터로 관리되는 생산</p></div>
-      </div>
-      <div class="spec-row">
-        <div class="spec-meta"><div class="tok">--font-h3</div><div class="det">24 / 32 · W600 · -0.015em<br>서브섹션 · 카드 제목</div></div>
-        <div class="spec-sample"><p class="t-h3">후가공부터 패키징까지, 일체화된 공정</p></div>
-      </div>
-      <div class="spec-row">
-        <div class="spec-meta"><div class="tok">--font-body-lg</div><div class="det">18 / 28 · W500<br>리드 문장</div></div>
-        <div class="spec-sample"><p class="t-bodylg">시제품과 대량양산 사이, 가장 어려운 구간을 GLUCK이 담당합니다.</p></div>
-      </div>
-      <div class="spec-row">
-        <div class="spec-meta"><div class="tok">--font-body</div><div class="det">16 / 26 · W400<br>일반 본문</div></div>
-        <div class="spec-sample"><p class="t-body">GLUCK은 산업용 SLA 3D프린팅을 기반으로 금형 없는 소량~중량 양산을 지원합니다. 설계 데이터 검토부터 후가공·조립·패키징까지, 생산의 전 과정이 데이터로 관리됩니다.</p></div>
-      </div>
-      <div class="spec-row">
-        <div class="spec-meta"><div class="tok">--font-caption</div><div class="det">13 / 20 · W500 · 0em<br>레이블 · 태그 · 헬퍼</div></div>
-        <div class="spec-sample"><p class="t-caption">GLUCK · INDUSTRIAL SLA MANUFACTURING PARTNER</p></div>
-      </div>
-      <div class="spec-row">
-        <div class="spec-meta"><div class="tok">Number</div><div class="det">font-feature-settings: "tnum"<br>수치 · 표 정렬 (표기 예시)</div></div>
-        <div class="spec-sample"><p class="t-num">0123456789 · ±0.05 mm · 1,000 EA</p></div>
-      </div>
-    </div>
-
-    <h3 class="sub reveal">한글 조판 원칙</h3>
-    <div class="kr-rules reveal">
-      <div class="rule-card">
-        <div class="k">Letter Spacing</div>
-        <div class="t">자간은 음수로, 정밀하게</div>
-        <div class="d">헤드라인 -0.02em~-0.035em, 본문 -0.01em, 캡션 0. 응집감 있는 자간이 제조 브랜드의 밀도를 만듭니다.</div>
-      </div>
-      <div class="rule-card">
-        <div class="k">Line Break</div>
-        <div class="t">단어 단위 줄바꿈</div>
-        <div class="d">word-break: keep-all을 기본으로, 한 줄 한국어 22~28자를 유지합니다. Hero 카피는 의미 단위로 개행합니다.</div>
-      </div>
-      <div class="rule-card">
-        <div class="k">Number</div>
-        <div class="t">수치는 고정폭으로</div>
-        <div class="d">수량·납기·정밀도 수치는 tnum을 적용해 자릿수를 정렬합니다. 데이터가 곧 신뢰이기 때문입니다.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ================================================== 05 GRAPHIC IDENTITY -->
-<section class="sec alt" id="graphic">
-  <div class="container">
-    <div class="sec-head reveal">
-      <div class="sec-no"><span class="num">04</span><span class="eyebrow">Graphic Identity</span></div>
-      <h2>그래픽 아이덴티티 <span class="badge draft">Draft · 확장 연구</span></h2>
-      <p class="lead">
-        GLUCK의 그래픽 언어는 장식 패턴이 아니라 <b>공정의 시각화</b>입니다.
-        디지털 데이터가 실제 제품으로 확장되는 과정 — 적층, 배열, 반복 — 을 시각 요소로 사용합니다.
-        아래 모티프는 공식 규정 확정 전의 연구안입니다.
-      </p>
-    </div>
-
-    <p class="gi-state reveal">ONE PART <em>→</em> 10 PARTS <em>→</em> 100 PARTS <em>→</em> <em>MASS PRODUCTION.</em><br>
-    하나의 지오메트리가 반복되고 증식하며 양산이 됩니다.</p>
-
-    <div class="mult-grid reveal" id="multGrid">
-      <div class="mult" data-count="1">
-        <div class="mg" aria-hidden="true"></div>
-        <div class="lab">One Part</div>
-        <div class="sub">단일 지오메트리</div>
-      </div>
-      <div class="mult" data-count="10">
-        <div class="mg" aria-hidden="true"></div>
-        <div class="lab">10 Parts</div>
-        <div class="sub">첫 번째 배치</div>
-      </div>
-      <div class="mult" data-count="24">
-        <div class="mg" aria-hidden="true"></div>
-        <div class="lab">100 Parts</div>
-        <div class="sub">플레이트 어레이</div>
-      </div>
-      <div class="mult" data-count="36">
-        <div class="mg" aria-hidden="true"></div>
-        <div class="lab">Mass Production</div>
-        <div class="sub">수량 제약 없는 확장</div>
-      </div>
-    </div>
-
-    <h3 class="sub reveal">모티프</h3>
-    <div class="motif-grid reveal">
-      <div class="motif">
-        <div class="viz viz-layer" aria-hidden="true"></div>
-        <div class="bd">
-          <div class="t">Layer — 적층</div>
-          <div class="d">SLA의 수평 적층 라인. 섹션 구분선, 배경 텍스처, 로딩 모션에 얇은 수평선 반복으로 적용합니다.</div>
-        </div>
-      </div>
-      <div class="motif">
-        <div class="viz viz-array" aria-hidden="true"></div>
-        <div class="bd">
-          <div class="t">Build Plate — 격자</div>
-          <div class="d">빌드 플레이트의 좌표 격자. 미세한 그리드와 도트로 정밀 제조의 좌표계를 표현합니다.</div>
-        </div>
-      </div>
-      <div class="motif">
-        <div class="viz viz-repeat" aria-hidden="true">
-          <svg class="lg" viewBox="0 0 81 87"><use href="#lg-symbol"/></svg>
-          <svg class="lg" viewBox="0 0 81 87"><use href="#lg-symbol"/></svg>
-          <svg class="lg" viewBox="0 0 81 87"><use href="#lg-symbol"/></svg>
-          <svg class="lg" viewBox="0 0 81 87"><use href="#lg-symbol"/></svg>
-          <svg class="lg" viewBox="0 0 81 87"><use href="#lg-symbol"/></svg>
-          <svg class="lg" viewBox="0 0 81 87"><use href="#lg-symbol"/></svg>
-        </div>
-        <div class="bd">
-          <div class="t">Repetition — 반복</div>
-          <div class="d">동일 파트의 반복 생산. 요소를 일정 간격으로 반복하고, 강조 대상 하나에만 Main Blue를 부여합니다.</div>
-        </div>
-      </div>
-    </div>
-
-    <p class="sub-lead reveal" style="margin-top:28px; max-width:none">
-      모션 원칙 — <b>Slow · Precise · Mechanical · Systematic.</b> 통통 튀는 SaaS 모션이 아니라,
-      정렬되고 반복·증식하는 제조적 움직임을 사용합니다. 등장 모션은 일정한 간격의 순차 재생을 기본으로 합니다.
+  <div class="sec-head reveal">
+    <div class="sec-no"><span class="num">01</span><span class="eyebrow">Logo</span></div>
+    <h2>로고</h2>
+    <p class="lead">
+      GLUCK의 시그니처 로고는 <b>워드마크 단독형</b>입니다. 현재 CI 자산 체계에 심볼 결합형 시그니처는 별도로 존재하지 않으며,
+      워드마크의 첫 글자인 <b>G 심볼</b>이 파비콘·앱 아이콘 등 아이콘 컨텍스트에서 사용됩니다.
+      모든 파일은 CI 가이드라인 보드의 원본 벡터에서 추출되었습니다.
     </p>
   </div>
-</section>
 
-<!-- ================================================== 06 PHOTOGRAPHY -->
-<section class="sec" id="photography">
-  <div class="container">
-    <div class="sec-head reveal">
-      <div class="sec-no"><span class="num">05</span><span class="eyebrow">Photography Direction</span></div>
-      <h2>포토그래피 <span class="badge soon">실사 라이브러리 준비 중</span></h2>
-      <p class="lead">
-        사진은 GLUCK의 핵심 브랜드 자산입니다. 아래 5개 카테고리 체계로 촬영·관리하며,
-        실사 라이브러리가 확보되는 대로 이 영역에서 다운로드로 제공됩니다.
-      </p>
-    </div>
-
-    <div class="photo-grid reveal">
-      <div class="photo-card">
-        <div class="ph"><span class="no">01 — FACTORY</span></div>
-        <div class="bd"><div class="t">Factory</div><div class="d">대규모 SLA 생산 인프라, 장비 라인, 팩토리 전경</div></div>
+  <h3 class="sub reveal" id="signature" data-spy>시그니처 로고 — Wordmark</h3>
+  <p class="sub-lead reveal">기본 로고. 항상 수평으로 사용하며, 비율(약 4.68 : 1)을 유지합니다.</p>
+  <div class="logo-stage reveal">
+    <div class="stage-grid">
+      <div class="stage light">
+        <span class="tag">On Light</span>
+        <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="GLUCK 워드마크 — 라이트 배경" style="color:#000"><use href="#lg-wordmark"/></svg>
       </div>
-      <div class="photo-card">
-        <div class="ph"><span class="no">02 — PRODUCTION</span></div>
-        <div class="bd"><div class="t">Production</div><div class="d">빌드 플레이트, 프린팅 공정, 반복 생산되는 파트</div></div>
-      </div>
-      <div class="photo-card">
-        <div class="ph"><span class="no">03 — PRECISION</span></div>
-        <div class="bd"><div class="t">Precision</div><div class="d">표면 조도, 디테일, 복잡 형상의 클로즈업</div></div>
-      </div>
-      <div class="photo-card">
-        <div class="ph"><span class="no">04 — APPLICATION</span></div>
-        <div class="bd"><div class="t">Application</div><div class="d">로봇, 모빌리티, 의료, 제품 등 산업 적용 사례</div></div>
-      </div>
-      <div class="photo-card">
-        <div class="ph"><span class="no">05 — CREATIVE</span></div>
-        <div class="bd"><div class="t">Creative Manufacturing</div><div class="d">아트, 브랜드 하드웨어, 문화 상품</div></div>
+      <div class="stage dark">
+        <span class="tag">On Dark</span>
+        <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="GLUCK 워드마크 — 다크 배경" style="color:#fff"><use href="#lg-wordmark"/></svg>
       </div>
     </div>
-
-    <h3 class="sub reveal">촬영 · 후처리 기준</h3>
-    <div class="tone-cols reveal">
-      <div class="tone-box do">
-        <div class="hd">기준</div>
-        <ul>
-          <li>배경은 무채색 — White / Light Gray, 또는 어두운 무광 Dark Gray</li>
-          <li>측광·반측광으로 표면 조도와 굴곡이 드러나도록 그림자를 살립니다</li>
-          <li>자연 채도 유지 — 과한 색보정을 하지 않습니다</li>
-          <li>비율 — 히어로·카드 16:9, 모바일 카드 4:5, 썸네일 1:1</li>
-          <li>여백을 충분히 두고, 피사체 중심의 안정적인 크롭을 사용합니다</li>
-        </ul>
-      </div>
-      <div class="tone-box dont">
-        <div class="hd">금지</div>
-        <ul>
-          <li>일반 스톡 사진 (비즈니스 미팅 컷 등)</li>
-          <li>AI로 생성한 가짜 제품 컷</li>
-          <li>경쟁사 또는 출처가 확인되지 않은 외부 사례 사진</li>
-          <li>NDA 사례를 마스킹 없이 공개하는 것</li>
-        </ul>
+    <div class="asset-bar">
+      <div class="name">GLUCK_Wordmark<span class="meta">SVG · PNG (1628px)</span></div>
+      <div class="acts">
+        <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Wordmark_Black.svg" download>Black <span class="fmt">SVG</span></a>
+        <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Wordmark_Black.png" download>Black <span class="fmt">PNG</span></a>
+        <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Wordmark_White.svg" download>White <span class="fmt">SVG</span></a>
+        <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Wordmark_White.png" download>White <span class="fmt">PNG</span></a>
+        <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Wordmark_Blue.svg" download>Blue <span class="fmt">SVG</span></a>
+        <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Wordmark_Blue.png" download>Blue <span class="fmt">PNG</span></a>
       </div>
     </div>
   </div>
-</section>
 
-<!-- ================================================== 07 BRAND IN MANUFACTURING -->
-<section class="sec alt" id="manufacturing">
-  <div class="container">
-    <div class="sec-head reveal">
-      <div class="sec-no"><span class="num">06</span><span class="eyebrow">Brand in Manufacturing</span></div>
-      <h2>제조 환경 속의 브랜드 <span class="badge draft">Draft · 권장 기준</span></h2>
-      <p class="lead">
-        GLUCK의 CI는 화면에서 끝나지 않습니다. 장비, 패키징, 각인, 사이니지 —
-        실제 제조 환경에 적용하기 위한 권장 기준(초안)입니다. 브랜드팀 확정과 실사 자산 확보 후 갱신됩니다.
-      </p>
-    </div>
-
-    <div class="mfg-wrap reveal">
-      <table class="mfg-table">
-        <thead>
-          <tr><th scope="col">적용 환경</th><th scope="col">권장 자산</th><th scope="col">기준</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row" class="env">Equipment — 장비 외장</th>
-            <td class="asset">Wordmark White / Black</td>
-            <td class="note">장비 외장 색상과의 명도 대비를 우선 확보. 단색 적용.</td>
-          </tr>
-          <tr>
-            <th scope="row" class="env">Label · Packaging</th>
-            <td class="asset">Wordmark Black</td>
-            <td class="note">라이트 지류 기준 블랙 워드마크. 소면적 라벨에는 G 심볼.</td>
-          </tr>
-          <tr>
-            <th scope="row" class="env">Technical Document</th>
-            <td class="asset">Wordmark Black</td>
-            <td class="note">문서 상단 좌측 또는 하단. 본문과 클리어 스페이스 유지.</td>
-          </tr>
-          <tr>
-            <th scope="row" class="env">Engraving — 각인</th>
-            <td class="asset">Wordmark / Symbol 단색</td>
-            <td class="note">음각·양각 등 컬러 표현이 불가한 환경. 최소 크기 기준 확정 전 사전 검토.</td>
-          </tr>
-          <tr>
-            <th scope="row" class="env">Factory Signage</th>
-            <td class="asset">Wordmark White on Blue / Black</td>
-            <td class="note">지정 컬러웨이 4종 내에서만 적용.</td>
-          </tr>
-          <tr>
-            <th scope="row" class="env">Product Marking</th>
-            <td class="asset">Symbol G</td>
-            <td class="note">파트 표면 등 판독 면적이 작은 경우 G 심볼 단독 사용.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<!-- ================================================== 08 USAGE GUIDELINES -->
-<section class="sec" id="usage">
-  <div class="container">
-    <div class="sec-head reveal">
-      <div class="sec-no"><span class="num">07</span><span class="eyebrow">Logo Usage Guidelines</span></div>
-      <h2>로고 사용 규정</h2>
-      <p class="lead">
-        로고는 GLUCK의 정밀함을 대표합니다. 아래의 허용·금지 사례를 따르면 별도 문의 없이
-        어떤 매체에서도 로고를 올바르게 사용할 수 있습니다.
-      </p>
-    </div>
-
-    <h3 class="sub reveal">DO</h3>
-    <div class="dd-grid reveal">
-      <div class="dd do">
-        <div class="vis">
-          <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="올바른 비율의 워드마크"><use href="#lg-wordmark"/></svg>
-        </div>
-        <div class="cap">지정된 비율(4.68 : 1)을 유지합니다</div>
+  <h3 class="sub reveal">공식 컬러웨이</h3>
+  <p class="sub-lead reveal">CI 가이드라인 보드에 수록된 4가지 조합만 사용합니다. 임의의 색상 조합은 허용되지 않습니다.</p>
+  <div class="colorway-grid reveal">
+    <div class="colorway">
+      <div class="cw-stage" style="background:#fff">
+        <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="블랙 워드마크 — 화이트 배경" style="color:#000"><use href="#lg-wordmark"/></svg>
       </div>
-      <div class="dd do">
-        <div class="vis do-colorways" role="img" aria-label="지정 컬러웨이 4종">
-          <span class="s1"><svg class="lg" viewBox="0 0 407 87" style="color:#000" aria-hidden="true"><use href="#lg-wordmark"/></svg></span>
-          <span class="s2"><svg class="lg" viewBox="0 0 407 87" style="color:#fff" aria-hidden="true"><use href="#lg-wordmark"/></svg></span>
-          <span class="s3"><svg class="lg" viewBox="0 0 407 87" style="color:#fff" aria-hidden="true"><use href="#lg-wordmark"/></svg></span>
-          <span class="s4"><svg class="lg" viewBox="0 0 407 87" style="color:#0059FF" aria-hidden="true"><use href="#lg-wordmark"/></svg></span>
-        </div>
-        <div class="cap">지정 컬러웨이 4종만 사용합니다</div>
-      </div>
-      <div class="dd do">
-        <div class="vis do-clear">
-          <div class="frame">
-            <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="클리어 스페이스가 확보된 워드마크" style="width:120px"><use href="#lg-wordmark"/></svg>
-          </div>
-        </div>
-        <div class="cap">충분한 클리어 스페이스를 확보합니다</div>
-      </div>
-      <div class="dd do">
-        <div class="vis do-contrast" role="img" aria-label="명도 대비 확보 예시">
-          <span class="half"><svg class="lg" viewBox="0 0 407 87" style="color:#000" aria-hidden="true"><use href="#lg-wordmark"/></svg></span>
-          <span class="half d"><svg class="lg" viewBox="0 0 407 87" style="color:#fff" aria-hidden="true"><use href="#lg-wordmark"/></svg></span>
-        </div>
-        <div class="cap">배경과 충분한 명도 대비를 확보합니다</div>
+      <div class="cw-cap">
+        <div class="cw-name">GLUCK Black</div>
+        <div class="cw-spec">C100 M100 Y100 K100<br>R0 G0 B0</div>
       </div>
     </div>
-
-    <h3 class="sub reveal">DON'T</h3>
-    <div class="dd-grid nine reveal">
-      <div class="dd dont v-stretch">
-        <div class="vis"><svg class="lg" viewBox="0 0 407 87" role="img" aria-label="가로로 늘어난 잘못된 워드마크"><use href="#lg-wordmark"/></svg></div>
-        <div class="cap">비율을 변경하지 않습니다</div>
+    <div class="colorway">
+      <div class="cw-stage" style="background:#000">
+        <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="화이트 워드마크 — 블랙 배경" style="color:#fff"><use href="#lg-wordmark"/></svg>
       </div>
-      <div class="dd dont v-rotate">
-        <div class="vis"><svg class="lg" viewBox="0 0 407 87" role="img" aria-label="회전된 잘못된 워드마크"><use href="#lg-wordmark"/></svg></div>
-        <div class="cap">회전하지 않습니다</div>
-      </div>
-      <div class="dd dont v-color">
-        <div class="vis"><svg class="lg" viewBox="0 0 407 87" role="img" aria-label="임의 색상이 적용된 잘못된 워드마크"><use href="#lg-wordmark"/></svg></div>
-        <div class="cap">임의 컬러로 변경하지 않습니다</div>
-      </div>
-      <div class="dd dont v-stroke">
-        <div class="vis"><svg viewBox="0 0 407 87" role="img" aria-label="외곽선이 적용된 잘못된 워드마크"><use href="#lg-wordmark"/></svg></div>
-        <div class="cap">스트로크를 적용하지 않습니다</div>
-      </div>
-      <div class="dd dont v-shadow">
-        <div class="vis"><svg class="lg" viewBox="0 0 407 87" role="img" aria-label="그림자가 적용된 잘못된 워드마크"><use href="#lg-wordmark"/></svg></div>
-        <div class="cap">그림자를 적용하지 않습니다</div>
-      </div>
-      <div class="dd dont">
-        <div class="vis"><svg viewBox="0 0 407 87" role="img" aria-label="그라데이션이 적용된 잘못된 워드마크">
-          <defs><linearGradient id="dontGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FF5C7A"/><stop offset="1" stop-color="#7048E8"/></linearGradient></defs>
-          <use href="#lg-wordmark" fill="url(#dontGrad)"/>
-        </svg></div>
-        <div class="cap">그라데이션을 적용하지 않습니다</div>
-      </div>
-      <div class="dd dont v-font">
-        <div class="vis"><span class="mix"><svg class="lg" viewBox="0 0 407 87" role="img" aria-label="워드마크에 다른 서체가 결합된 잘못된 예"><use href="#lg-wordmark"/></svg><em>Studio</em></span></div>
-        <div class="cap">다른 타입페이스와 결합하지 않습니다</div>
-      </div>
-      <div class="dd dont">
-        <div class="vis v-busy"><svg class="lg" viewBox="0 0 407 87" role="img" aria-label="복잡한 배경 위의 잘못된 워드마크"><use href="#lg-wordmark"/></svg></div>
-        <div class="cap">복잡한 이미지·배경 위에 사용하지 않습니다</div>
-      </div>
-      <div class="dd dont v-skew">
-        <div class="vis"><svg class="lg" viewBox="0 0 407 87" role="img" aria-label="기울여 왜곡된 잘못된 워드마크"><use href="#lg-wordmark"/></svg></div>
-        <div class="cap">형태를 왜곡하지 않습니다</div>
+      <div class="cw-cap">
+        <div class="cw-name">GLUCK White</div>
+        <div class="cw-spec">C0 M0 Y0 K0<br>R255 G255 B255</div>
       </div>
     </div>
-
-    <h3 class="sub reveal">Clear Space &amp; Minimum Size <span class="badge draft">Draft · 확정 예정</span></h3>
-    <p class="sub-lead reveal">공식 CI 수치가 확정되기 전의 권장 초안입니다. CI 가이드라인 보드의 비례를 기준으로 도출했으며, 브랜드팀 확정 시 수치가 갱신됩니다.</p>
-    <div class="cs-wrap reveal">
-      <div class="cs-panel">
-        <div class="cs-frame">
-          <span class="u top">1G</span><span class="u bot">1G</span><span class="u lft">1G</span><span class="u rgt">1G</span>
-          <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="클리어 스페이스 다이어그램 — 사방 1G 이상"><use href="#lg-wordmark"/></svg>
-        </div>
+    <div class="colorway">
+      <div class="cw-stage" style="background:#0059FF">
+        <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="화이트 워드마크 — 블루 배경" style="color:#fff"><use href="#lg-wordmark"/></svg>
       </div>
-      <div class="cs-side">
-        <div class="cs-item">
-          <div class="k">클리어 스페이스 <span class="badge draft">Draft</span></div>
-          <div class="d">워드마크 캡 하이트(= G의 높이, 1G)를 단위로, 사방에 1G 이상의 여백을 확보합니다. CI 보드의 패널 비례(로고 높이 대비 상하 여백)에서 도출한 권장안입니다.</div>
-        </div>
-        <div class="cs-item">
-          <div class="k">최소 사용 크기 <span class="badge draft">확정 예정</span></div>
-          <div class="d">디지털·인쇄 최소 크기는 공식 확정 전입니다. 확정 시 이 영역에 게시됩니다.</div>
-        </div>
-        <div class="cs-item">
-          <div class="k">소면적 대응</div>
-          <div class="d">워드마크의 판독이 어려운 크기에서는 워드마크를 축소하는 대신 G 심볼을 사용합니다.</div>
-        </div>
+      <div class="cw-cap">
+        <div class="cw-name">White on Main Blue</div>
+        <div class="cw-spec">BG #0059FF<br>C86 M63 Y0 K0</div>
+      </div>
+    </div>
+    <div class="colorway">
+      <div class="cw-stage" style="background:#fff">
+        <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="블루 워드마크 — 화이트 배경" style="color:#0059FF"><use href="#lg-wordmark"/></svg>
+      </div>
+      <div class="cw-cap">
+        <div class="cw-name">Signature Main Blue</div>
+        <div class="cw-spec">#0059FF<br>R0 G89 B255</div>
       </div>
     </div>
   </div>
-</section>
 
-<!-- ================================================== 09 MEDIA KIT -->
-<section class="sec alt" id="mediakit">
-  <div class="container">
-    <div class="sec-head reveal">
-      <div class="sec-no"><span class="num">08</span><span class="eyebrow">Media Kit</span></div>
-      <h2>미디어 킷</h2>
-      <p class="lead">언론·파트너·협력사가 바로 사용할 수 있는 소개 문안과 채널 정보, 로고 패키지입니다.</p>
+  <h3 class="sub reveal" id="symbol" data-spy>심볼 로고 — G</h3>
+  <p class="sub-lead reveal">워드마크의 G를 단독 사용하는 심볼. 파비콘, 앱 아이콘, 소면적 마킹 등 워드마크를 판독할 수 없는 크기에서 사용합니다.</p>
+  <div class="logo-stage reveal">
+    <div class="stage-grid">
+      <div class="stage light sym">
+        <span class="tag">Symbol · On Light</span>
+        <svg class="lg" viewBox="0 0 81 87" role="img" aria-label="G 심볼 — 라이트 배경" style="color:#000"><use href="#lg-symbol"/></svg>
+      </div>
+      <div class="stage dark sym">
+        <span class="tag">Symbol · On Dark</span>
+        <svg class="lg" viewBox="0 0 81 87" role="img" aria-label="G 심볼 — 다크 배경" style="color:#fff"><use href="#lg-symbol"/></svg>
+      </div>
     </div>
+    <div class="asset-bar">
+      <div class="name">GLUCK_Symbol<span class="meta">SVG · PNG (648px)</span></div>
+      <div class="acts">
+        <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Symbol_Black.svg" download>Black <span class="fmt">SVG</span></a>
+        <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Symbol_Black.png" download>Black <span class="fmt">PNG</span></a>
+        <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Symbol_White.svg" download>White <span class="fmt">SVG</span></a>
+        <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_Symbol_White.png" download>White <span class="fmt">PNG</span></a>
+      </div>
+    </div>
+  </div>
 
-    <div class="mk-grid reveal">
-      <div class="mk-boiler">
-        <div class="en-tag">Industrial SLA Manufacturing Partner</div>
-        <p class="main" id="boilerText">GLUCK은 산업용 SLA 3D프린팅 기반의 고정밀 양산 제조 파트너입니다.
-        금형이 준비되기 전의 구간, 그리고 금형이 만들 수 없는 제품 —
-        GLUCK은 두 영역 모두를 데이터 기반 SLA 양산으로 책임집니다.</p>
-        <p class="subp">설계 데이터 검토(DfAM)부터 프린팅, 사상·도색 등 후가공, 조립·패키징까지
-        생산의 전 과정을 일체화하여 출력물이 아닌 '제품'으로 납품합니다.
-        로봇, 모빌리티, 의료·전자 등 정밀 산업과 브랜드·아트·문화재 영역을 함께 지원합니다.</p>
-        <div class="foot">
-          <span class="src">표준 소개 문안 (초안) — 브랜드팀 확정 전이며, 인용 시 확인을 권장합니다.</span>
-          <button class="btn btn-tertiary btn-sm" id="copyBoiler">소개 문안 복사</button>
+  <h3 class="sub reveal" id="round" data-spy>라운드 로고 · 탭 아이콘</h3>
+  <p class="sub-lead reveal">CI 가이드라인이 지정하는 두 가지 아이콘 컨테이너 — 원형(워드마크)과 라운드 스퀘어(G 심볼). 각각 포지티브/네거티브 두 형태로 수록되어 있으며, 이 형태 그대로 사용합니다.</p>
+  <div class="logo-stage reveal">
+    <div class="stage-grid">
+      <div class="stage gray">
+        <span class="tag">Round Logo</span>
+        <div style="display:flex; gap:24px; align-items:center; flex-wrap:wrap; justify-content:center">
+          <img src="brand-assets/logo/GLUCK_RoundLogo_Black.png" alt="라운드 로고 — 블랙 서클, 화이트 워드마크" width="128" height="128" style="width:128px">
+          <img src="brand-assets/logo/GLUCK_RoundLogo_White.png" alt="라운드 로고 — 화이트 서클, 블랙 워드마크" width="128" height="128" style="width:128px">
         </div>
       </div>
-      <div class="mk-side">
-        <div class="mk-facts">
-          <div class="hd">Key Facts</div>
-          <div id="factRows"></div>
-          <div class="src">출처: GLUCK 영업 소개자료 2026. 인용 전 최신 수치를 확인해 주세요.</div>
-        </div>
-        <div class="mk-ch">
-          <div class="hd" style="font-size:14px; font-weight:700; margin-bottom:8px">Channels</div>
-          <div class="ch-row"><span class="k">Website</span><a class="v" href="https://www.gluck.co.kr" target="_blank" rel="noopener">gluck.co.kr</a></div>
-          <div class="ch-row"><span class="k">실시간 견적</span><a class="v" href="https://glucklab.com" target="_blank" rel="noopener">GLUCKLAB.COM</a></div>
-          <div class="ch-row"><span class="k">문의 (견적·검토)</span><a class="v" href="mailto:customer@gluck.co.kr">customer@gluck.co.kr</a></div>
-          <div class="ch-row"><span class="k">Instagram</span><a class="v" href="https://www.instagram.com/gluck_3dprinting" target="_blank" rel="noopener">@gluck_3dprinting</a></div>
-          <div class="ch-row"><span class="k">SCULPIA (아트·문화재)</span><a class="v" href="https://www.instagram.com/sculpia_official" target="_blank" rel="noopener">@sculpia_official</a></div>
-          <div style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap">
-            <a class="btn btn-tertiary btn-sm" href="brand-assets/GLUCK_Brand_Assets.zip" download>GLUCK Logo Pack <span class="fmt">ZIP</span></a>
-            <span class="btn btn-sm" aria-disabled="true">회사소개서 — 준비 중</span>
+      <div class="stage gray">
+        <span class="tag">Tab Icon</span>
+        <div style="display:flex; gap:24px; align-items:center; flex-wrap:wrap; justify-content:center">
+          <img src="brand-assets/logo/GLUCK_TabIcon_Black_1080.png" alt="탭 아이콘 — 블랙 라운드 스퀘어, 화이트 G" width="116" height="116" style="width:116px; border-radius:14px">
+          <div style="width:116px; aspect-ratio:1; background:#fff; border:1px solid #E6E8EC; border-radius:14px; display:flex; align-items:center; justify-content:center">
+            <svg class="lg" viewBox="0 0 81 87" role="img" aria-label="탭 아이콘 — 화이트 배경, 블랙 G" style="width:56px; color:#000"><use href="#lg-symbol"/></svg>
           </div>
         </div>
       </div>
     </div>
+    <div class="asset-bar">
+      <div class="name">GLUCK_RoundLogo · GLUCK_TabIcon<span class="meta">SVG · PNG</span></div>
+      <div class="acts">
+        <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_RoundLogo_Black.svg" download>Round Black <span class="fmt">SVG</span></a>
+        <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_RoundLogo_White.svg" download>Round White <span class="fmt">SVG</span></a>
+        <a class="btn btn-outline btn-sm" href="brand-assets/logo/GLUCK_TabIcon_Black_1080.png" download>Tab Icon <span class="fmt">PNG</span></a>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="sub reveal" id="mono" data-spy>모노 로고 — Physical Application</h3>
+  <p class="sub-lead reveal">
+    단색 환경에서는 Black 또는 White 워드마크만 사용합니다. 화면을 넘어 제조 현장의 실물 적용까지
+    동일한 기준을 적용합니다. 각인·마킹 등 소면적 적용 시에는 G 심볼 사용을 권장합니다.
+  </p>
+  <div class="app-chips reveal" role="list">
+    <span role="listitem">Equipment — 장비 외장</span>
+    <span role="listitem">Label — 제품 라벨</span>
+    <span role="listitem">Packaging — 패키징</span>
+    <span role="listitem">Document — 기술 문서</span>
+    <span role="listitem">Engraving — 각인</span>
+    <span role="listitem">Factory Signage — 사이니지</span>
+    <span role="listitem">Product Marking — 제품 마킹</span>
   </div>
 </section>
 
-<!-- ================================================== 10 DOWNLOAD CENTER -->
-<section class="sec" id="downloads">
-  <div class="container">
-    <div class="sec-head reveal">
-      <div class="sec-no"><span class="num">09</span><span class="eyebrow">Download Center</span></div>
-      <h2>다운로드 센터</h2>
-      <p class="lead">
-        모든 브랜드 자산을 한곳에서 내려받을 수 있습니다.
-        파일명은 <b>GLUCK_{자산}_{변형}.{포맷}</b> 규칙을 따릅니다.
-      </p>
-    </div>
-
-    <div id="dlRoot" class="reveal"></div>
-
-    <div class="dl-all reveal">
-      <div>
-        <div class="t">Download All Brand Assets</div>
-        <div class="d">로고 전체(SVG·PNG) + CI 가이드라인 보드 원본 — GLUCK_Brand_Assets.zip · 300KB</div>
-      </div>
-      <a class="btn btn-primary btn-lg" href="brand-assets/GLUCK_Brand_Assets.zip" download>전체 자산 다운로드 <span class="fmt">ZIP</span></a>
-    </div>
-
-    <p class="dl-note reveal">
-      자산 디렉터리: <code>brand-assets/logo</code> · <code>brand-assets/guideline</code> —
-      Factory·Product 실사, CI Guidelines PDF, 프레젠테이션 템플릿은 자산 확정 후 추가됩니다.
+<!-- ================================================== 02 브랜드 컬러 -->
+<section class="sec" id="color" data-spy>
+  <div class="sec-head reveal">
+    <div class="sec-no"><span class="num">02</span><span class="eyebrow">Brand Color</span></div>
+    <h2>브랜드 컬러</h2>
+    <p class="lead">
+      GLUCK의 키 컬러는 <b>Signature Main Blue #0059FF</b> 단일 컬러입니다.
+      페이지 안에서 블루는 핵심 액션과 강조에만 절제하여 사용합니다. 각 값은 클릭하여 복사할 수 있습니다.
     </p>
   </div>
+
+  <div class="swatch-hero reveal">
+    <div class="surface">
+      <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="Signature Main Blue 위 화이트 워드마크"><use href="#lg-wordmark"/></svg>
+    </div>
+    <div class="spec">
+      <div class="nm">Signature Main Blue</div>
+      <div class="ds">Primary CTA · 핵심 액센트 · 강조 텍스트. 페이지당 2~3개 컴포넌트에만 사용합니다.</div>
+      <div class="val-row"><span class="k">HEX</span><span class="v">#0059FF</span><button class="copy-btn" data-copy="#0059FF">Copy</button></div>
+      <div class="val-row"><span class="k">RGB</span><span class="v">0, 89, 255</span><button class="copy-btn" data-copy="rgb(0, 89, 255)">Copy</button></div>
+      <div class="val-row"><span class="k">CMYK</span><span class="v">86, 63, 0, 0</span><button class="copy-btn" data-copy="C86 M63 Y0 K0">Copy</button></div>
+      <div class="val-note">Pantone 공식 지정값 없음 — 지정 시 업데이트 예정 · 흰 글자 대비 5.42 : 1 (WCAG AA 통과)</div>
+    </div>
+  </div>
+
+  <h3 class="sub reveal">Blue Scale — 파생 컬러</h3>
+  <p class="sub-lead reveal">#0059FF를 기준으로 정밀 파생된 4개 값. 상태(hover·pressed)와 배경 강조에만 사용하며 임의의 새로운 블루를 만들지 않습니다.</p>
+  <div class="scale-grid reveal">
+    <div class="scale-card">
+      <div class="chip" style="background:#337AFF"><span class="wcag">AA-Large</span></div>
+      <div class="body">
+        <div class="nm">Blue Tone Up</div>
+        <div class="use">CTA hover, focus ring. 본문 텍스트 컬러로 사용 금지 (대비 3.91)</div>
+        <div class="hexline"><span class="hex">#337AFF</span><button class="copy-btn" data-copy="#337AFF">Copy</button></div>
+      </div>
+    </div>
+    <div class="scale-card">
+      <div class="chip" style="background:#1A6AFF"><span class="wcag">AA</span></div>
+      <div class="body">
+        <div class="nm">Blue Soft</div>
+        <div class="use">Primary 옆 보조 강조 버튼 등 약한 Primary</div>
+        <div class="hexline"><span class="hex">#1A6AFF</span><button class="copy-btn" data-copy="#1A6AFF">Copy</button></div>
+      </div>
+    </div>
+    <div class="scale-card">
+      <div class="chip" style="background:#0047CC"><span class="wcag">AA 7.57</span></div>
+      <div class="body">
+        <div class="nm">Blue Tone Down</div>
+        <div class="use">CTA pressed/active, 다크 배경 위 강조</div>
+        <div class="hexline"><span class="hex">#0047CC</span><button class="copy-btn" data-copy="#0047CC">Copy</button></div>
+      </div>
+    </div>
+    <div class="scale-card">
+      <div class="chip" style="background:#D7E1F4; border-bottom:1px solid var(--border)"><span class="wcag">BG Only</span></div>
+      <div class="body">
+        <div class="nm">Blue Light</div>
+        <div class="use">선택 상태·정보 배경 전용. 텍스트 컬러로 절대 사용 금지</div>
+        <div class="hexline"><span class="hex">#D7E1F4</span><button class="copy-btn" data-copy="#D7E1F4">Copy</button></div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="sub reveal">Neutral — Gray Scale <span class="badge draft">Draft · 운영 추정값</span></h3>
+  <p class="sub-lead reveal">현재 운영 중인 그레이 스케일입니다. 브랜드팀 확정 시 HEX 값이 교체될 수 있습니다.</p>
+  <div class="gray-strip reveal">
+    <div class="g"><div class="fill" style="background:#FFFFFF"></div><div class="inf"><div class="tk">white</div><button class="hx" data-copy="#FFFFFF">#FFFFFF</button></div></div>
+    <div class="g"><div class="fill" style="background:#F6F7F9"></div><div class="inf"><div class="tk">superlight</div><button class="hx" data-copy="#F6F7F9">#F6F7F9</button></div></div>
+    <div class="g"><div class="fill" style="background:#E6E8EC"></div><div class="inf"><div class="tk">light</div><button class="hx" data-copy="#E6E8EC">#E6E8EC</button></div></div>
+    <div class="g"><div class="fill" style="background:#B3B8C2"></div><div class="inf"><div class="tk">gray</div><button class="hx" data-copy="#B3B8C2">#B3B8C2</button></div></div>
+    <div class="g"><div class="fill" style="background:#6B7280"></div><div class="inf"><div class="tk">dark</div><button class="hx" data-copy="#6B7280">#6B7280</button></div></div>
+    <div class="g"><div class="fill" style="background:#2D3139"></div><div class="inf"><div class="tk">dark-2</div><button class="hx" data-copy="#2D3139">#2D3139</button></div></div>
+    <div class="g"><div class="fill" style="background:#1A1D24"></div><div class="inf"><div class="tk">dark-3</div><button class="hx" data-copy="#1A1D24">#1A1D24</button></div></div>
+    <div class="g"><div class="fill" style="background:#000000"></div><div class="inf"><div class="tk">black</div><button class="hx" data-copy="#000000">#000000</button></div></div>
+  </div>
+
+  <h3 class="sub reveal">사용 비율 — 60 · 30 · 10</h3>
+  <div class="reveal">
+    <div class="ratio-bar" role="img" aria-label="컬러 사용 비율: 화이트와 밝은 그레이 60%, 그레이 스케일 30%, 메인 블루 10%">
+      <div class="r" style="flex:6; background:#fff; color:#6B7280">60</div>
+      <div class="r" style="flex:3; background:#2D3139; color:#fff">30</div>
+      <div class="r" style="flex:1; background:#0059FF; color:#fff">10</div>
+    </div>
+    <div class="ratio-note">
+      <span><b>60%</b> 배경 · 카드 · 여백 (White / Superlight)</span>
+      <span><b>30%</b> 본문 · 보조 UI (Gray Scale)</span>
+      <span><b>10%</b> CTA · 강조 (Main Blue)</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================== 03 타이포그래피 -->
+<section class="sec" id="typography" data-spy>
+  <div class="sec-head reveal">
+    <div class="sec-no"><span class="num">03</span><span class="eyebrow">Typography</span></div>
+    <h2>타이포그래피</h2>
+    <p class="lead">
+      GLUCK의 공식 서체는 <b>SUIT</b> 단일 패밀리입니다. 한글·영문·숫자 모두 SUIT를 사용하며,
+      별도의 영문 폰트 분기를 두지 않습니다. 데이터·코드 표기에는 보조로 JetBrains Mono를 사용합니다.
+    </p>
+  </div>
+
+  <div class="type-hero reveal">
+    <div class="fname">SUIT</div>
+    <div class="fdesc">
+      <p>한·영·숫자가 균일한 시각 무게를 갖는 지오메트릭 산세리프. GLUCK의 모든 매체에서 400–800 웨이트를 사용합니다.</p>
+      <div class="weights" aria-hidden="true">
+        <span style="font-weight:400">가A1</span>
+        <span style="font-weight:500">가A1</span>
+        <span style="font-weight:600">가A1</span>
+        <span style="font-weight:700">가A1</span>
+        <span style="font-weight:800">가A1</span>
+      </div>
+      <p style="margin-top:20px"><a class="lnk" href="https://sun.fo/suit/" target="_blank" rel="noopener">SUIT 공식 배포처에서 폰트 받기 ↗</a></p>
+    </div>
+  </div>
+
+  <h3 class="sub reveal">Type Scale</h3>
+  <p class="sub-lead reveal">데스크톱 기준 스케일. 모바일에서는 H1~H3를 한 단계씩 축소합니다.</p>
+  <div class="spec-table reveal">
+    <div class="spec-row">
+      <div class="spec-meta"><div class="tok">--font-display</div><div class="det">56 / 64 · W800 · -0.035em<br>Hero 카피</div></div>
+      <div class="spec-sample"><p class="t-display">정밀한 제조,<br>실제 양산.</p></div>
+    </div>
+    <div class="spec-row">
+      <div class="spec-meta"><div class="tok">--font-h1</div><div class="det">40 / 52 · W700 · -0.025em<br>페이지 타이틀</div></div>
+      <div class="spec-sample"><p class="t-h1">출력이 아니라, 제품으로 납품합니다</p></div>
+    </div>
+    <div class="spec-row">
+      <div class="spec-meta"><div class="tok">--font-h2</div><div class="det">32 / 42 · W700 · -0.02em<br>섹션 타이틀</div></div>
+      <div class="spec-sample"><p class="t-h2">금형 없는 양산, 데이터로 관리되는 생산</p></div>
+    </div>
+    <div class="spec-row">
+      <div class="spec-meta"><div class="tok">--font-h3</div><div class="det">24 / 32 · W600 · -0.015em<br>서브섹션 · 카드 제목</div></div>
+      <div class="spec-sample"><p class="t-h3">후가공부터 패키징까지, 일체화된 공정</p></div>
+    </div>
+    <div class="spec-row">
+      <div class="spec-meta"><div class="tok">--font-body-lg</div><div class="det">18 / 28 · W500<br>리드 문장</div></div>
+      <div class="spec-sample"><p class="t-bodylg">시제품과 대량양산 사이, 가장 어려운 구간을 GLUCK이 담당합니다.</p></div>
+    </div>
+    <div class="spec-row">
+      <div class="spec-meta"><div class="tok">--font-body</div><div class="det">16 / 26 · W400<br>일반 본문</div></div>
+      <div class="spec-sample"><p class="t-body">GLUCK은 산업용 SLA 3D프린팅을 기반으로 금형 없는 소량~중량 양산을 지원합니다. 설계 데이터 검토부터 후가공·조립·패키징까지, 생산의 전 과정이 데이터로 관리됩니다.</p></div>
+    </div>
+    <div class="spec-row">
+      <div class="spec-meta"><div class="tok">--font-caption</div><div class="det">13 / 20 · W500 · 0em<br>레이블 · 태그 · 헬퍼</div></div>
+      <div class="spec-sample"><p class="t-caption">GLUCK · INDUSTRIAL SLA MANUFACTURING PARTNER</p></div>
+    </div>
+    <div class="spec-row">
+      <div class="spec-meta"><div class="tok">Number</div><div class="det">font-feature-settings: "tnum"<br>수치 · 표 정렬 (표기 예시)</div></div>
+      <div class="spec-sample"><p class="t-num">0123456789 · ±0.05 mm · 1,000 EA</p></div>
+    </div>
+  </div>
+
+  <h3 class="sub reveal">한글 조판 원칙</h3>
+  <div class="kr-rules reveal">
+    <div class="rule-card">
+      <div class="k">Letter Spacing</div>
+      <div class="t">자간은 음수로, 정밀하게</div>
+      <div class="d">헤드라인 -0.02em~-0.035em, 본문 -0.01em, 캡션 0. 응집감 있는 자간이 제조 브랜드의 밀도를 만듭니다.</div>
+    </div>
+    <div class="rule-card">
+      <div class="k">Line Break</div>
+      <div class="t">단어 단위 줄바꿈</div>
+      <div class="d">word-break: keep-all을 기본으로, 한 줄 한국어 22~28자를 유지합니다. Hero 카피는 의미 단위로 개행합니다.</div>
+    </div>
+    <div class="rule-card">
+      <div class="k">Number</div>
+      <div class="t">수치는 고정폭으로</div>
+      <div class="d">수량·납기·정밀도 수치는 tnum을 적용해 자릿수를 정렬합니다. 데이터가 곧 신뢰이기 때문입니다.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================== 04 로고 사용 규정 -->
+<section class="sec" id="usage" data-spy>
+  <div class="sec-head reveal">
+    <div class="sec-no"><span class="num">04</span><span class="eyebrow">Logo Usage Guidelines</span></div>
+    <h2>로고 사용 규정</h2>
+    <p class="lead">
+      로고는 GLUCK의 정밀함을 대표합니다. 아래의 허용·금지 사례를 따르면 별도 문의 없이
+      어떤 매체에서도 로고를 올바르게 사용할 수 있습니다.
+    </p>
+  </div>
+
+  <h3 class="sub reveal">DO</h3>
+  <div class="dd-grid reveal">
+    <div class="dd do">
+      <div class="vis">
+        <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="올바른 비율의 워드마크"><use href="#lg-wordmark"/></svg>
+      </div>
+      <div class="cap">지정된 비율(4.68 : 1)을 유지합니다</div>
+    </div>
+    <div class="dd do">
+      <div class="vis do-colorways" role="img" aria-label="지정 컬러웨이 4종">
+        <span class="s1"><svg class="lg" viewBox="0 0 407 87" style="color:#000" aria-hidden="true"><use href="#lg-wordmark"/></svg></span>
+        <span class="s2"><svg class="lg" viewBox="0 0 407 87" style="color:#fff" aria-hidden="true"><use href="#lg-wordmark"/></svg></span>
+        <span class="s3"><svg class="lg" viewBox="0 0 407 87" style="color:#fff" aria-hidden="true"><use href="#lg-wordmark"/></svg></span>
+        <span class="s4"><svg class="lg" viewBox="0 0 407 87" style="color:#0059FF" aria-hidden="true"><use href="#lg-wordmark"/></svg></span>
+      </div>
+      <div class="cap">지정 컬러웨이 4종만 사용합니다</div>
+    </div>
+    <div class="dd do">
+      <div class="vis do-clear">
+        <div class="frame">
+          <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="클리어 스페이스가 확보된 워드마크" style="width:112px"><use href="#lg-wordmark"/></svg>
+        </div>
+      </div>
+      <div class="cap">충분한 클리어 스페이스를 확보합니다</div>
+    </div>
+    <div class="dd do">
+      <div class="vis do-contrast" role="img" aria-label="명도 대비 확보 예시">
+        <span class="half"><svg class="lg" viewBox="0 0 407 87" style="color:#000" aria-hidden="true"><use href="#lg-wordmark"/></svg></span>
+        <span class="half d"><svg class="lg" viewBox="0 0 407 87" style="color:#fff" aria-hidden="true"><use href="#lg-wordmark"/></svg></span>
+      </div>
+      <div class="cap">배경과 충분한 명도 대비를 확보합니다</div>
+    </div>
+  </div>
+
+  <h3 class="sub reveal">DON'T</h3>
+  <div class="dd-grid nine reveal">
+    <div class="dd dont v-stretch">
+      <div class="vis"><svg class="lg" viewBox="0 0 407 87" role="img" aria-label="가로로 늘어난 잘못된 워드마크"><use href="#lg-wordmark"/></svg></div>
+      <div class="cap">비율을 변경하지 않습니다</div>
+    </div>
+    <div class="dd dont v-rotate">
+      <div class="vis"><svg class="lg" viewBox="0 0 407 87" role="img" aria-label="회전된 잘못된 워드마크"><use href="#lg-wordmark"/></svg></div>
+      <div class="cap">회전하지 않습니다</div>
+    </div>
+    <div class="dd dont v-color">
+      <div class="vis"><svg class="lg" viewBox="0 0 407 87" role="img" aria-label="임의 색상이 적용된 잘못된 워드마크"><use href="#lg-wordmark"/></svg></div>
+      <div class="cap">임의 컬러로 변경하지 않습니다</div>
+    </div>
+    <div class="dd dont v-stroke">
+      <div class="vis"><svg viewBox="0 0 407 87" role="img" aria-label="외곽선이 적용된 잘못된 워드마크"><use href="#lg-wordmark"/></svg></div>
+      <div class="cap">스트로크를 적용하지 않습니다</div>
+    </div>
+    <div class="dd dont v-shadow">
+      <div class="vis"><svg class="lg" viewBox="0 0 407 87" role="img" aria-label="그림자가 적용된 잘못된 워드마크"><use href="#lg-wordmark"/></svg></div>
+      <div class="cap">그림자를 적용하지 않습니다</div>
+    </div>
+    <div class="dd dont">
+      <div class="vis"><svg viewBox="0 0 407 87" role="img" aria-label="그라데이션이 적용된 잘못된 워드마크">
+        <defs><linearGradient id="dontGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FF5C7A"/><stop offset="1" stop-color="#7048E8"/></linearGradient></defs>
+        <use href="#lg-wordmark" fill="url(#dontGrad)"/>
+      </svg></div>
+      <div class="cap">그라데이션을 적용하지 않습니다</div>
+    </div>
+    <div class="dd dont v-font">
+      <div class="vis"><span class="mix"><svg class="lg" viewBox="0 0 407 87" role="img" aria-label="워드마크에 다른 서체가 결합된 잘못된 예"><use href="#lg-wordmark"/></svg><em>Studio</em></span></div>
+      <div class="cap">다른 타입페이스와 결합하지 않습니다</div>
+    </div>
+    <div class="dd dont">
+      <div class="vis v-busy"><svg class="lg" viewBox="0 0 407 87" role="img" aria-label="복잡한 배경 위의 잘못된 워드마크"><use href="#lg-wordmark"/></svg></div>
+      <div class="cap">복잡한 이미지·배경 위에 사용하지 않습니다</div>
+    </div>
+    <div class="dd dont v-skew">
+      <div class="vis"><svg class="lg" viewBox="0 0 407 87" role="img" aria-label="기울여 왜곡된 잘못된 워드마크"><use href="#lg-wordmark"/></svg></div>
+      <div class="cap">형태를 왜곡하지 않습니다</div>
+    </div>
+  </div>
+
+  <h3 class="sub reveal" id="clearspace" data-spy>클리어 스페이스 &amp; 최소 사용 크기 <span class="badge draft">Draft · 확정 예정</span></h3>
+  <p class="sub-lead reveal">공식 CI 수치가 확정되기 전의 권장 초안입니다. CI 가이드라인 보드의 비례를 기준으로 도출했으며, 브랜드팀 확정 시 수치가 갱신됩니다.</p>
+  <div class="cs-wrap reveal">
+    <div class="cs-panel">
+      <div class="cs-frame">
+        <span class="u top">1G</span><span class="u bot">1G</span><span class="u lft">1G</span><span class="u rgt">1G</span>
+        <svg class="lg" viewBox="0 0 407 87" role="img" aria-label="클리어 스페이스 다이어그램 — 사방 1G 이상"><use href="#lg-wordmark"/></svg>
+      </div>
+    </div>
+    <div class="cs-side">
+      <div class="cs-item">
+        <div class="k">클리어 스페이스 <span class="badge draft">Draft</span></div>
+        <div class="d">워드마크 캡 하이트(= G의 높이, 1G)를 단위로, 사방에 1G 이상의 여백을 확보합니다. CI 보드의 패널 비례(로고 높이 대비 상하 여백)에서 도출한 권장안입니다.</div>
+      </div>
+      <div class="cs-item">
+        <div class="k">최소 사용 크기 <span class="badge draft">확정 예정</span></div>
+        <div class="d">디지털·인쇄 최소 크기는 공식 확정 전입니다. 확정 시 이 영역에 게시됩니다.</div>
+      </div>
+      <div class="cs-item">
+        <div class="k">소면적 대응</div>
+        <div class="d">워드마크의 판독이 어려운 크기에서는 워드마크를 축소하는 대신 G 심볼을 사용합니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================== 05 미디어 키트 -->
+<section class="sec" id="mediakit" data-spy>
+  <div class="sec-head reveal">
+    <div class="sec-no"><span class="num">05</span><span class="eyebrow">Media Kit</span></div>
+    <h2>미디어 키트</h2>
+    <p class="lead">언론·파트너·협력사가 바로 사용할 수 있는 표준 소개문안과 채널 정보, 로고 패키지입니다.</p>
+  </div>
+
+  <div class="mk-grid reveal">
+    <div class="mk-boiler">
+      <div class="en-tag">GLUCK 표준 소개문안</div>
+      <div id="boilerText">
+        <p class="main">GLUCK은 산업용 SLA 3D프린팅을 기반으로, 시제품을 넘어 실제 생산 가능한 부품과 제품을 만드는 양산 제조 파트너입니다.</p>
+        <p class="subp">2013년부터 로봇·모빌리티·의료기기·전자·산업 부품부터 브랜드 제품과 문화·예술 분야까지 다양한 제조 프로젝트를 수행해왔으며, 현재 파주 제1·제2 팩토리에서 50기의 산업용 SLA 3D프린터를 기반으로 대규모 생산 인프라를 운영하고 있습니다. 누적 100만 개 이상의 파트 생산 경험을 바탕으로 높은 정밀도와 매끄러운 표면 품질, 복잡한 형상 구현이 필요한 제품을 안정적으로 생산합니다.</p>
+        <p class="subp">글룩이 제공하는 것은 단순한 '3D프린팅 출력'이 아닙니다. 제품의 <b>수량, 일정, 설계 변경 가능성, 품질, 비용과 양산 계획</b>을 함께 검토하고, 고객에게 가장 합리적인 제조 방식을 제안합니다. 필요에 따라 설계 검토와 DfAM, 3D프린팅 생산, 후가공과 도색, 양산까지 하나의 제조 과정으로 연결합니다.</p>
+        <p class="subp">특히 <b>금형 제작 전 초기·브릿지 생산, 다품종 소량·중량 생산, 반복 생산, 복잡한 외장·하우징·지그·기능성 부품, 디자인 완성도가 중요한 브랜드 하드웨어</b>처럼 기존 제조 방식만으로 대응하기 어려운 영역에서 글룩의 경쟁력이 발휘됩니다.</p>
+        <p class="subp">GLUCK은 하나의 제조 방식을 고집하는 회사가 아닙니다. 고객이 금형·절삭·3D프린팅 사이에서 더 빠르고 안전하게 제조 방식을 결정하고, 복잡한 디자인을 실제 생산 가능한 제품으로 전환할 수 있도록 돕습니다.</p>
+        <p class="closing">복잡한 디자인을 실제 생산으로 연결하는 디지털 파운드리.<br>GLUCK은 변화하는 제조 환경을 위한 확장 가능한 양산 파트너입니다.</p>
+      </div>
+      <div class="foot">
+        <span class="src">GLUCK 표준 소개문안 — 수정 없이 전문을 사용해 주세요.</span>
+        <button class="btn btn-tertiary btn-sm" id="copyBoiler">소개문안 전문 복사</button>
+      </div>
+    </div>
+    <div class="mk-side">
+      <div class="mk-facts">
+        <div class="hd">Key Facts</div>
+        <div id="factRows"></div>
+        <div class="src">출처: GLUCK 표준 소개문안 (2026.08 기준). 인용 전 최신 수치를 확인해 주세요.</div>
+      </div>
+      <div class="mk-ch">
+        <div class="hd">Channels</div>
+        <div class="ch-row"><span class="k">Website</span><a class="v" href="https://www.gluck.co.kr" target="_blank" rel="noopener">gluck.co.kr</a></div>
+        <div class="ch-row"><span class="k">회사 소개</span><a class="v" href="https://glucklab.com/company/company_sub01.html?lang=ko" target="_blank" rel="noopener">glucklab.com/company</a></div>
+        <div class="ch-row"><span class="k">실시간 견적</span><a class="v" href="https://glucklab.com" target="_blank" rel="noopener">GLUCKLAB.COM</a></div>
+        <div class="ch-row"><span class="k">문의 (견적·검토)</span><a class="v" href="mailto:customer@gluck.co.kr">customer@gluck.co.kr</a></div>
+        <div class="ch-row"><span class="k">Instagram</span><a class="v" href="https://www.instagram.com/gluck_3dprinting" target="_blank" rel="noopener">@gluck_3dprinting</a></div>
+        <div class="ch-row"><span class="k">SCULPIA (아트·문화재)</span><a class="v" href="https://www.instagram.com/sculpia_official" target="_blank" rel="noopener">@sculpia_official</a></div>
+        <div style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap">
+          <a class="btn btn-tertiary btn-sm" href="brand-assets/GLUCK_Brand_Assets.zip" download>GLUCK Logo Pack <span class="fmt">ZIP</span></a>
+          <span class="btn btn-sm" aria-disabled="true">회사소개서 — 준비 중</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================== 06 다운로드 센터 -->
+<section class="sec" id="downloads" data-spy>
+  <div class="sec-head reveal">
+    <div class="sec-no"><span class="num">06</span><span class="eyebrow">Download Center</span></div>
+    <h2>다운로드 센터</h2>
+    <p class="lead">
+      모든 브랜드 자산을 한곳에서 내려받을 수 있습니다.
+      파일명은 <b>GLUCK_{자산}_{변형}.{포맷}</b> 규칙을 따릅니다.
+    </p>
+  </div>
+
+  <div id="dlRoot" class="reveal"></div>
+
+  <div class="dl-all reveal">
+    <div>
+      <div class="t">Download All Brand Assets</div>
+      <div class="d">로고 전체(SVG·PNG) + CI 가이드라인 보드 원본 — GLUCK_Brand_Assets.zip · 300KB</div>
+    </div>
+    <a class="btn btn-primary btn-lg" href="brand-assets/GLUCK_Brand_Assets.zip" download>전체 자산 다운로드 <span class="fmt">ZIP</span></a>
+  </div>
+
+  <p class="dl-note reveal">
+    자산 디렉터리: <code>brand-assets/logo</code> · <code>brand-assets/guideline</code> —
+    Factory·Product 실사, CI Guidelines PDF, 프레젠테이션 템플릿은 자산 확정 후 추가됩니다.
+  </p>
 </section>
 
 </main>
+</div><!-- /.shell -->
 
 <!-- ================================================== FOOTER -->
 <footer>
-  <div class="container">
+  <div class="ft-in">
     <div class="ft-grid">
       <div>
         <div class="ft-logo">
@@ -1469,14 +1332,14 @@ footer { background: var(--gray-dark-3); color: #fff; padding: 72px 0 40px; }
           <b>글룩(GLUCK Inc.)</b><br>
           대표자 홍재욱 · 개인정보책임자 김태완 · 사업자등록번호 440-81-00060<br>
           서울특별시 마포구 와우산로 29가길 9, 글룩빌딩<br>
-          E-mail <a href="mailto:support@glucklab.com" style="color:rgba(255,255,255,0.75)">support@glucklab.com</a> · Tel 1555-0096
+          E-mail <a href="mailto:support@glucklab.com">support@glucklab.com</a> · Tel 1555-0096
         </div>
       </div>
       <div class="ft-right">
         <div class="hd">Brand Resource</div>
-        <a href="#logo">로고 다운로드</a>
+        <a href="#signature">로고 다운로드</a>
         <a href="#usage">로고 사용 규정</a>
-        <a href="#mediakit">미디어 킷</a>
+        <a href="#mediakit">미디어 키트</a>
         <a href="#downloads">전체 자산 다운로드</a>
       </div>
     </div>
@@ -1492,17 +1355,17 @@ footer { background: var(--gray-dark-3); color: #fff; padding: 72px 0 40px; }
 <script>
 /* ============================================================
    Brand Asset Data — UI와 분리된 자산 데이터.
-   로고·CI 자산 변경 시 이 객체와 brand-assets/ 파일만 갱신하면 됩니다.
+   로고·CI 자산·수치 변경 시 이 객체와 brand-assets/ 파일만 갱신하면 됩니다.
    ============================================================ */
 const GLUCK_BRAND = {
-  version: "1.0",
+  version: "1.1",
   basedOn: "GLUCK Design System v1.1 (2026.07) · CI 가이드라인 보드",
   assetDir: "brand-assets/",
-  /* 회사 수치 — 출처: GLUCK 영업 소개자료 2026. 갱신 시 여기만 수정 */
+  /* 회사 수치 — 출처: GLUCK 표준 소개문안 (2026.08). 갱신 시 여기만 수정 */
   keyFacts: [
     { k: "설립", v: "2013" },
-    { k: "산업용 SLA 3D프린터", v: "45기", plus: true },
-    { k: "누적 생산 파트 (2026.01 기준)", v: "1,000,000", plus: true },
+    { k: "산업용 SLA 3D프린터", v: "50기" },
+    { k: "누적 생산 파트", v: "1,000,000", plus: true },
     { k: "팩토리", v: "파주 제1·제2팩토리" }
   ],
   groups: [
@@ -1595,6 +1458,22 @@ const GLUCK_BRAND = {
   ).join('');
 })();
 
+/* ============ Theme toggle ============ */
+(function themeToggle() {
+  const btn = document.getElementById('themeBtn');
+  const root = document.documentElement;
+  function label() {
+    btn.setAttribute('aria-label', root.dataset.theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환');
+  }
+  label();
+  btn.addEventListener('click', () => {
+    const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try { localStorage.setItem('gluck-theme', next); } catch (e) {}
+    label();
+  });
+})();
+
 /* ============ Copy interaction ============ */
 const toast = document.getElementById('toast');
 let toastTimer;
@@ -1605,7 +1484,7 @@ function showToast(msg, mono) {
   toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
 }
 function copyText(text, onDone) {
-  const done = () => { showToast('복사되었습니다', text); onDone && onDone(); };
+  const done = () => { showToast('복사되었습니다', text.length > 28 ? '' : text); onDone && onDone(); };
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
   } else { fallbackCopy(text, done); }
@@ -1631,16 +1510,18 @@ document.addEventListener('click', e => {
   });
 });
 document.getElementById('copyBoiler').addEventListener('click', () => {
-  copyText(document.getElementById('boilerText').textContent.replace(/\s+/g, ' ').trim());
+  const paras = [...document.querySelectorAll('#boilerText p')]
+    .map(p => p.textContent.replace(/\s+/g, ' ').trim());
+  copyText(paras.join('\n\n'));
 });
 
 /* ============ Capability flags ============ */
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const hasIO = 'IntersectionObserver' in window;
 
-/* ============ Scrollspy ============ */
-const sections = [...document.querySelectorAll('main section[id]')];
-const navLinks = [...document.querySelectorAll('.nav a, .subnav a')];
+/* ============ Scrollspy — 사이드 내비 + 모바일 칩 ============ */
+const spyTargets = [...document.querySelectorAll('[data-spy]')];
+const navLinks = [...document.querySelectorAll('.sidenav a, .subnav a')];
 function setActive(id) {
   navLinks.forEach(a => {
     const on = a.getAttribute('href') === '#' + id;
@@ -1648,12 +1529,24 @@ function setActive(id) {
     if (on && a.closest('.subnav')) a.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduceMotion ? 'auto' : 'smooth' });
   });
 }
-if (hasIO) {
-  const spy = new IntersectionObserver(entries => {
-    entries.forEach(en => { if (en.isIntersecting) setActive(en.target.id); });
-  }, { rootMargin: '-35% 0px -55% 0px' });
-  sections.forEach(s => spy.observe(s));
+let spyTick = false;
+function runSpy() {
+  spyTick = false;
+  const line = window.innerHeight * 0.32;
+  let cur = spyTargets.length ? spyTargets[0].id : null;
+  for (const t of spyTargets) {
+    if (t.getBoundingClientRect().top <= line) cur = t.id; else break;
+  }
+  if (cur) setActive(cur);
 }
+function onSpy() {
+  if (spyTick) return;
+  spyTick = true;
+  setTimeout(runSpy, 80);
+}
+window.addEventListener('scroll', onSpy, { passive: true });
+window.addEventListener('resize', onSpy);
+onSpy();
 
 /* ============ Reveal (Slow · Precise) ============ */
 if (hasIO) {
@@ -1694,34 +1587,6 @@ if (hasIO) {
     }, { threshold: 0.3 });
     io.observe(plate);
   } else { start(); }
-})();
-
-/* ============ Part multiplication — 4단계 ============ */
-(function mult() {
-  const cards = [...document.querySelectorAll('.mult')];
-  cards.forEach(card => {
-    const n = parseInt(card.dataset.count, 10);
-    const mg = card.querySelector('.mg');
-    for (let i = 0; i < 36; i++) {
-      const cell = document.createElement('i');
-      if (i < n) {
-        cell.classList.add(n === 36 ? 'bb' : 'on');
-        if (n === 36 && i % 7 !== 0) { cell.classList.remove('bb'); cell.classList.add('on'); }
-        cell.style.animationDelay = (i * 40) + 'ms';
-      } else {
-        cell.style.animationDelay = (i * 12) + 'ms';
-      }
-      mg.appendChild(cell);
-    }
-  });
-  if (hasIO) {
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(en => {
-        if (en.isIntersecting) { en.target.classList.add('play'); io.unobserve(en.target); }
-      });
-    }, { threshold: 0.25 });
-    cards.forEach(c => io.observe(c));
-  } else { cards.forEach(c => c.classList.add('play')); }
 })();
 </script>
 </body>

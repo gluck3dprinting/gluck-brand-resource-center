@@ -1,13 +1,13 @@
 # GLUCK Brand Resource Center — 자산 관리 문서
 
-> 페이지: `../gluck-brand-resource-center.html`
+> 페이지: `../index.html`
 > 기준: GLUCK Design System v1.1 (2026.07) · CI 가이드라인 보드 2종
 > 최종 갱신: 2026.08
 
 ## 1. 디렉터리 구조
 
 ```
-gluck-brand-resource-center.html   ← Brand Resource Center 페이지 (단일 HTML)
+index.html                         ← Brand Resource Center 페이지 (단일 HTML)
 brand-assets/
 ├── logo/                          ← 로고 자산 (CI 보드 원본 벡터에서 추출)
 │   ├── GLUCK_Wordmark_{Black|White|Blue}.{svg|png}
@@ -57,14 +57,13 @@ brand-assets/
 | Gray Scale 6단계 HEX | 운영 추정값 (v1.1 기준) | 브랜드팀 |
 | Clear Space (1G 초안) | 보드 비례 기반 권장 초안 | 브랜드팀 |
 | 최소 사용 크기 | 미확정 — 수치 미게시 | 브랜드팀 |
-| Graphic Identity 모티프 | 확장 연구안 | 브랜드팀 |
-| Photography 실사 라이브러리 | 자산 미확보 — 다운로드 미제공 | 브랜드팀/마케팅 |
-| CI Guidelines PDF · 프레젠테이션 템플릿 | 미제작 | 브랜드팀 |
+| 실사 사진 라이브러리 | 자산 미확보 — 다운로드 미제공 | 브랜드팀/마케팅 |
+| CI Guidelines PDF · 회사소개서 · 프레젠테이션 템플릿 | 미제작 | 브랜드팀 |
 | Pantone | 공식 지정값 없음 | 브랜드팀 |
 
 ## 6. 수치·회사 정보 출처 (인용 전 확인)
 
-- Key Facts (설립 2013 · SLA 45기+ · 누적 1,000,000+ 파트 2026.01 · 파주 팩토리 2곳): **영업 소개자료 2026** 기준 — 페이지에 출처 문구 표기됨. 최신 수치 확인 후 인용
+- Key Facts (설립 2013 · SLA 50기 · 누적 1,000,000+ 파트 · 파주 팩토리 2곳): **GLUCK 표준 소개문안 (2026.08)** 기준 — 페이지에 출처 문구 표기됨. 최신 수치 확인 후 인용
 - 푸터 회사 정보 (대표자·사업자번호·주소·연락처): Design System v1.1 표준 푸터 기준
 - 채널: gluck.co.kr · GLUCKLAB.COM · customer@gluck.co.kr · @gluck_3dprinting · @sculpia_official (영업 소개자료 2026)
 - 고객사명·NDA 사례는 노출 동의 확인 전 게시 금지 → 페이지에 미포함
@@ -81,5 +80,5 @@ brand-assets/
 ```bash
 python -m http.server 8734
 ```
-후 `http://localhost:8734/gluck-brand-resource-center.html` 접속.
+후 `http://localhost:8734` 접속.
 (`file://`로 직접 열어도 동작하나, 다운로드·클립보드는 서버 환경 권장)
