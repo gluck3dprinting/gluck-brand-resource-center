@@ -58,7 +58,7 @@
   --text: #F2F4F8;
   --text-2: #9AA1AD;
   --border: #262B33;
-  --accent-text: #337AFF;         /* 텍스트용 블루 */
+  --accent-text: #4585FF;         /* 텍스트용 블루 (다크 서피스 위 AA 확보) */
   --accent-strong: #7AA5FF;       /* active 텍스트 (대비 확보) */
   --accent-bg: rgba(51,122,255,0.16); /* 선택 배경 */
   --grid-line: rgba(255,255,255,0.05);
@@ -120,12 +120,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .brand { display: flex; align-items: center; gap: 14px; color: var(--text); flex-shrink: 0; }
 .brand svg { height: 15px; width: auto; }
 .brand-sub {
-  font-family: var(--font-mono); font-size: 10.5px; font-weight: 500;
-  letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-2);
+  font-family: var(--font-mono); font-size: 10.5px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-2);
   border-left: 1px solid var(--border); padding-left: 14px; white-space: nowrap;
 }
 .theme-btn {
-  width: 38px; height: 38px; border: 1px solid var(--border); border-radius: 10px;
+  width: 38px; height: 38px; border: 1px solid var(--border); border-radius: 8px;
   display: inline-flex; align-items: center; justify-content: center;
   color: var(--text); transition: border-color .15s ease, background .15s ease;
 }
@@ -161,14 +161,14 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   overflow-y: auto; scrollbar-width: thin;
   padding: 44px 0 48px;
 }
-.sn-group { margin-bottom: 32px; }
+.sn-group { margin-bottom: 34px; }
 .sn-group .sn-title {
   font-size: 15px; font-weight: 800; letter-spacing: -0.01em;
-  padding: 6px 12px; margin-bottom: 4px;
+  padding: 6px 12px; margin-bottom: 6px;
 }
 .sn-group a {
   display: block; font-size: 14px; font-weight: 500; color: var(--text-2);
-  padding: 7px 12px 7px 24px; border-radius: 8px;
+  padding: 7px 12px 7px 24px; border-radius: 8px; margin-bottom: 2px;
   transition: color .15s ease, background .15s ease;
 }
 .sn-group a:hover { color: var(--text); background: var(--surface-2); }
@@ -204,8 +204,8 @@ main { min-width: 0; padding-bottom: 40px; }
   display: flex; flex-direction: column; align-items: center; text-align: center; gap: 18px;
 }
 .banner .b-eyebrow {
-  font-family: var(--font-mono); font-size: 10.5px; font-weight: 500;
-  letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.68);
+  font-family: var(--font-mono); font-size: 10.5px; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.68);
 }
 .banner .b-title {
   color: #fff; font-size: clamp(27px, 3.6vw, 40px); font-weight: 800;
@@ -224,7 +224,7 @@ main { min-width: 0; padding-bottom: 40px; }
 
 /* ============ Section frame ============ */
 section.sec { padding: 92px 0 0; scroll-margin-top: calc(var(--topbar-h) + 12px); }
-h3.sub, .sub-anchor { scroll-margin-top: calc(var(--topbar-h) + 20px); }
+h3.sub { scroll-margin-top: calc(var(--topbar-h) + 20px); }
 .sec-head { margin-bottom: 48px; }
 .sec-no {
   display: flex; align-items: baseline; gap: 16px;
@@ -232,14 +232,15 @@ h3.sub, .sub-anchor { scroll-margin-top: calc(var(--topbar-h) + 20px); }
 }
 .sec-no .num { font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--text); }
 .sec-no .eyebrow {
-  font-family: var(--font-mono); font-size: 11px; font-weight: 500;
-  letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent-text);
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent-text);
 }
 .sec-head h2 { font-size: 30px; line-height: 1.3; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 14px; }
 .sec-head .lead { font-size: 16.5px; line-height: 1.65; color: var(--text-2); max-width: 640px; }
 
 h3.sub { font-size: 21px; font-weight: 700; letter-spacing: -0.015em; margin: 64px 0 8px; }
-h3.sub:first-of-type { margin-top: 0; }
+.sec-head + h3.sub { margin-top: 0; }
+h3.sub + div { margin-top: 12px; } /* 리드 문장 없는 헤딩 아래 여백 */
 .sub-lead { font-size: 15px; color: var(--text-2); margin-bottom: 26px; max-width: 640px; }
 
 /* ============ Buttons ============ */
@@ -259,11 +260,10 @@ h3.sub:first-of-type { margin-top: 0; }
 .btn-outline:hover { border-color: var(--gray); }
 .btn-lg { height: 56px; padding: 0 28px; font-size: 16px; }
 .btn-sm { height: 34px; padding: 0 13px; font-size: 12.5px; border-radius: 7px; }
-.btn .fmt { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: .06em; opacity: .85; }
-.btn[aria-disabled="true"] { background: var(--surface-2); color: var(--text-2); cursor: not-allowed; border: 1px dashed var(--border); }
+.btn .fmt { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: .08em; opacity: .85; }
 
 /* ============ 브랜드 소개 (Hero) ============ */
-.hero { padding: 76px 0 0; }
+section.hero.sec { padding: 76px 0 0; }
 .hero-wordmark { color: var(--text); margin-bottom: 44px; }
 .hero-wordmark svg { width: min(560px, 84%); height: auto; }
 .hero-copy h1 { font-size: clamp(28px, 3.4vw, 40px); line-height: 1.28; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 18px; }
@@ -275,14 +275,9 @@ h3.sub:first-of-type { margin-top: 0; }
 .identity-strip { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--border); border-radius: 4px; margin-top: 72px; background: var(--surface); }
 .identity-strip .cell { padding: 26px 26px 24px; border-left: 1px solid var(--border); }
 .identity-strip .cell:first-child { border-left: 0; }
-.identity-strip .k { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--accent-text); margin-bottom: 10px; }
+.identity-strip .k { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-text); margin-bottom: 10px; }
 .identity-strip .t { font-size: 18px; font-weight: 700; letter-spacing: -0.015em; margin-bottom: 6px; }
 .identity-strip .d { font-size: 14px; color: var(--text-2); }
-.identity-quote { margin-top: 52px; max-width: 720px; }
-.identity-quote p { font-size: clamp(19px, 2.2vw, 24px); line-height: 1.5; font-weight: 600; letter-spacing: -0.02em; }
-.identity-quote p strong { color: var(--accent-text); font-weight: 700; }
-.identity-quote .src { margin-top: 14px; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-2); }
-
 /* ============ Logo ============ */
 /* 로고 프리뷰 면은 자산 시연용이므로 테마와 무관하게 고정 컬러 유지 */
 .logo-stage { border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
@@ -459,7 +454,7 @@ h3.sub:first-of-type { margin-top: 0; }
 /* ============ Media Kit ============ */
 .mk-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 14px; align-items: stretch; }
 .mk-boiler { border: 1px solid var(--border); background: var(--surface); border-radius: 4px; padding: 34px; display: flex; flex-direction: column; }
-.mk-boiler .en-tag { font-size: 12.5px; font-weight: 700; letter-spacing: .04em; color: var(--accent-text); margin-bottom: 18px; }
+.mk-boiler .en-tag { font-size: 12.5px; font-weight: 700; letter-spacing: 0; color: var(--accent-text); margin-bottom: 18px; }
 .mk-boiler .main { font-size: 18px; line-height: 1.62; font-weight: 700; margin-bottom: 16px; }
 .mk-boiler .subp { font-size: 14.5px; line-height: 1.75; color: var(--text-2); margin-bottom: 14px; }
 .mk-boiler .subp b { color: var(--text); font-weight: 700; }
@@ -478,7 +473,7 @@ h3.sub:first-of-type { margin-top: 0; }
 .mk-ch .hd { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
 .ch-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); font-size: 13.5px; }
 .ch-row .k { color: var(--text-2); }
-.ch-row a.v { font-family: var(--font-mono); font-size: 12px; font-weight: 500; color: var(--text); }
+.ch-row a.v { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--text); }
 .ch-row a.v:hover { color: var(--accent-text); }
 
 /* ============ Downloads ============ */
@@ -560,7 +555,7 @@ footer { background: #1A1D24; color: #fff; padding: 64px 0 36px; margin-top: 96p
   .sidenav { display: none; }
   .subnav { display: block; }
   section.sec { scroll-margin-top: calc(var(--topbar-h) + 56px); }
-  h3.sub, .sub-anchor { scroll-margin-top: calc(var(--topbar-h) + 62px); }
+  h3.sub { scroll-margin-top: calc(var(--topbar-h) + 62px); }
 }
 @media (max-width: 1023px) {
   section.sec { padding: 76px 0 0; }
@@ -577,7 +572,7 @@ footer { background: #1A1D24; color: #fff; padding: 64px 0 36px; margin-top: 96p
 @media (max-width: 767px) {
   .shell, .topbar-in, .ft-in { padding-left: 20px; padding-right: 20px; }
   section.sec { padding: 60px 0 0; }
-  .hero { padding-top: 52px; }
+  section.hero.sec { padding-top: 52px; }
   .banner-in { padding: 44px 24px; }
   .sec-head h2 { font-size: 25px; }
   .stage { min-height: 210px; padding: 30px; }
@@ -734,11 +729,6 @@ footer { background: #1A1D24; color: #fff; padding: 64px 0 36px; margin-top: 96p
     </div>
   </div>
 
-  <blockquote class="identity-quote reveal">
-    <p>정밀한 제조 신뢰감 위에, 브랜드와 산업을 실제 제품으로 전환하는
-    <strong>디지털 파운드리</strong>의 시각 언어.</p>
-    <p class="src">GLUCK Design System · Brand Identity 정의</p>
-  </blockquote>
 </section>
 
 <!-- ================================================== 01 로고 -->
