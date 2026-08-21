@@ -15,7 +15,7 @@ brand-assets/
 │   ├── GLUCK_Symbol_{Black|White}.{svg|png}
 │   ├── GLUCK_RoundLogo_{Black|White}.{svg|png}
 │   ├── GLUCK_TabIcon_Black_1080.png        ← 보드 원본 래스터 (벡터 없음)
-│   ├── GLUCK_Favicon_Round{.svg|_1080|_512|_192|_32.png} ← 원형 파비콘 (블랙 서클 + 화이트 G)
+│   ├── GLUCK_Favicon.{png|ico}             ← 공식 파비콘 (다크 라운드 스퀘어 + 화이트 G, 사내 표준 원본)
 │   └── GLUCK_Symbol_G_826x888.png          ← 보드 원본 래스터
 ├── guideline/                     ← CI 가이드라인 보드 원본 (1920×1080)
 │   ├── GLUCK_CI_Guideline_Logo_Icon.svg
