@@ -50,29 +50,28 @@ brand-assets/
 4. 섹션 본문(로고 프리뷰 등)은 인라인 `<symbol id="lg-wordmark">` `<symbol id="lg-symbol">`을 참조 —
    로고 원본이 바뀌면 이 두 심볼의 패스만 교체하면 페이지 전체에 반영됨
 
-## 5. Draft / 확정 예정 항목 (페이지에 Draft 배지로 표기됨)
+## 5. 확정 항목 · 추가 예정 자산
 
-| 항목 | 상태 | 확정 주체 |
-|---|---|---|
-| Gray Scale 6단계 HEX | 운영 추정값 (v1.1 기준) | 브랜드팀 |
-| Clear Space (1G 초안) | 보드 비례 기반 권장 초안 | 브랜드팀 |
-| 최소 사용 크기 | 미확정 — 수치 미게시 | 브랜드팀 |
-| 실사 사진 라이브러리 | 자산 미확보 — 다운로드 미제공 | 브랜드팀/마케팅 |
-| CI Guidelines PDF · 회사소개서 · 프레젠테이션 템플릿 | 미제작 | 브랜드팀 |
-| Pantone | 공식 지정값 없음 | 브랜드팀 |
+**확정 (2026.08 브랜드 확정 완료):** Gray Scale 6단계 HEX · Clear Space 사방 1G · Pantone 별도 지정 없음
+
+| 추가 예정 | 상태 |
+|---|---|
+| 실사 사진 라이브러리 | 자산 확보 후 다운로드 센터에 추가 |
+| CI Guidelines PDF · 프레젠테이션 템플릿 | 준비되는 대로 추가 |
+| 회사소개서 | https://glucklab.com/brochure/ (링크 연결됨) |
 
 ## 6. 수치·회사 정보 출처 (인용 전 확인)
 
 - Key Facts (설립 2013 · SLA 50기 · 누적 1,000,000+ 파트 · 파주 팩토리 2곳): **GLUCK 표준 소개문안 (2026.08)** 기준 — 페이지에 출처 문구 표기됨. 최신 수치 확인 후 인용
 - 푸터 회사 정보 (대표자·사업자번호·주소·연락처): Design System v1.1 표준 푸터 기준
-- 채널: gluck.co.kr · GLUCKLAB.COM · customer@gluck.co.kr · @gluck_3dprinting · @sculpia_official (영업 소개자료 2026)
+- 채널: glucklab.com (홈페이지) · glucklab.com/company (회사 소개) · glucklab.com/brochure (회사소개서) · support@glucklab.com (문의) · @gluck_3dprinting · @sculpia_official
 - 고객사명·NDA 사례는 노출 동의 확인 전 게시 금지 → 페이지에 미포함
 
 ## 7. 컬러·타이포 기준 (확정)
 
 - Key Color: `#0059FF` Signature Main Blue (C86 M63 Y0 K0 / R0 G89 B255)
 - 파생: `#337AFF`(hover·AA-Large 전용) `#1A6AFF` `#0047CC` `#D7E1F4`(배경 전용)
-- 서체: SUIT 단일 패밀리 (400–800) + JetBrains Mono(데이터 보조) — CDN 로드, 사내망 차단 시 셀프호스팅 전환
+- 서체: SUIT 단일 패밀리 (400–800) — 라벨·수치 포함 전체 통일. CDN 로드, 사내망 차단 시 셀프호스팅 전환
 - 사용 비율 60(배경)·30(그레이)·10(블루)
 
 ## 8. 로컬 미리보기

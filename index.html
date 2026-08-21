@@ -10,9 +10,6 @@
 <link rel="icon" type="image/png" href="brand-assets/logo/GLUCK_TabIcon_Black_1080.png">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
 <script>
 /* 테마 초기화 — 페인트 전 적용 (FOUC 방지) */
 (function () {
@@ -37,7 +34,7 @@
   --blue-tone-down:  #0047CC;
   --blue-light:      #D7E1F4;
 
-  /* Gray Scale — 운영 추정값 (브랜드팀 확정 시 교체) */
+  /* Gray Scale — 확정 */
   --gray-superlight: #F6F7F9;
   --gray-light:      #E6E8EC;
   --gray:            #B3B8C2;
@@ -48,7 +45,8 @@
   --black: #000000;
 
   --font-sans: 'SUIT Variable', 'SUIT', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  /* 라벨·수치도 SUIT로 통일 (tnum으로 자릿수 정렬) */
+  --font-mono: 'SUIT Variable', 'SUIT', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1); /* slow · precise */
   --topbar-h: 64px;
 
@@ -102,6 +100,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 :focus-visible { outline: 2px solid var(--blue-tone-up); outline-offset: 2px; border-radius: 2px; }
 
 .lg { fill: currentColor; }
+.val-row .v, .scale-card .hex, .gray-strip .g .hx, .ch-row a.v, .fact-row .v, .sec-no .num { font-variant-numeric: tabular-nums; }
 
 .skip { position: fixed; top: -48px; left: 16px; z-index: 200; background: var(--gray-dark-3); color: #fff; padding: 10px 16px; border-radius: 0 0 8px 8px; font-size: 13px; font-weight: 600; transition: top .2s var(--ease); }
 .skip:focus { top: 0; }
@@ -238,15 +237,6 @@ h3.sub, .sub-anchor { scroll-margin-top: calc(var(--topbar-h) + 20px); }
 }
 .sec-head h2 { font-size: 30px; line-height: 1.3; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 14px; }
 .sec-head .lead { font-size: 16.5px; line-height: 1.65; color: var(--text-2); max-width: 640px; }
-
-.badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-family: var(--font-mono); font-size: 10px; font-weight: 700;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  padding: 4px 9px; border-radius: 4px; vertical-align: middle;
-}
-.badge.draft { background: rgba(180,83,9,0.16); color: #F0A860; border: 1px solid rgba(243,223,184,0.25); }
-:root[data-theme="light"] .badge.draft { background: #FDF4E3; color: #B45309; border-color: #F3DFB8; }
 
 h3.sub { font-size: 21px; font-weight: 700; letter-spacing: -0.015em; margin: 64px 0 8px; }
 h3.sub:first-of-type { margin-top: 0; }
@@ -469,7 +459,7 @@ h3.sub:first-of-type { margin-top: 0; }
 /* ============ Media Kit ============ */
 .mk-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 14px; align-items: stretch; }
 .mk-boiler { border: 1px solid var(--border); background: var(--surface); border-radius: 4px; padding: 34px; display: flex; flex-direction: column; }
-.mk-boiler .en-tag { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--accent-text); margin-bottom: 18px; }
+.mk-boiler .en-tag { font-size: 12.5px; font-weight: 700; letter-spacing: .04em; color: var(--accent-text); margin-bottom: 18px; }
 .mk-boiler .main { font-size: 18px; line-height: 1.62; font-weight: 700; margin-bottom: 16px; }
 .mk-boiler .subp { font-size: 14.5px; line-height: 1.75; color: var(--text-2); margin-bottom: 14px; }
 .mk-boiler .subp b { color: var(--text); font-weight: 700; }
@@ -908,7 +898,7 @@ footer { background: #1A1D24; color: #fff; padding: 64px 0 36px; margin-top: 96p
       <div class="val-row"><span class="k">HEX</span><span class="v">#0059FF</span><button class="copy-btn" data-copy="#0059FF">Copy</button></div>
       <div class="val-row"><span class="k">RGB</span><span class="v">0, 89, 255</span><button class="copy-btn" data-copy="rgb(0, 89, 255)">Copy</button></div>
       <div class="val-row"><span class="k">CMYK</span><span class="v">86, 63, 0, 0</span><button class="copy-btn" data-copy="C86 M63 Y0 K0">Copy</button></div>
-      <div class="val-note">Pantone 공식 지정값 없음 — 지정 시 업데이트 예정 · 흰 글자 대비 5.42 : 1 (WCAG AA 통과)</div>
+      <div class="val-note">Pantone 별도 지정 없음 · 흰 글자 대비 5.42 : 1 (WCAG AA 통과)</div>
     </div>
   </div>
 
@@ -949,8 +939,8 @@ footer { background: #1A1D24; color: #fff; padding: 64px 0 36px; margin-top: 96p
     </div>
   </div>
 
-  <h3 class="sub reveal">Neutral — Gray Scale <span class="badge draft">Draft · 운영 추정값</span></h3>
-  <p class="sub-lead reveal">현재 운영 중인 그레이 스케일입니다. 브랜드팀 확정 시 HEX 값이 교체될 수 있습니다.</p>
+  <h3 class="sub reveal">Neutral — Gray Scale</h3>
+  <p class="sub-lead reveal">GLUCK의 공식 뉴트럴 스케일입니다. 배경·보더·본문 텍스트의 위계에 사용합니다.</p>
   <div class="gray-strip reveal">
     <div class="g"><div class="fill" style="background:#FFFFFF"></div><div class="inf"><div class="tk">white</div><button class="hx" data-copy="#FFFFFF">#FFFFFF</button></div></div>
     <div class="g"><div class="fill" style="background:#F6F7F9"></div><div class="inf"><div class="tk">superlight</div><button class="hx" data-copy="#F6F7F9">#F6F7F9</button></div></div>
@@ -984,7 +974,7 @@ footer { background: #1A1D24; color: #fff; padding: 64px 0 36px; margin-top: 96p
     <h2>타이포그래피</h2>
     <p class="lead">
       GLUCK의 공식 서체는 <b>SUIT</b> 단일 패밀리입니다. 한글·영문·숫자 모두 SUIT를 사용하며,
-      별도의 영문 폰트 분기를 두지 않습니다. 데이터·코드 표기에는 보조로 JetBrains Mono를 사용합니다.
+      별도의 영문 폰트 분기를 두지 않습니다. 수치는 tnum(고정폭 숫자)으로 자릿수를 정렬합니다.
     </p>
   </div>
 
@@ -1148,8 +1138,8 @@ footer { background: #1A1D24; color: #fff; padding: 64px 0 36px; margin-top: 96p
     </div>
   </div>
 
-  <h3 class="sub reveal" id="clearspace" data-spy>클리어 스페이스 &amp; 최소 사용 크기 <span class="badge draft">Draft · 확정 예정</span></h3>
-  <p class="sub-lead reveal">공식 CI 수치가 확정되기 전의 권장 초안입니다. CI 가이드라인 보드의 비례를 기준으로 도출했으며, 브랜드팀 확정 시 수치가 갱신됩니다.</p>
+  <h3 class="sub reveal" id="clearspace" data-spy>클리어 스페이스</h3>
+  <p class="sub-lead reveal">CI 가이드라인 보드의 비례를 기준으로 하는 로고 여백 규정입니다.</p>
   <div class="cs-wrap reveal">
     <div class="cs-panel">
       <div class="cs-frame">
@@ -1159,12 +1149,8 @@ footer { background: #1A1D24; color: #fff; padding: 64px 0 36px; margin-top: 96p
     </div>
     <div class="cs-side">
       <div class="cs-item">
-        <div class="k">클리어 스페이스 <span class="badge draft">Draft</span></div>
-        <div class="d">워드마크 캡 하이트(= G의 높이, 1G)를 단위로, 사방에 1G 이상의 여백을 확보합니다. CI 보드의 패널 비례(로고 높이 대비 상하 여백)에서 도출한 권장안입니다.</div>
-      </div>
-      <div class="cs-item">
-        <div class="k">최소 사용 크기 <span class="badge draft">확정 예정</span></div>
-        <div class="d">디지털·인쇄 최소 크기는 공식 확정 전입니다. 확정 시 이 영역에 게시됩니다.</div>
+        <div class="k">클리어 스페이스</div>
+        <div class="d">워드마크 캡 하이트(= G의 높이, 1G)를 단위로, 사방에 1G 이상의 여백을 확보합니다. 어떤 요소도 이 영역 안에 배치하지 않습니다.</div>
       </div>
       <div class="cs-item">
         <div class="k">소면적 대응</div>
@@ -1210,15 +1196,14 @@ footer { background: #1A1D24; color: #fff; padding: 64px 0 36px; margin-top: 96p
       </div>
       <div class="mk-ch">
         <div class="hd">Channels</div>
-        <div class="ch-row"><span class="k">Website</span><a class="v" href="https://www.gluck.co.kr" target="_blank" rel="noopener">gluck.co.kr</a></div>
+        <div class="ch-row"><span class="k">Website</span><a class="v" href="https://glucklab.com" target="_blank" rel="noopener">glucklab.com</a></div>
         <div class="ch-row"><span class="k">회사 소개</span><a class="v" href="https://glucklab.com/company/company_sub01.html?lang=ko" target="_blank" rel="noopener">glucklab.com/company</a></div>
-        <div class="ch-row"><span class="k">실시간 견적</span><a class="v" href="https://glucklab.com" target="_blank" rel="noopener">GLUCKLAB.COM</a></div>
-        <div class="ch-row"><span class="k">문의 (견적·검토)</span><a class="v" href="mailto:customer@gluck.co.kr">customer@gluck.co.kr</a></div>
+        <div class="ch-row"><span class="k">문의</span><a class="v" href="mailto:support@glucklab.com">support@glucklab.com</a></div>
         <div class="ch-row"><span class="k">Instagram</span><a class="v" href="https://www.instagram.com/gluck_3dprinting" target="_blank" rel="noopener">@gluck_3dprinting</a></div>
         <div class="ch-row"><span class="k">SCULPIA (아트·문화재)</span><a class="v" href="https://www.instagram.com/sculpia_official" target="_blank" rel="noopener">@sculpia_official</a></div>
         <div style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap">
           <a class="btn btn-tertiary btn-sm" href="brand-assets/GLUCK_Brand_Assets.zip" download>GLUCK Logo Pack <span class="fmt">ZIP</span></a>
-          <span class="btn btn-sm" aria-disabled="true">회사소개서 — 준비 중</span>
+          <a class="btn btn-tertiary btn-sm" href="https://glucklab.com/brochure/" target="_blank" rel="noopener">회사소개서 보기 ↗</a>
         </div>
       </div>
     </div>
@@ -1248,7 +1233,7 @@ footer { background: #1A1D24; color: #fff; padding: 64px 0 36px; margin-top: 96p
 
   <p class="dl-note reveal">
     자산 디렉터리: <code>brand-assets/logo</code> · <code>brand-assets/guideline</code> —
-    Factory·Product 실사, CI Guidelines PDF, 프레젠테이션 템플릿은 자산 확정 후 추가됩니다.
+    Factory·Product 실사, CI Guidelines PDF, 프레젠테이션 템플릿은 준비되는 대로 추가됩니다.
   </p>
 </section>
 

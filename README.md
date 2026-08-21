@@ -42,9 +42,9 @@ brand-assets/
 |---|---|---|
 | — | 브랜드 소개 | 워드마크 히어로 · Precision / Production / Scale |
 | 01 | 로고 | 시그니처 워드마크 · 컬러웨이 4종 · G 심볼 · 라운드/탭 아이콘 |
-| 02 | 브랜드 컬러 | Signature Main Blue `#0059FF` · 파생 블루 · 그레이(Draft) · 클릭 복사 |
+| 02 | 브랜드 컬러 | Signature Main Blue `#0059FF` · 파생 블루 · 그레이 스케일 · 클릭 복사 |
 | 03 | 타이포그래피 | SUIT 단일 패밀리 · Type Scale 실문장 스펙시멘 |
-| 04 | 로고 사용 규정 | DO 4종 / DON'T 9종 시각 예시 · 클리어 스페이스 (Draft) |
+| 04 | 로고 사용 규정 | DO 4종 / DON'T 9종 시각 예시 · 클리어 스페이스(1G) |
 | 05 | 미디어 키트 | GLUCK 표준 소개문안 · Key Facts · 채널 · 로고 팩 |
 | 06 | 다운로드 센터 | 전체 자산 다운로드 (데이터 분리 렌더) |
 
@@ -54,7 +54,8 @@ brand-assets/
 - **G 심볼**은 파비콘·앱 아이콘 등 아이콘 컨텍스트 전용
 - **키 컬러** `#0059FF` Signature Main Blue (C86 M63 Y0 K0 / R0 G89 B255)
 - 컬러웨이 4종: Black on Light · White on Dark · White on Blue · Blue on Light
-- **서체**: SUIT (400–800) 단일 패밀리 + JetBrains Mono (데이터 보조)
+- **서체**: SUIT (400–800) 단일 패밀리 — 라벨·수치 포함 전체 통일 (숫자는 tnum 정렬)
+- **클리어 스페이스**: 사방 1G(워드마크 캡 하이트) 이상 · **그레이 스케일**: 확정값
 
 ## 자산 관리
 
@@ -63,9 +64,10 @@ brand-assets/
 - 파일명 규칙: `GLUCK_{자산}_{변형}.{포맷}`
 - 회사 수치 출처: **GLUCK 표준 소개문안 (2026.08)** — 설립 2013 · SLA 50기 · 누적 1,000,000+ 파트 · 파주 제1·제2팩토리
 
-## Draft / 확정 예정 (브랜드팀)
+## 추가 예정 자산
 
-Gray Scale HEX(운영 추정값) · Clear Space(1G 초안) · 최소 사용 크기 · Pantone 지정값 · 실사 라이브러리 · CI Guidelines PDF · 회사소개서
+실사 사진 라이브러리 · CI Guidelines PDF · 프레젠테이션 템플릿 (준비되는 대로 다운로드 센터에 추가)
+회사소개서: https://glucklab.com/brochure/ · 문의: support@glucklab.com
 
 ---
 
