@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLUCK Brand Resource Center</title>
+<meta name="description" content="산업용 SLA 3D프린팅 기반 양산 제조 파트너 GLUCK의 공식 브랜드 리소스 센터. 로고, 컬러, 타이포그래피, 사용 가이드라인과 브랜드 자산 다운로드.">
+<link rel="icon" href="https://gluck3dprinting.github.io/gluck-brand-resource-center/brand-assets/logo/GLUCK_Favicon.ico">
+<link rel="apple-touch-icon" href="https://gluck3dprinting.github.io/gluck-brand-resource-center/brand-assets/logo/GLUCK_Favicon.png">
+<style>
+  /* GLUCK Brand Resource Center 래퍼 — glucklab.com/brand/ 에 이 파일 하나만 업로드하면 끝.
+     콘텐츠는 GitHub Pages(BASE)에서 불러오며, 이후 업데이트 시 이 파일은 수정할 필요가 없습니다. */
+  html, body { margin: 0; height: 100%; background: #0F1115; }
+  iframe { border: 0; width: 100%; height: 100%; display: block; }
+  .fallback {
+    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: #9AA1AD; font: 14px/1.6 'SUIT', -apple-system, 'Malgun Gothic', sans-serif; text-align: center;
+  }
+  .fallback a { color: #4585FF; }
+</style>
+</head>
+<body>
+<iframe id="app" title="GLUCK Brand Resource Center" allow="clipboard-write"></iframe>
+<noscript>
+  <div class="fallback">
+    <p>브라우저에서 JavaScript가 꺼져 있습니다.<br>
+    <a href="https://gluck3dprinting.github.io/gluck-brand-resource-center/">여기를 눌러 직접 열기</a></p>
+  </div>
+</noscript>
+<script>
+/* ① 콘텐츠 원본 — GitHub Pages (사내에서 git push 하면 1~2분 내 자동 반영) */
+var BASE = "https://gluck3dprinting.github.io/gluck-brand-resource-center/";
+
+(function () {
+  var iframe = document.getElementById("app");
+
+  /* ③ 갱신 시각을 ?v= 로 붙여 캐시를 우회하고, 주소창 해시(#color 등)를 그대로 전달 */
+  function load(v) {
+    iframe.src = BASE + "?v=" + encodeURIComponent(v) + (location.hash || "");
+  }
+
+  /* ② HEAD 요청으로 Last-Modified(갱신 시각) 조회 — 실패 시 현재 시각으로 대체 */
+  fetch(BASE + "index.html", { method: "HEAD", cache: "no-store" })
+    .then(function (r) { load(r.headers.get("Last-Modified") || Date.now()); })
+    .catch(function () { load(Date.now()); });
+
+  /* ④ 페이지 내부 스크롤 위치 → 주소창 해시 동기화 (glucklab.com/brand/#color 형태 유지) */
+  window.addEventListener("message", function (e) {
+    if (e.origin !== "https://gluck3dprinting.github.io") return;
+    var d = e.data && e.data.gluckBrand;
+    if (d && d.hash) history.replaceState(null, "", d.hash);
+  });
+})();
+</script>
+</body>
+</html>

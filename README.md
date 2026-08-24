@@ -5,6 +5,16 @@
 >
 > 기준: GLUCK Design System v1.1 (2026.07) · CI 가이드라인 보드 2종
 
+## 주소 체계
+
+| 구분 | 주소 | 설명 |
+|---|---|---|
+| **대외 공식** | `https://glucklab.com/brand/` | 홈페이지 도메인 연결 주소 (래퍼 → 최신본, `handoff/` 참조) |
+| 최신본 (GitHub Pages) | https://gluck3dprinting.github.io/gluck-brand-resource-center/ | 항상 최신 — `main` push 시 1~2분 내 자동 반영 |
+| 섹션 앵커 | `#identity` `#signature` `#symbol` `#round` `#color` `#typography` `#usage` `#clearspace` `#mediakit` `#downloads` | 두 주소 모두 동일하게 동작 |
+
+`handoff/index.html`은 glucklab.com에 1회 업로드하는 래퍼(5KB), `handoff/DEVELOPER.md`는 내부 개발자 전달 문서입니다.
+
 ## 미리보기
 
 ```bash

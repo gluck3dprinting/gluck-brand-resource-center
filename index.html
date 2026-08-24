@@ -1442,6 +1442,10 @@ function setActive(id) {
     a.classList.toggle('active', on);
     if (on && a.closest('.subnav')) a.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduceMotion ? 'auto' : 'smooth' });
   });
+  /* glucklab.com 래퍼(iframe) 임베드 시 주소창 해시 동기화 */
+  if (window.parent !== window) {
+    try { window.parent.postMessage({ gluckBrand: { hash: '#' + id } }, '*'); } catch (e) {}
+  }
 }
 let spyTick = false;
 function runSpy() {
