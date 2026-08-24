@@ -63,7 +63,7 @@ brand-assets/
 
 ## 6. 수치·회사 정보 출처 (인용 전 확인)
 
-- Key Facts (설립 2013 · SLA 50기 · 누적 1,000,000+ 파트 · 파주 팩토리 2곳): **GLUCK 표준 소개문안 (2026.08)** 기준 — 페이지에 출처 문구 표기됨. 최신 수치 확인 후 인용
+- Key Facts (설립 2013 · SLA 45기 · 누적 1,000,000+ 파트 · 파주 팩토리 2곳): 2026.08 기준 공식 수치 — 페이지에 기준 문구 표기됨. 최신 수치 확인 후 인용. 표준 소개문안(2026.08 확정본)은 수치 없이 기술·역량 중심 서술
 - 푸터 회사 정보 (대표자·사업자번호·주소·연락처): Design System v1.1 표준 푸터 기준
 - 채널: glucklab.com (홈페이지) · glucklab.com/company (회사 소개) · glucklab.com/brochure (회사소개서) · support@glucklab.com (문의) · @gluck_3dprinting · @sculpia_official
 - 고객사명·NDA 사례는 노출 동의 확인 전 게시 금지 → 페이지에 미포함
