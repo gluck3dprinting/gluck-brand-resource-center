@@ -30,11 +30,24 @@ python -m http.server 8734
 - **컬러 클릭 복사 · 표준 소개문안 전문 복사**
 - **다운로드 센터** — 모든 링크가 실제 파일로 연결 (SVG·PNG·ZIP)
 
+## 자산 등록 관리 (admin.html)
+
+`admin.html`은 자산 데이터를 손코딩 없이 등록·수정하는 관리 화면입니다.
+공용 디자인 시스템 **gluck-ui**(gluck.css + gluck.js)로 구성했으며, 사내 소재(TDS)·조직도 시스템의 등록 UX 패턴(모달 등록 폼 · 스티키 라이브 프리뷰 · 더티 추적 · Ctrl+S · 토스트)을 따릅니다.
+
+- **등록**: [자산 등록] → 파일을 드롭하면 이름·포맷·용량 자동 입력 → 검증(파일명 규칙·중복·필수값) → 목록 반영
+- **미리보기**: 우측 패널에 공개 페이지(다크)와 동일한 모습으로 실시간 렌더
+- **저장**: [변경사항 저장] → 브라우저가 `brand-assets/assets.js`에 직접 저장(File System Access) 또는 다운로드 후 교체 → git push
+- **안전장치**: 저장 전 초안 localStorage 보존·복원, 이탈 경고, 삭제 시 안내 문구
+- Key Facts(미디어 키트 수치)도 같은 화면에서 편집
+
 ## 구조
 
 ```
-index.html                  ← Brand Resource Center 페이지 (단일 HTML, 의존성 없음)
+index.html                  ← Brand Resource Center 페이지 (공개, 단일 HTML)
+admin.html                  ← 자산 등록 관리 (gluck-ui 기반)
 brand-assets/
+├── assets.js               ← ★ 자산 데이터 단일 소스 (두 페이지 공용)
 ├── logo/                   ← 로고 자산 — CI 보드 원본 벡터에서 추출
 │   ├── GLUCK_Wordmark_{Black|White|Blue}.{svg|png}
 │   ├── GLUCK_Wordmark_currentColor.svg      (웹 인라인용)
