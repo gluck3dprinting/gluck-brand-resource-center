@@ -2,7 +2,7 @@
 
 > 페이지: `../index.html`
 > 기준: GLUCK Design System v1.1 (2026.07) · CI 가이드라인 보드 2종
-> 최종 갱신: 2026.09 (v1.2 — 자산 등록 관리·assets.js 분리)
+> 최종 갱신: 2026.08
 
 ## 1. 디렉터리 구조
 
@@ -42,29 +42,14 @@ brand-assets/
 
 ## 4. 페이지 데이터 구조
 
-자산 데이터의 단일 소스는 **`brand-assets/assets.js`**(`GLUCK_BRAND` 객체)이며 공개 페이지(index.html)와 등록 관리(admin.html)가 함께 읽습니다.
+다운로드 센터는 HTML 하단 `GLUCK_BRAND` JS 객체에서 렌더링됩니다.
+**자산 추가·교체 시 절차:**
 
-```
-GLUCK_BRAND = {
-  version, updated,                 // 데이터 기준일 (발행 시 자동 갱신)
-  assetDir: "brand-assets/",
-  package: { path, size, desc },    // 전체 ZIP — 발행 시 재생성 옵션
-  keyFacts: [{ k, v, plus? }],
-  groups: [{ title, note, dir,      // dir = 이 그룹 파일이 들어갈 폴더 (logo/ · guideline/ · photo/ …)
-    items: [{ name, desc, added?,   // added = 등록일 (45일 이내 NEW 표시)
-      prev: "img"|"wm"|"sym", prevBg, prevColor?, src?,
-      formats: [{ ext, path, size }] }] }]
-}
-```
-
-**자산 추가·교체 절차 (권장 — admin.html):**
-
-1. `admin.html` → [자산 등록] 또는 그룹 위로 파일 드롭 → 이름·포맷·용량 자동 입력 → 목록에 반영
-2. 우상단 **GitHub에 발행** → 실물 파일 + assets.js + ZIP이 한 커밋으로 push (토큰 1회 등록 필요)
-3. 1~2분 뒤 공개 페이지 반영. 토큰이 없으면 [assets.js 다운로드] 후 저장소에 복사해 git push
-
-직접 편집할 때는 `assets.js`의 `groups[].items[]`에 항목을 추가하면 됩니다.
-로고 원본이 바뀌면 index.html의 인라인 `<symbol id="lg-wordmark">` `<symbol id="lg-symbol">` 패스만 교체하면 페이지 전체에 반영됩니다.
+1. 파일을 `brand-assets/` 규칙에 맞게 저장
+2. `GLUCK_BRAND.groups`에 항목 추가 (name / desc / formats[path, size])
+3. ZIP 재생성 후 용량 갱신
+4. 섹션 본문(로고 프리뷰 등)은 인라인 `<symbol id="lg-wordmark">` `<symbol id="lg-symbol">`을 참조 —
+   로고 원본이 바뀌면 이 두 심볼의 패스만 교체하면 페이지 전체에 반영됨
 
 ## 5. 확정 항목 · 추가 예정 자산
 

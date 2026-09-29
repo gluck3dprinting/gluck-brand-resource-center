@@ -175,10 +175,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 .sn-group a:hover { color: var(--text); background: var(--surface-2); }
 .sn-group a.active { color: var(--accent-strong); background: var(--accent-bg); font-weight: 700; }
-.sn-foot { margin-top: 28px; padding: 14px 12px 0; border-top: 1px solid var(--border);
-  font-size: 12px; line-height: 1.7; color: var(--text-2); font-variant-numeric: tabular-nums; display: grid; gap: 2px; }
-.sn-foot a { color: var(--text-2); display: inline-flex; align-items: center; gap: 4px; width: fit-content; }
-.sn-foot a:hover { color: var(--accent-text); }
 
 main { min-width: 0; padding-bottom: 40px; }
 
@@ -244,9 +240,7 @@ h3.sub { scroll-margin-top: calc(var(--topbar-h) + 20px); }
 .sec-head h2 { font-size: 30px; line-height: 1.3; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 14px; }
 .sec-head .lead { font-size: 16.5px; line-height: 1.65; color: var(--text-2); max-width: 640px; }
 
-h3.sub { font-size: 21px; font-weight: 700; letter-spacing: -0.015em; margin: 64px 0 8px;
-  display: flex; align-items: center; gap: 14px; }
-h3.sub::after { content: ""; flex: 1; height: 1px; background: var(--border); } /* 헤딩-헤어라인 (소재 시스템 이디엄) */
+h3.sub { font-size: 21px; font-weight: 700; letter-spacing: -0.015em; margin: 64px 0 8px; }
 .sec-head + h3.sub { margin-top: 0; }
 h3.sub + div { margin-top: 12px; } /* 리드 문장 없는 헤딩 아래 여백 */
 .sub-lead { font-size: 15px; color: var(--text-2); margin-bottom: 26px; max-width: 640px; }
@@ -504,11 +498,7 @@ section.hero.sec { padding: 76px 0 0; }
 .dl-prev.dark { background: #1A1D24; }
 .dl-prev.blue { background: #0059FF; }
 .dl-prev.light { background: #fff; }
-.dl-name { font-size: 14.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; }
-.dl-new { font-family: var(--font-mono); font-size: 9.5px; font-weight: 700; letter-spacing: .1em; color: var(--accent-strong);
-  background: var(--accent-bg); border-radius: 999px; padding: 2px 7px; line-height: 1.3; }
-.dl-empty { padding: 22px 20px; font-size: 13px; color: var(--text-2); }
-.dl-updated { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-2); margin-top: 12px; font-variant-numeric: tabular-nums; }
+.dl-name { font-size: 14.5px; font-weight: 700; }
 .dl-desc { font-size: 12.5px; color: var(--text-2); margin-top: 2px; }
 .dl-acts { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .dl-all {
@@ -533,7 +523,6 @@ footer { background: #1A1D24; color: #fff; padding: 64px 0 36px; margin-top: 96p
 .ft-right .hd { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.82); }
 .ft-right a { color: rgba(255,255,255,0.72); }
 .ft-right a:hover { color: #fff; }
-.ft-right a.ft-admin { margin-top: 6px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.12); font-size: 12px; color: rgba(255,255,255,0.5); }
 .ft-bottom {
   margin-top: 48px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,0.12);
   display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
@@ -690,10 +679,6 @@ footer { background: #1A1D24; color: #fff; padding: 64px 0 36px; margin-top: 96p
       <a href="#downloads">다운로드 센터</a>
     </div>
   </nav>
-  <div class="sn-foot">
-    <span id="snCounts">자산 · 파일 집계 중</span>
-    <a href="admin.html" title="자산 등록 관리 (담당자용)">자산 등록 관리 <span aria-hidden="true">→</span></a>
-  </div>
 </aside>
 
 <main>
@@ -1207,7 +1192,7 @@ footer { background: #1A1D24; color: #fff; padding: 64px 0 36px; margin-top: 96p
         <div class="ch-row"><span class="k">Instagram</span><a class="v" href="https://www.instagram.com/gluck_3dprinting" target="_blank" rel="noopener">@gluck_3dprinting</a></div>
         <div class="ch-row"><span class="k">SCULPIA (아트·문화재)</span><a class="v" href="https://www.instagram.com/sculpia_official" target="_blank" rel="noopener">@sculpia_official</a></div>
         <div style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap">
-          <a class="btn btn-tertiary btn-sm" href="brand-assets/GLUCK_Brand_Assets.zip" data-pk-link download>GLUCK Logo Pack <span class="fmt">ZIP</span></a>
+          <a class="btn btn-tertiary btn-sm" href="brand-assets/GLUCK_Brand_Assets.zip" download>GLUCK Logo Pack <span class="fmt">ZIP</span></a>
           <a class="btn btn-tertiary btn-sm" href="https://glucklab.com/brochure/" target="_blank" rel="noopener">회사소개서 보기 ↗</a>
         </div>
       </div>
@@ -1224,7 +1209,6 @@ footer { background: #1A1D24; color: #fff; padding: 64px 0 36px; margin-top: 96p
       모든 브랜드 자산을 한곳에서 내려받을 수 있습니다.
       파일명은 <b>GLUCK_{자산}_{변형}.{포맷}</b> 규칙을 따릅니다.
     </p>
-    <p class="dl-updated" id="dlUpdated"></p>
   </div>
 
   <div id="dlRoot" class="reveal"></div>
@@ -1232,9 +1216,9 @@ footer { background: #1A1D24; color: #fff; padding: 64px 0 36px; margin-top: 96p
   <div class="dl-all reveal">
     <div>
       <div class="t">Download All Brand Assets</div>
-      <div class="d" id="pkDesc">로고 전체(SVG·PNG) + 파비콘 + CI 가이드라인 보드 원본 — GLUCK_Brand_Assets.zip · 510KB</div>
+      <div class="d">로고 전체(SVG·PNG) + 파비콘 + CI 가이드라인 보드 원본 — GLUCK_Brand_Assets.zip · 510KB</div>
     </div>
-    <a class="btn btn-primary btn-lg" id="pkLink" href="brand-assets/GLUCK_Brand_Assets.zip" download>전체 자산 다운로드 <span class="fmt">ZIP</span></a>
+    <a class="btn btn-primary btn-lg" href="brand-assets/GLUCK_Brand_Assets.zip" download>전체 자산 다운로드 <span class="fmt">ZIP</span></a>
   </div>
 
   <p class="dl-note reveal">
@@ -1267,7 +1251,6 @@ footer { background: #1A1D24; color: #fff; padding: 64px 0 36px; margin-top: 96p
         <a href="#usage">로고 사용 규정</a>
         <a href="#mediakit">미디어 키트</a>
         <a href="#downloads">전체 자산 다운로드</a>
-        <a href="admin.html" class="ft-admin">자산 등록 관리 (담당자)</a>
       </div>
     </div>
     <div class="ft-bottom">
@@ -1279,9 +1262,76 @@ footer { background: #1A1D24; color: #fff; padding: 64px 0 36px; margin-top: 96p
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<!-- 자산 데이터 단일 소스 — 등록·수정은 admin.html (또는 이 파일 직접 편집) -->
-<script src="brand-assets/assets.js"></script>
 <script>
+/* ============================================================
+   Brand Asset Data — UI와 분리된 자산 데이터.
+   로고·CI 자산·수치 변경 시 이 객체와 brand-assets/ 파일만 갱신하면 됩니다.
+   ============================================================ */
+const GLUCK_BRAND = {
+  version: "1.1",
+  basedOn: "GLUCK Design System v1.1 (2026.07) · CI 가이드라인 보드",
+  assetDir: "brand-assets/",
+  /* 회사 수치 — 출처: GLUCK 표준 소개문안 (2026.08). 갱신 시 여기만 수정 */
+  keyFacts: [
+    { k: "설립", v: "2013" },
+    { k: "산업용 SLA 3D프린터", v: "45기" },
+    { k: "누적 생산 파트", v: "1,000,000", plus: true },
+    { k: "팩토리", v: "파주 제1·제2팩토리" }
+  ],
+  groups: [
+    {
+      title: "Logo — Signature Wordmark",
+      note: "기본 로고 · viewBox 407 × 87",
+      items: [
+        { name: "GLUCK_Wordmark_Black", desc: "블랙 — 라이트 배경용", prev: "wm", prevBg: "light", prevColor: "#000",
+          formats: [ { ext: "SVG", path: "logo/GLUCK_Wordmark_Black.svg", size: "2KB" }, { ext: "PNG", path: "logo/GLUCK_Wordmark_Black.png", size: "27KB" } ] },
+        { name: "GLUCK_Wordmark_White", desc: "화이트 — 다크·블루 배경용", prev: "wm", prevBg: "dark", prevColor: "#fff",
+          formats: [ { ext: "SVG", path: "logo/GLUCK_Wordmark_White.svg", size: "2KB" }, { ext: "PNG", path: "logo/GLUCK_Wordmark_White.png", size: "34KB" } ] },
+        { name: "GLUCK_Wordmark_Blue", desc: "Signature Main Blue #0059FF — 라이트 배경용", prev: "wm", prevBg: "light", prevColor: "#0059FF",
+          formats: [ { ext: "SVG", path: "logo/GLUCK_Wordmark_Blue.svg", size: "2KB" }, { ext: "PNG", path: "logo/GLUCK_Wordmark_Blue.png", size: "27KB" } ] },
+        { name: "GLUCK_Wordmark_currentColor", desc: "웹 인라인용 — fill: currentColor", prev: "wm", prevBg: "light", prevColor: "#B3B8C2",
+          formats: [ { ext: "SVG", path: "logo/GLUCK_Wordmark_currentColor.svg", size: "2KB" } ] }
+      ]
+    },
+    {
+      title: "Logo — Symbol (G)",
+      note: "아이콘 컨텍스트 전용 · viewBox 81 × 87",
+      items: [
+        { name: "GLUCK_Symbol_Black", desc: "블랙 — 라이트 배경용", prev: "sym", prevBg: "light", prevColor: "#000",
+          formats: [ { ext: "SVG", path: "logo/GLUCK_Symbol_Black.svg", size: "1KB" }, { ext: "PNG", path: "logo/GLUCK_Symbol_Black.png", size: "13KB" } ] },
+        { name: "GLUCK_Symbol_White", desc: "화이트 — 다크 배경용", prev: "sym", prevBg: "dark", prevColor: "#fff",
+          formats: [ { ext: "SVG", path: "logo/GLUCK_Symbol_White.svg", size: "1KB" }, { ext: "PNG", path: "logo/GLUCK_Symbol_White.png", size: "15KB" } ] }
+      ]
+    },
+    {
+      title: "Logo — Round · Tab Icon",
+      note: "지정 아이콘 컨테이너",
+      items: [
+        { name: "GLUCK_RoundLogo_Black", desc: "블랙 서클 + 화이트 워드마크", prev: "img", src: "logo/GLUCK_RoundLogo_Black.png", prevBg: "light",
+          formats: [ { ext: "SVG", path: "logo/GLUCK_RoundLogo_Black.svg", size: "2KB" }, { ext: "PNG", path: "logo/GLUCK_RoundLogo_Black.png", size: "58KB" } ] },
+        { name: "GLUCK_RoundLogo_White", desc: "화이트 서클 + 블랙 워드마크", prev: "img", src: "logo/GLUCK_RoundLogo_White.png", prevBg: "light",
+          formats: [ { ext: "SVG", path: "logo/GLUCK_RoundLogo_White.svg", size: "2KB" }, { ext: "PNG", path: "logo/GLUCK_RoundLogo_White.png", size: "58KB" } ] },
+        { name: "GLUCK_TabIcon_Black", desc: "앱·탭 아이콘 — 1080 × 1080", prev: "img", src: "logo/GLUCK_TabIcon_Black_1080.png", prevBg: "light",
+          formats: [ { ext: "PNG", path: "logo/GLUCK_TabIcon_Black_1080.png", size: "22KB" } ] },
+        { name: "GLUCK_Favicon", desc: "공식 파비콘 — 다크 라운드 스퀘어 + 화이트 G (PNG 1024 · ICO 16~256px 7단계)", prev: "img", src: "logo/GLUCK_Favicon.png", prevBg: "light",
+          formats: [ { ext: "PNG", path: "logo/GLUCK_Favicon.png", size: "163KB" }, { ext: "ICO", path: "logo/GLUCK_Favicon.ico", size: "52KB" } ] },
+        { name: "GLUCK_Symbol_G_826x888", desc: "G 심볼 래스터 원본 — 826 × 888", prev: "img", src: "logo/GLUCK_Symbol_G_826x888.png", prevBg: "light",
+          formats: [ { ext: "PNG", path: "logo/GLUCK_Symbol_G_826x888.png", size: "17KB" } ] }
+      ]
+    },
+    {
+      title: "Brand Guide — CI 가이드라인 보드",
+      note: "원본 보드 (1920 × 1080)",
+      items: [
+        { name: "GLUCK_CI_Guideline_Logo_Icon", desc: "Round Logo · Tab Icon 규정 보드", prev: "sym", prevBg: "light", prevColor: "#000",
+          formats: [ { ext: "SVG", path: "guideline/GLUCK_CI_Guideline_Logo_Icon.svg", size: "69KB" } ] },
+        { name: "GLUCK_CI_Guideline_Logo_on_Background", desc: "배경별 컬러웨이 규정 보드", prev: "wm", prevBg: "blue", prevColor: "#fff",
+          formats: [ { ext: "SVG", path: "guideline/GLUCK_CI_Guideline_Logo_on_Background.svg", size: "80KB" } ] }
+      ]
+    }
+  ]
+};
+
 /* ============ Download Center 렌더 ============ */
 (function renderDownloads() {
   const root = document.getElementById('dlRoot');
@@ -1304,31 +1354,12 @@ footer { background: #1A1D24; color: #fff; padding: 64px 0 36px; margin-top: 96p
       const acts = item.formats.map(f =>
         `<a class="btn btn-outline btn-sm" href="${GLUCK_BRAND.assetDir}${f.path}" download>${f.ext} <span class="fmt">${f.size}</span></a>`
       ).join('');
-      const isNew = item.added && (Date.now() - new Date(item.added).getTime()) < 45 * 86400000;
-      rows += `<div class="dl-row">${prev}<div><span class="dl-name">${item.name}${isNew ? '<span class="dl-new">NEW</span>' : ''}</span><div class="dl-desc">${item.desc}</div></div><div class="dl-acts">${acts}</div></div>`;
+      rows += `<div class="dl-row">${prev}<div><span class="dl-name">${item.name}</span><div class="dl-desc">${item.desc}</div></div><div class="dl-acts">${acts}</div></div>`;
     });
-    g.innerHTML = `<div class="dl-group-hd"><span class="t">${group.title}</span><span class="c">${group.note} · ${count} FILES</span></div><div class="dl-list">${rows || '<div class="dl-empty">준비 중인 자산입니다.</div>'}</div>`;
+    g.innerHTML = `<div class="dl-group-hd"><span class="t">${group.title}</span><span class="c">${group.note} · ${count} FILES</span></div><div class="dl-list">${rows}</div>`;
     frag.appendChild(g);
   });
   root.appendChild(frag);
-  const upd = document.getElementById('dlUpdated');
-  if (upd && GLUCK_BRAND.updated) upd.textContent = `데이터 기준일 ${GLUCK_BRAND.updated}`;
-  const pk = GLUCK_BRAND.package;
-  if (pk) {
-    const d = document.getElementById('pkDesc'); const l = document.getElementById('pkLink');
-    if (d) d.textContent = `${pk.desc || '전체 브랜드 자산'} — ${pk.path} · ${pk.size}`;
-    if (l) l.href = GLUCK_BRAND.assetDir + pk.path;
-    document.querySelectorAll('[data-pk-link]').forEach(el => { el.href = GLUCK_BRAND.assetDir + pk.path; });
-  }
-})();
-
-/* ============ 사이드바 자산 집계 ============ */
-(function snCounts() {
-  const el = document.getElementById('snCounts');
-  if (!el) return;
-  let items = 0, files = 0;
-  GLUCK_BRAND.groups.forEach(g => { items += g.items.length; g.items.forEach(it => { files += it.formats.length; }); });
-  el.textContent = `자산 ${items}개 · 파일 ${files}건`;
 })();
 
 /* ============ Key Facts 렌더 ============ */
