@@ -42,18 +42,14 @@ brand-assets/
 
 ## 4. 페이지 데이터 구조
 
-자산 데이터의 단일 소스는 **`brand-assets/assets.js`** (`GLUCK_BRAND` 객체)이며,
-공개 페이지(index.html)와 등록 관리(admin.html)가 함께 사용합니다.
+다운로드 센터는 HTML 하단 `GLUCK_BRAND` JS 객체에서 렌더링됩니다.
+**자산 추가·교체 시 절차:**
 
-**자산 추가·교체 절차 (권장 — admin.html):**
-
-1. `admin.html` → [자산 등록] → 파일 드롭(이름·포맷·용량 자동) → 목록 반영
-2. 실물 파일을 `brand-assets/logo/`(보드는 `guideline/`)에 배치
-3. [변경사항 저장] → `assets.js` 저장(또는 다운로드 후 교체) → git push
-4. ZIP 재생성은 선택 (전체 패키지 갱신 시)
-
-직접 편집할 때는 `assets.js`의 `groups[].items[]`에 항목을 추가하면 됩니다.
-로고 원본이 바뀌면 index.html의 인라인 `<symbol id="lg-wordmark">` `<symbol id="lg-symbol">` 패스만 교체하면 페이지 전체에 반영됩니다.
+1. 파일을 `brand-assets/` 규칙에 맞게 저장
+2. `GLUCK_BRAND.groups`에 항목 추가 (name / desc / formats[path, size])
+3. ZIP 재생성 후 용량 갱신
+4. 섹션 본문(로고 프리뷰 등)은 인라인 `<symbol id="lg-wordmark">` `<symbol id="lg-symbol">`을 참조 —
+   로고 원본이 바뀌면 이 두 심볼의 패스만 교체하면 페이지 전체에 반영됨
 
 ## 5. 확정 항목 · 추가 예정 자산
 
