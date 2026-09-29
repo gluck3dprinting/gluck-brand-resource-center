@@ -28,13 +28,34 @@ python -m http.server 8734
 - **다크 모드 기본** — 다크가 기본 테마, 수동 토글로 라이트 전환 가능 (선택값 localStorage 저장)
 - **상단 배너** — Main Blue 그라데이션 + 노이즈 텍스처, "Scalable Mass Production" + 회사 소개 CTA (glucklab.com)
 - **컬러 클릭 복사 · 표준 소개문안 전문 복사**
-- **다운로드 센터** — 모든 링크가 실제 파일로 연결 (SVG·PNG·ZIP)
+- **다운로드 센터** — 모든 링크가 실제 파일로 연결 (SVG·PNG·ZIP) · 데이터 기준일 · 최근 등록(NEW) 표시
+- **자산 등록 관리 (`admin.html`)** — 담당자용. 파일을 드롭해 등록하고 **GitHub에 발행** 한 번으로 공개 페이지에 반영
+
+## 자산 등록 관리 (admin.html)
+
+`admin.html`은 자산 데이터를 손코딩 없이 등록·수정·발행하는 담당자 화면입니다.
+사내 공용 디자인 시스템 **gluck-ui**(gluck.css + gluck.js)로 구성했고, 소재(TDS)·조직도 시스템의 등록 UX
+(좌측 그룹 목록 · 우측 스티키 라이브 미리보기 · 파일 드롭 자동 입력 · 더티 추적 · Ctrl+S · 토스트)를 그대로 따릅니다.
+
+| 기능 | 내용 |
+|---|---|
+| 등록 | [자산 등록] 또는 그룹 위로 파일 드롭 → 이름·포맷·용량 자동 입력 → 검증(파일명 규칙·중복·필수값) → 목록 반영 |
+| 미리보기 | 등록 폼 안과 우측 패널에 **공개 페이지(다크)와 동일한 모습**으로 실시간 렌더 |
+| 정리 | 드래그로 순서 변경·그룹 이동, 복제, 그룹 추가/이름·폴더 수정, Key Facts 편집 |
+| **발행 A (권장)** | 사이드바 **연결 설정**에 GitHub 토큰 1회 등록 → **GitHub에 발행** → 실물 파일 + `assets.js` + ZIP 패키지가 **한 커밋**으로 push → 1~2분 뒤 Pages 반영. 다른 사용자가 먼저 발행했으면 충돌 안내 |
+| 발행 B (수동) | `assets.js`(+드롭한 파일) 다운로드 → 저장소에 복사 → git push |
+| 안전장치 | 저장 전 초안 localStorage 보존·복원, 이탈 경고, 삭제 시 실물 파일은 저장소에 유지 |
+
+토큰: GitHub → Settings → Developer settings → **Fine-grained tokens** → Repository access: 이 저장소만 → Permissions: **Contents: Read and write**.
+토큰은 브라우저(localStorage)에만 저장되며 GitHub API 호출 외에는 전송되지 않습니다.
 
 ## 구조
 
 ```
-index.html                  ← Brand Resource Center 페이지 (단일 HTML, 의존성 없음)
+index.html                  ← Brand Resource Center 페이지 (공개 · 단일 HTML)
+admin.html                  ← 자산 등록 관리 (담당자 · gluck-ui 기반 · GitHub 발행)
 brand-assets/
+├── assets.js               ← ★ 자산 데이터 단일 소스 (두 페이지 공용)
 ├── logo/                   ← 로고 자산 — CI 보드 원본 벡터에서 추출
 │   ├── GLUCK_Wordmark_{Black|White|Blue}.{svg|png}
 │   ├── GLUCK_Wordmark_currentColor.svg      (웹 인라인용)
@@ -69,7 +90,7 @@ brand-assets/
 
 ## 자산 관리
 
-- 다운로드 센터·Key Facts는 `index.html` 하단의 **`GLUCK_BRAND` JS 객체**에서 렌더링 — 자산 추가·수치 변경 시 데이터만 수정
+- 다운로드 센터·Key Facts·사이드바 집계는 **`brand-assets/assets.js`**(`GLUCK_BRAND`)에서 렌더링 — `admin.html`에서 편집·발행 (직접 편집도 가능)
 - 로고 원본 교체 시 인라인 `<symbol id="lg-wordmark">` / `<symbol id="lg-symbol">` 패스만 교체하면 페이지 전체 반영
 - 파일명 규칙: `GLUCK_{자산}_{변형}.{포맷}`
 - 회사 수치 (2026.08 기준 공식 수치): 설립 2013 · SLA 45기 · 누적 1,000,000+ 파트 · 파주 제1·제2팩토리

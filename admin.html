@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="admin">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>자산 등록 관리 — GLUCK Brand Resource Center</title>
+<meta name="description" content="GLUCK 브랜드 자산 등록·수정·발행 관리 화면 (담당자용)">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#F7F8FA">
+<link rel="icon" href="brand-assets/logo/GLUCK_Favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="brand-assets/logo/GLUCK_Favicon.png">
+<!-- 공용 디자인 시스템 (gluck-ui) — 이 페이지의 첫 실사용 소비자 -->
+<link rel="stylesheet" href="https://gluck3dprinting.github.io/gluck-ui/dist/gluck.css">
+<style>
+/* ============================================================
+   BRC Admin — 페이지 전용 스타일. 컴포넌트는 .gluck-* 그대로,
+   페이지 고유 요소만 .brc-* 접두어. 값은 전부 시맨틱 토큰.
+   레이아웃 이디엄: 소재 시스템(좌 폼 · 우 스티키 미리보기) + 조직도(그룹 목록 · 드래그 순서)
+   ============================================================ */
+.brc-split { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: var(--space-5); align-items: start; }
+.brc-right { position: sticky; top: var(--space-5); display: grid; gap: var(--space-4); }
+@media (max-width: 1240px) { .brc-split { grid-template-columns: 1fr; } .brc-right { position: static; } }
+
+/* 섹션 헤딩 — 헤어라인 이디엄 */
+.brc-hd { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3); min-height: 32px; }
+.brc-hd h2 { font: var(--font-h4); letter-spacing: -.01em; white-space: nowrap; }
+.brc-hd .note { font: var(--font-caption); color: var(--color-text-tertiary); white-space: nowrap; }
+.brc-hd::after { content: ""; flex: 1; height: 1px; background: var(--color-border-default); }
+.brc-hd .gluck-btn, .brc-hd .gluck-menu { flex: none; }
+.brc-group { margin-bottom: var(--space-8); }
+.brc-group.is-dropover .gluck-card { box-shadow: inset 0 0 0 2px var(--color-action-primary); }
+
+/* 자산 시연면 — 공개 페이지와 동일 인상. 테마와 무관한 고정 컬러 (lint-ignore) */
+.brc-mini { width: 72px; height: 44px; border: var(--border-width) solid var(--color-border-default); border-radius: var(--radius-xs);
+  display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+.brc-mini svg { width: 68%; height: auto; fill: currentColor; }
+.brc-mini.sym svg { width: 30%; }
+.brc-mini img { width: 58%; height: 58%; object-fit: contain; }
+.brc-mini.light, .brc-stage.light { background: #fff; }     /* lint-ignore: 자산 시연면 */
+.brc-mini.dark,  .brc-stage.dark  { background: #1A1D24; }  /* lint-ignore: 자산 시연면 */
+.brc-mini.blue,  .brc-stage.blue  { background: #0059FF; }  /* lint-ignore: 자산 시연면 */
+.brc-mini.gray,  .brc-stage.gray  { background: #F6F7F9; }  /* lint-ignore: 자산 시연면 */
+.brc-stage { height: 150px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md);
+  border: var(--border-width) solid var(--color-border-default); position: relative; overflow: hidden; }
+.brc-stage svg { width: 56%; height: auto; fill: currentColor; }
+.brc-stage.sym svg { width: 22%; }
+.brc-stage img { width: 46%; height: 70%; object-fit: contain; }
+.brc-stage .tag { position: absolute; top: 10px; left: 12px; font: var(--font-label); letter-spacing: .1em; text-transform: uppercase; color: #6B7280; } /* lint-ignore */
+.brc-stage.dark .tag, .brc-stage.blue .tag { color: rgba(255,255,255,.6); }
+
+/* 공개 페이지 행 미리보기 (다크 서브트리 안) */
+.brc-prow { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: var(--space-3); align-items: center;
+  padding: var(--space-3); background: var(--color-bg-surface); border: var(--border-width) solid var(--color-border-default); border-radius: var(--radius-md); }
+.brc-prow .nm { font: var(--font-body-sm); font-weight: var(--font-weight-bold); color: var(--color-text-primary); display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.brc-prow .ds { font: var(--font-caption); font-weight: 400; color: var(--color-text-tertiary); margin-top: 2px; }
+.brc-prow .fmts { grid-column: 1 / -1; display: flex; gap: var(--space-1-5); flex-wrap: wrap; }
+.brc-prow .fmts .gluck-btn { pointer-events: none; }
+.brc-newtag { font: var(--font-label); font-size: 9.5px; letter-spacing: .1em; color: var(--color-text-brand); background: var(--color-bg-brand-subtle); border-radius: var(--radius-pill); padding: 1px 7px; }
+
+/* Key Facts 편집·미리보기 */
+.brc-fact-edit { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto 36px; gap: var(--space-2); align-items: center; }
+.brc-facts-prev .row { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-4); padding: var(--space-2) 0; border-top: var(--border-width) solid var(--color-border-default); }
+.brc-facts-prev .row:first-child { border-top: 0; }
+.brc-facts-prev .k { font: var(--font-caption); font-weight: 400; color: var(--color-text-tertiary); }
+.brc-facts-prev .v { font: var(--font-body-sm); font-weight: var(--font-weight-bold); color: var(--color-text-primary); }
+.brc-facts-prev .v .plus { color: var(--color-text-brand); }
+
+/* 포맷(파일) 편집 행 */
+.brc-frow { display: grid; grid-template-columns: 76px minmax(0, 1fr) 84px 92px 36px; gap: var(--space-2); align-items: center; }
+.brc-frow-hd { font: var(--font-label); color: var(--color-text-tertiary); letter-spacing: .04em; }
+
+/* 모달 2열 (폼 · 라이브 미리보기) */
+.brc-modal-grid { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: var(--space-5); align-items: start; }
+@media (max-width: 767px) { .brc-modal-grid { grid-template-columns: 1fr; } }
+.brc-modal-prev { position: sticky; top: 0; display: grid; gap: var(--space-3); }
+.brc-modal-prev .lbl { font: var(--font-label); letter-spacing: .06em; color: var(--color-text-tertiary); text-transform: uppercase; }
+
+/* 변경 내역 */
+.brc-changes { display: grid; gap: var(--space-1-5); }
+.brc-change { display: flex; align-items: center; gap: var(--space-2); font: var(--font-caption); font-weight: 400; color: var(--color-text-secondary); }
+.brc-change .gluck-badge { flex: none; min-width: 42px; justify-content: center; }
+.brc-change .nm { color: var(--color-text-primary); font-weight: var(--font-weight-medium); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.brc-change .sz { margin-left: auto; color: var(--color-text-tertiary); white-space: nowrap; }
+
+/* GitHub 연결 패널 (소재 시스템의 NAS 패널 이디엄) */
+.brc-conn { margin: var(--space-3) var(--space-2) 0; padding: var(--space-3); border: var(--border-width) solid var(--color-border-default); border-radius: var(--radius-md); background: var(--color-bg-subtle); display: grid; gap: var(--space-1); }
+.brc-conn .row { display: flex; align-items: center; gap: var(--space-2); font: var(--font-caption); color: var(--color-text-primary); }
+.brc-conn .dot { width: 8px; height: 8px; border-radius: var(--radius-circle); background: var(--color-text-disabled); flex: none; }
+.brc-conn .dot.ok  { background: var(--color-status-success-text); box-shadow: 0 0 0 3px var(--color-status-success-bg); }
+.brc-conn .dot.bad { background: var(--color-status-danger-text);  box-shadow: 0 0 0 3px var(--color-status-danger-bg); }
+.brc-conn .detail { font: var(--font-label); font-weight: 500; letter-spacing: 0; color: var(--color-text-tertiary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.brc-conn .gluck-btn { justify-self: start; margin-top: var(--space-1); }
+.gluck-shell.is-collapsed .brc-conn { display: none; }
+
+/* 발행 진행 */
+.brc-steps { display: grid; gap: var(--space-2); }
+.brc-step { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: var(--space-2); align-items: center; font: var(--font-body-sm); color: var(--color-text-secondary); }
+.brc-step .ic { width: 20px; height: 20px; border-radius: var(--radius-circle); display: grid; place-items: center; border: var(--border-width) solid var(--color-border-strong); color: var(--color-text-tertiary); }
+.brc-step.is-doing .ic { border-color: var(--color-action-primary); color: var(--color-action-primary); }
+.brc-step.is-done .ic { background: var(--color-status-success-text); border-color: var(--color-status-success-text); color: var(--color-text-on-brand); }
+.brc-step.is-fail .ic { background: var(--color-status-danger-text); border-color: var(--color-status-danger-text); color: var(--color-text-on-brand); }
+.brc-step .ic .gluck-icon { width: 12px; height: 12px; stroke-width: 2.5; }
+.brc-step .st { font: var(--font-caption); color: var(--color-text-tertiary); }
+.brc-step.is-done { color: var(--color-text-primary); }
+
+/* 드래그 */
+.gluck-table tr[draggable] .brc-grip { color: var(--color-text-disabled); cursor: grab; }
+.gluck-table tr.is-dragging { opacity: .4; }
+.gluck-table tr.is-over-before td { box-shadow: inset 0 2px 0 var(--color-action-primary); }
+.gluck-table td { vertical-align: middle; }
+.brc-name-cell .ds { font: var(--font-caption); font-weight: 400; color: var(--color-text-tertiary); margin-top: 1px; white-space: normal; }
+.brc-name-cell .nm { display: inline-flex; align-items: center; gap: var(--space-2); }
+.brc-token-row { display: flex; gap: var(--space-2); align-items: center; }
+.brc-token-row .gluck-input { flex: 1; }
+.brc-ol { margin: 0; padding-left: 18px; display: grid; gap: var(--space-1); font: var(--font-body-sm); color: var(--color-text-secondary); }
+.brc-ol b { color: var(--color-text-primary); }
+.brc-kbd { font: var(--font-label); letter-spacing: 0; padding: 1px 6px; border: var(--border-width) solid var(--color-border-default); border-bottom-width: 2px; border-radius: var(--radius-xs); background: var(--color-bg-surface); color: var(--color-text-secondary); }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">본문으로 건너뛰기</a>
+<!-- gluck-ui 아이콘 스프라이트(Lucide) + 로고 심볼 — 크로스 도메인 <use> 제약으로 인라인 -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></symbol>
+  <symbol id="i-arrow-up-down" viewBox="0 0 24 24"><path d="m21 16-4 4-4-4" /><path d="M17 20V4" /><path d="m3 8 4-4 4 4" /><path d="M7 4v16" /></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M10.268 21a2 2 0 0 0 3.464 0" /><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" /></symbol>
+  <symbol id="i-building-2" viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" /><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" /><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" /><path d="M10 6h4" /><path d="M10 10h4" /><path d="M10 14h4" /><path d="M10 18h4" /></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M8 2v4" /><path d="M16 2v4" /><rect width="18" height="18" x="3" y="4" rx="2" /><path d="M3 10h18" /></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></symbol>
+  <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" /></symbol>
+  <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></symbol>
+  <symbol id="i-chevron-up" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6" /></symbol>
+  <symbol id="i-circle-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line x1="12" x2="12.01" y1="16" y2="16" /></symbol>
+  <symbol id="i-circle-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></symbol>
+  <symbol id="i-clipboard-list" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /><path d="M12 11h4" /><path d="M12 16h4" /><path d="M8 11h.01" /><path d="M8 16h.01" /></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></symbol>
+  <symbol id="i-ellipsis" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" /></symbol>
+  <symbol id="i-external-link" viewBox="0 0 24 24"><path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /><circle cx="12" cy="12" r="3" /></symbol>
+  <symbol id="i-factory" viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" /><path d="M17 18h1" /><path d="M12 18h1" /><path d="M7 18h1" /></symbol>
+  <symbol id="i-file-text" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M10 9H8" /><path d="M16 13H8" /><path d="M16 17H8" /></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" /></symbol>
+  <symbol id="i-inbox" viewBox="0 0 24 24"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12" /><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" /></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></symbol>
+  <symbol id="i-layout-dashboard" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1" /><rect width="7" height="5" x="14" y="3" rx="1" /><rect width="7" height="9" x="14" y="12" rx="1" /><rect width="7" height="5" x="3" y="16" rx="1" /></symbol>
+  <symbol id="i-loader-circle" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></symbol>
+  <symbol id="i-log-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" x2="9" y1="12" y2="12" /></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14" /></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></symbol>
+  <symbol id="i-package" viewBox="0 0 24 24"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z" /><path d="M12 22V12" /><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7" /><path d="m7.5 4.27 9 5.15" /></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /><path d="m15 5 4 4" /></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14" /><path d="M12 5v14" /></symbol>
+  <symbol id="i-refresh-cw" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M8 16H3v5" /></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></symbol>
+  <symbol id="i-table-2" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18" /></symbol>
+  <symbol id="i-trash-2" viewBox="0 0 24 24"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></symbol>
+  <symbol id="i-triangle-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /><path d="M12 9v4" /><path d="M12 17h.01" /></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" /></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></symbol>
+  <symbol id="lg-wordmark" viewBox="0 0 407 87"><g transform="translate(-289 -348)"><path d="M588.063 377.88C586.933 369.624 579.938 363.338 572.001 363.338C557.51 363.338 552.044 377.272 552.044 391.814C552.044 406.356 557.51 419.578 572.001 419.578C581.886 419.578 587.456 412.014 588.671 400.992H604.314C602.66 421.799 590.116 434.916 572.001 434.916C549.364 434.916 535.898 415.743 535.898 391.793C535.898 367.843 549.364 348 572.001 348C588.063 348 601.717 358.707 603.707 377.88H588.063Z" fill="currentColor"/><path d="M637.946 384.376V374.402V349.991H619.895V432.968H637.946V409.122V406.231V384.376Z" fill="currentColor"/><path d="M660.479 382.741L692.54 349.991H670.028L640.417 381.736V403.695L648.291 395.649L673.002 432.968H695.639L660.479 382.741Z" fill="currentColor"/><path d="M427.423 417.608H410.565V349.991H392.514V432.968H431.234V421.401C431.234 419.306 429.517 417.629 427.423 417.629V417.608Z" fill="currentColor"/><path d="M515.585 349.991H501.345V401.579C501.345 414.025 497.199 419.599 484.341 419.599C469.745 419.599 467.441 410.652 467.441 401.579V349.991H449.39V401.579C449.39 424.23 462.143 434.937 484.341 434.937C506.539 434.937 519.397 423.999 519.397 401.579V353.804C519.397 351.688 517.7 349.991 515.585 349.991Z" fill="currentColor"/><path d="M345.898 386.576L331.364 401.223H349.144C351.259 401.223 352.955 402.92 352.955 405.036V405.078C352.955 408.556 352.746 415.262 352.746 415.262C352.746 415.262 350.463 419.41 332.809 419.41C316.056 419.41 307.68 405.246 307.68 391.207C307.68 376.455 317.836 363.108 334.61 363.108C351.384 363.108 355.803 371.259 355.803 371.259L367.949 358.54C367.949 358.54 358.023 348 334.924 348C308.769 348 289 366.188 289 391.207C289 416.225 306.654 435 332.809 435C358.965 435 369.917 427.247 369.917 427.247V386.597H345.898V386.576Z" fill="currentColor"/></g></symbol>
+  <symbol id="lg-symbol" viewBox="0 0 81 87"><g transform="translate(-289 -348)"> <path d="M345.898 386.576L331.364 401.223H349.144C351.259 401.223 352.955 402.92 352.955 405.036V405.078C352.955 408.556 352.746 415.262 352.746 415.262C352.746 415.262 350.463 419.41 332.809 419.41C316.056 419.41 307.68 405.246 307.68 391.207C307.68 376.455 317.836 363.108 334.61 363.108C351.384 363.108 355.803 371.259 355.803 371.259L367.949 358.54C367.949 358.54 358.023 348 334.924 348C308.769 348 289 366.188 289 391.207C289 416.225 306.654 435 332.809 435C358.965 435 369.917 427.247 369.917 427.247V386.597H345.898V386.576Z" fill="currentColor"/> </g></symbol>
+</svg>
+
+<div class="gluck-shell" id="shell">
+  <aside class="gluck-sidebar">
+    <div class="gluck-sidebar__brand">
+      <a class="gluck-logo" href="index.html" aria-label="GLUCK Brand Resource Center 공개 페이지로">
+        <svg class="gluck-sidebar__logo-full" viewBox="0 0 407 87" aria-hidden="true"><use href="#lg-wordmark"/></svg>
+        <svg class="gluck-sidebar__logo-mini" viewBox="0 0 81 87" aria-hidden="true"><use href="#lg-symbol"/></svg>
+      </a>
+      <span class="gluck-env-badge gluck-sidebar__env">BRAND</span>
+    </div>
+    <nav aria-label="관리 메뉴">
+      <div class="gluck-sidebar__group">자산 관리</div>
+      <a href="#assets" aria-current="page" data-nav><svg class="gluck-icon" aria-hidden="true"><use href="#i-package"/></svg><span>자산 목록</span><span class="gluck-count" id="navCount">0</span></a>
+      <a href="#facts" data-nav><svg class="gluck-icon" aria-hidden="true"><use href="#i-clipboard-list"/></svg><span>Key Facts</span></a>
+      <a href="#publish" data-nav><svg class="gluck-icon" aria-hidden="true"><use href="#i-upload"/></svg><span>발행 방법</span></a>
+      <div class="gluck-sidebar__group">바로가기</div>
+      <a href="index.html" target="_blank" rel="noopener"><svg class="gluck-icon" aria-hidden="true"><use href="#i-external-link"/></svg><span>공개 페이지 열기</span></a>
+      <a href="https://github.com/gluck3dprinting/gluck-brand-resource-center" target="_blank" rel="noopener"><svg class="gluck-icon" aria-hidden="true"><use href="#i-globe"/></svg><span>GitHub 저장소</span></a>
+      <a href="https://gluck3dprinting.github.io/gluck-ui/" target="_blank" rel="noopener"><svg class="gluck-icon" aria-hidden="true"><use href="#i-layout-dashboard"/></svg><span>공용 디자인 시스템</span></a>
+    </nav>
+    <div class="brc-conn" id="connPanel" aria-live="polite">
+      <div class="row"><span class="dot" id="connDot"></span><strong id="connTitle">GitHub 미연결</strong></div>
+      <div class="detail" id="connDetail">발행하려면 연결이 필요합니다</div>
+      <button class="gluck-btn gluck-btn--outline gluck-btn--xs" data-modal="ghModal" id="btnConn"><svg class="gluck-icon" aria-hidden="true"><use href="#i-lock"/></svg> 연결 설정</button>
+    </div>
+    <div class="gluck-sidebar__footer">
+      <span class="gluck-avatar" aria-hidden="true">G</span>
+      <div><strong>Brand Resource</strong><span id="footCounts">자산 0개 · 파일 0건</span></div>
+    </div>
+  </aside>
+
+  <div class="gluck-shell__main">
+    <div class="gluck-topbar">
+      <button class="gluck-btn gluck-btn--ghost gluck-btn--icon gluck-btn--sm" data-shell-toggle aria-expanded="true" aria-label="사이드바 접기"><svg class="gluck-icon" aria-hidden="true"><use href="#i-menu"/></svg></button>
+      <nav class="gluck-breadcrumb" aria-label="현재 위치"><a href="index.html">Brand Resource Center</a><svg class="gluck-icon" aria-hidden="true"><use href="#i-chevron-right"/></svg><span aria-current="page">자산 등록 관리</span></nav>
+      <div class="gluck-topbar__actions">
+        <span class="gluck-text-caption gluck-text-tertiary" id="dirtyHint" hidden>저장되지 않은 변경 <b id="dirtyCount" class="t-num">0</b>건</span>
+        <button class="gluck-btn gluck-btn--outline gluck-btn--sm" id="btnDownload" title="토큰 없이 쓰는 방법: 파일을 내려받아 저장소에 교체 후 git push"><svg class="gluck-icon" aria-hidden="true"><use href="#i-download"/></svg> assets.js 다운로드</button>
+        <button class="gluck-btn gluck-btn--primary gluck-btn--sm" id="btnPublish"><svg class="gluck-icon" aria-hidden="true"><use href="#i-upload"/></svg> <span id="btnPublishLabel">GitHub에 발행</span></button>
+      </div>
+    </div>
+
+    <main class="gluck-page" id="main">
+      <div class="gluck-page-header">
+        <div>
+          <h1 class="gluck-page-title">브랜드 자산 등록 관리</h1>
+          <p>파일을 끌어다 놓아 자산을 등록하고, <strong>발행</strong> 한 번으로 공개 리소스 센터에 반영합니다. 실물 파일·데이터(assets.js)·ZIP 패키지가 한 커밋으로 올라갑니다.</p>
+        </div>
+        <div class="gluck-btn-group">
+          <button class="gluck-btn gluck-btn--outline" id="btnAddGroup"><svg class="gluck-icon" aria-hidden="true"><use href="#i-plus"/></svg> 그룹 추가</button>
+          <button class="gluck-btn gluck-btn--primary" id="btnAdd"><svg class="gluck-icon" aria-hidden="true"><use href="#i-plus"/></svg> 자산 등록</button>
+        </div>
+      </div>
+
+      <div id="notices" class="gluck-stack" style="--stack-gap: var(--space-2)"></div>
+
+      <div class="gluck-kpi-grid">
+        <div class="gluck-card gluck-kpi"><span class="gluck-kpi__label">자산 항목</span><span class="gluck-kpi__value" id="kpiItems">0</span><span class="gluck-kpi__delta gluck-text-tertiary" id="kpiGroups">그룹 0</span></div>
+        <div class="gluck-card gluck-kpi"><span class="gluck-kpi__label">다운로드 파일</span><span class="gluck-kpi__value" id="kpiFiles">0</span><span class="gluck-kpi__delta gluck-text-tertiary" id="kpiPkg">패키지 —</span></div>
+        <div class="gluck-card gluck-kpi"><span class="gluck-kpi__label">발행 대기 변경</span><span class="gluck-kpi__value" id="kpiPending">0</span><span class="gluck-kpi__delta gluck-text-tertiary" id="kpiPendingFiles">업로드 파일 0</span></div>
+        <div class="gluck-card gluck-kpi"><span class="gluck-kpi__label">데이터 기준일</span><span class="gluck-kpi__value" id="kpiUpdated" style="font-size: 20px">—</span><span class="gluck-kpi__delta gluck-text-tertiary" id="kpiLastPub">마지막 발행 —</span></div>
+      </div>
+
+      <div class="brc-split">
+        <div>
+          <section id="assets" aria-label="자산 목록"><div id="groupsRoot"></div></section>
+
+          <section id="facts" aria-label="Key Facts" class="brc-group">
+            <div class="brc-hd"><h2>Key Facts</h2><span class="note">미디어 키트 수치 · 갱신 시 기준일 확인</span></div>
+            <div class="gluck-card">
+              <div class="gluck-stack" style="--stack-gap: var(--space-2)" id="factsRoot"></div>
+              <div style="margin-top: var(--space-4)"><button class="gluck-btn gluck-btn--outline gluck-btn--sm" id="btnAddFact"><svg class="gluck-icon" aria-hidden="true"><use href="#i-plus"/></svg> 항목 추가</button></div>
+            </div>
+          </section>
+
+          <section id="publish" aria-label="발행 방법" class="brc-group">
+            <div class="brc-hd"><h2>발행 방법</h2><span class="note">둘 중 하나</span></div>
+            <div class="gluck-grid" style="--grid-gap: var(--space-4)">
+              <div class="gluck-card" style="--span: 6">
+                <div class="gluck-row" style="justify-content: space-between; margin-bottom: var(--space-2)"><strong>A · GitHub에 발행 (권장)</strong><span class="gluck-badge gluck-badge--success gluck-badge--no-dot">자동</span></div>
+                <ol class="brc-ol">
+                  <li>사이드바 <b>연결 설정</b>에서 GitHub 토큰 1회 등록</li>
+                  <li>자산 등록·수정 후 우상단 <b>GitHub에 발행</b> (또는 <span class="brc-kbd">Ctrl</span>+<span class="brc-kbd">S</span>)</li>
+                  <li>업로드 파일 · assets.js · ZIP 패키지가 한 커밋으로 올라가고 1~2분 뒤 공개 페이지에 반영</li>
+                </ol>
+              </div>
+              <div class="gluck-card" style="--span: 6">
+                <div class="gluck-row" style="justify-content: space-between; margin-bottom: var(--space-2)"><strong>B · 파일 내려받아 직접 반영</strong><span class="gluck-badge gluck-badge--no-dot">수동</span></div>
+                <ol class="brc-ol">
+                  <li>우상단 <b>assets.js 다운로드</b> → 저장소 <b>brand-assets/assets.js</b> 교체</li>
+                  <li>등록 폼에 드롭한 실물 파일을 <b>brand-assets/logo/</b>(보드는 guideline/)에 복사</li>
+                  <li>git commit · push — 삭제한 자산의 실물 파일은 두 방법 모두 저장소에 남습니다</li>
+                </ol>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <aside class="brc-right" aria-label="미리보기·변경 내역">
+          <div class="gluck-card">
+            <div class="brc-hd" style="margin-bottom: var(--space-3)"><h2>공개 페이지 미리보기</h2></div>
+            <div data-theme="dark" style="background: var(--color-bg-page); padding: var(--space-4); border-radius: var(--radius-md)">
+              <div class="gluck-stack" style="--stack-gap: var(--space-3)" id="previewRoot"></div>
+            </div>
+          </div>
+          <div class="gluck-card">
+            <div class="brc-hd" style="margin-bottom: var(--space-3)"><h2>변경 내역</h2><span class="note" id="changesNote">없음</span></div>
+            <div class="brc-changes" id="changesRoot"></div>
+          </div>
+          <div class="gluck-card">
+            <div class="brc-hd" style="margin-bottom: var(--space-3)"><h2>Key Facts 미리보기</h2></div>
+            <div data-theme="dark" style="background: var(--color-bg-page); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md)"><div class="brc-facts-prev" id="factsPrev"></div></div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ================= 자산 등록/수정 ================= -->
+<dialog class="gluck-modal" data-size="lg" id="assetModal" aria-labelledby="modalTitle" style="--modal-w: 880px">
+  <div class="gluck-modal__header">
+    <div><h2 class="gluck-modal__title" id="modalTitle">자산 등록</h2><p class="gluck-text-caption gluck-text-tertiary" style="margin-top: 2px">파일을 먼저 놓으면 이름·포맷·용량이 자동으로 채워집니다.</p></div>
+    <button class="gluck-btn gluck-btn--ghost gluck-btn--icon gluck-btn--sm gluck-modal__close" data-close aria-label="닫기"><svg class="gluck-icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+  </div>
+  <div class="gluck-modal__body">
+    <div id="modalAlert" hidden></div>
+    <div class="brc-modal-grid">
+      <div>
+        <label class="gluck-dropzone" id="dropzone" style="margin-bottom: var(--space-4); padding: var(--space-5)">
+          <input type="file" class="sr-only" id="dzInput" multiple accept=".svg,.png,.jpg,.jpeg,.webp,.ico,.pdf,.zip,.ai,.eps,.pptx,.key">
+          <svg class="gluck-icon gluck-icon--lg" aria-hidden="true"><use href="#i-upload"/></svg>
+          <span><strong>파일 선택</strong> 또는 여기로 드래그 — 같은 자산의 SVG·PNG를 한 번에 놓아도 됩니다</span>
+          <span class="gluck-text-caption gluck-text-tertiary">파일명 규칙 GLUCK_{자산}_{변형}.{포맷} · 최대 20MB</span>
+        </label>
+        <div class="gluck-form-grid">
+          <div class="gluck-field"><label class="gluck-label is-required" for="fGroup">그룹</label><select class="gluck-select" id="fGroup"></select></div>
+          <div class="gluck-field"><label class="gluck-label is-required" for="fName">자산 이름</label><input class="gluck-input" id="fName" placeholder="예: GLUCK_Wordmark_Black" maxlength="60" autocomplete="off" spellcheck="false"><span class="gluck-help">확장자 제외 · 공개 페이지에 그대로 표시</span></div>
+          <div class="gluck-field is-full"><label class="gluck-label is-required" for="fDesc">설명</label><input class="gluck-input" id="fDesc" placeholder="예: 블랙 — 라이트 배경용" maxlength="90" autocomplete="off"></div>
+          <div class="gluck-field"><label class="gluck-label" for="fPrev">미리보기 형태</label>
+            <select class="gluck-select" id="fPrev"><option value="img">업로드한 이미지</option><option value="wm">워드마크 벡터 (내장)</option><option value="sym">G 심볼 벡터 (내장)</option></select></div>
+          <div class="gluck-field"><label class="gluck-label" for="fPrevBg">미리보기 배경</label>
+            <select class="gluck-select" id="fPrevBg"><option value="light">라이트 (화이트)</option><option value="gray">라이트 그레이</option><option value="dark">다크</option><option value="blue">Main Blue</option></select></div>
+          <div class="gluck-field" id="rowPrevColor" hidden><label class="gluck-label" for="fPrevColor">로고 컬러</label>
+            <select class="gluck-select" id="fPrevColor"><option value="#000">블랙</option><option value="#fff">화이트</option><option value="#0059FF">Main Blue</option><option value="#B3B8C2">그레이 (참고용)</option></select></div>
+          <div class="gluck-field" id="rowPrevSrc"><label class="gluck-label" for="fPrevSrc">미리보기 이미지</label><select class="gluck-select" id="fPrevSrc"></select><span class="gluck-help">등록한 파일 중 하나 (PNG·SVG·WEBP 권장)</span></div>
+          <div class="gluck-field"><label class="gluck-label" for="fAdded">등록일</label><input class="gluck-input" id="fAdded" type="date"><span class="gluck-help">45일 이내면 공개 페이지에 NEW 표시</span></div>
+        </div>
+
+        <fieldset class="gluck-fieldset" style="margin-top: var(--space-5)">
+          <legend style="font: var(--font-body-sm); font-weight: 600">다운로드 파일 <span class="gluck-text-tertiary" id="fmtCount"></span></legend>
+          <div class="gluck-stack" style="--stack-gap: var(--space-2)">
+            <div class="brc-frow brc-frow-hd" aria-hidden="true"><span>포맷</span><span>경로 (brand-assets/ 기준)</span><span>용량</span><span>상태</span><span></span></div>
+            <div id="fmtRows" class="gluck-stack" style="--stack-gap: var(--space-2)"></div>
+            <div><button type="button" class="gluck-btn gluck-btn--outline gluck-btn--xs" id="btnAddFmt"><svg class="gluck-icon" aria-hidden="true"><use href="#i-plus"/></svg> 저장소에 이미 있는 파일 추가</button></div>
+          </div>
+        </fieldset>
+      </div>
+      <div class="brc-modal-prev">
+        <span class="lbl">공개 페이지에서 보이는 모습</span>
+        <div data-theme="dark" style="background: var(--color-bg-page); padding: var(--space-3); border-radius: var(--radius-md)"><div id="modalPrev"></div></div>
+        <span class="gluck-text-caption gluck-text-tertiary">라이트·다크 두 테마에서 확인하려면 배경을 바꿔 보세요.</span>
+      </div>
+    </div>
+  </div>
+  <div class="gluck-modal__footer">
+    <button class="gluck-btn gluck-btn--danger-outline" id="btnModalDelete" hidden style="margin-right: auto"><svg class="gluck-icon" aria-hidden="true"><use href="#i-trash-2"/></svg> 삭제</button>
+    <button class="gluck-btn gluck-btn--tertiary" data-close>취소</button>
+    <button class="gluck-btn gluck-btn--primary" id="btnModalSave">목록에 반영</button>
+  </div>
+</dialog>
+
+<!-- ================= 그룹 추가/편집 ================= -->
+<dialog class="gluck-modal" data-size="sm" id="groupModal" aria-labelledby="groupTitle">
+  <div class="gluck-modal__header"><h2 class="gluck-modal__title" id="groupTitle">그룹 추가</h2><button class="gluck-btn gluck-btn--ghost gluck-btn--icon gluck-btn--sm gluck-modal__close" data-close aria-label="닫기"><svg class="gluck-icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+  <div class="gluck-modal__body">
+    <div id="groupAlert" hidden></div>
+    <div class="gluck-stack" style="--stack-gap: var(--space-4)">
+      <div class="gluck-field"><label class="gluck-label is-required" for="gTitle">그룹 이름</label><input class="gluck-input" id="gTitle" placeholder="예: Photo — 팩토리 실사" maxlength="60"></div>
+      <div class="gluck-field"><label class="gluck-label" for="gNote">부제</label><input class="gluck-input" id="gNote" placeholder="예: 보도용 · 3000px 이상" maxlength="80"></div>
+      <div class="gluck-field"><label class="gluck-label is-required" for="gDir">파일 폴더</label><input class="gluck-input" id="gDir" placeholder="예: photo/" list="dirList"><datalist id="dirList"><option value="logo/"><option value="guideline/"><option value="photo/"><option value="template/"><option value="document/"></datalist><span class="gluck-help">brand-assets/ 아래 폴더 — 이 그룹에 드롭한 파일이 들어갑니다</span></div>
+    </div>
+  </div>
+  <div class="gluck-modal__footer">
+    <button class="gluck-btn gluck-btn--danger-outline" id="btnGroupDelete" hidden style="margin-right: auto"><svg class="gluck-icon" aria-hidden="true"><use href="#i-trash-2"/></svg> 그룹 삭제</button>
+    <button class="gluck-btn gluck-btn--tertiary" data-close>취소</button>
+    <button class="gluck-btn gluck-btn--primary" id="btnGroupSave">저장</button>
+  </div>
+</dialog>
+
+<!-- ================= GitHub 연결 ================= -->
+<dialog class="gluck-modal" id="ghModal" aria-labelledby="ghTitle">
+  <div class="gluck-modal__header"><div><h2 class="gluck-modal__title" id="ghTitle">GitHub 연결</h2><p class="gluck-text-caption gluck-text-tertiary" style="margin-top:2px">발행에 쓰는 토큰은 이 브라우저에만 저장되며 어디에도 전송되지 않습니다 (GitHub API 호출에만 사용).</p></div><button class="gluck-btn gluck-btn--ghost gluck-btn--icon gluck-btn--sm gluck-modal__close" data-close aria-label="닫기"><svg class="gluck-icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+  <div class="gluck-modal__body">
+    <div id="ghAlert" hidden></div>
+    <div class="gluck-stack" style="--stack-gap: var(--space-4)">
+      <div class="gluck-card" style="padding: var(--space-4); background: var(--color-bg-subtle)">
+        <strong class="gluck-text-body-sm">토큰 만들기 (1회 · 약 1분)</strong>
+        <ol class="brc-ol" style="margin-top: var(--space-2)">
+          <li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com › Settings › Developer settings › Fine-grained tokens › Generate</a> (gluck3dprinting 계정)</li>
+          <li>Repository access → <b>Only select repositories</b> → <b>gluck-brand-resource-center</b></li>
+          <li>Permissions → Repository permissions → <b>Contents: Read and write</b> (Pages: Read는 선택)</li>
+          <li>Generate 후 표시되는 <b>github_pat_…</b> 값을 아래에 붙여 넣기</li>
+        </ol>
+      </div>
+      <div class="gluck-field"><label class="gluck-label is-required" for="ghToken">토큰</label>
+        <div class="brc-token-row"><input class="gluck-input" id="ghToken" type="password" placeholder="github_pat_…" autocomplete="off" spellcheck="false"><button type="button" class="gluck-btn gluck-btn--outline gluck-btn--icon" id="ghToggle" aria-label="토큰 표시/숨김" aria-pressed="false"><svg class="gluck-icon" aria-hidden="true"><use href="#i-eye"/></svg></button></div></div>
+      <label class="gluck-check"><input type="checkbox" id="ghRemember" checked> 이 브라우저에 기억 (공용 PC라면 끄세요 — 탭을 닫으면 사라집니다)</label>
+      <div id="ghResult"></div>
+    </div>
+  </div>
+  <div class="gluck-modal__footer">
+    <button class="gluck-btn gluck-btn--danger-outline" id="ghDisconnect" hidden style="margin-right:auto">연결 해제</button>
+    <button class="gluck-btn gluck-btn--tertiary" data-close>취소</button>
+    <button class="gluck-btn gluck-btn--primary" id="ghSave">연결 테스트 후 저장</button>
+  </div>
+</dialog>
+
+<!-- ================= 발행 ================= -->
+<dialog class="gluck-modal" id="pubModal" aria-labelledby="pubTitle">
+  <div class="gluck-modal__header"><h2 class="gluck-modal__title" id="pubTitle">GitHub에 발행</h2><button class="gluck-btn gluck-btn--ghost gluck-btn--icon gluck-btn--sm gluck-modal__close" data-close aria-label="닫기" id="pubClose"><svg class="gluck-icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+  <div class="gluck-modal__body">
+    <div id="pubAlert" hidden></div>
+    <div class="gluck-stack" style="--stack-gap: var(--space-4)" id="pubForm">
+      <div class="brc-changes" id="pubChanges"></div>
+      <div class="gluck-field"><label class="gluck-label is-required" for="pubMsg">커밋 메시지</label><input class="gluck-input" id="pubMsg" maxlength="120"></div>
+      <label class="gluck-check"><input type="checkbox" id="pubZip" checked> ZIP 패키지(GLUCK_Brand_Assets.zip)도 다시 만들어 함께 올리기 <span class="gluck-text-tertiary">— 실물 파일이 바뀐 경우 권장</span></label>
+    </div>
+    <div class="brc-steps" id="pubSteps" hidden></div>
+    <div id="pubDone" hidden></div>
+  </div>
+  <div class="gluck-modal__footer">
+    <button class="gluck-btn gluck-btn--tertiary" data-close id="pubCancel">취소</button>
+    <button class="gluck-btn gluck-btn--primary" id="pubGo"><svg class="gluck-icon" aria-hidden="true"><use href="#i-upload"/></svg> 발행</button>
+  </div>
+</dialog>
+
+<script src="brand-assets/assets.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" defer></script>
+<script src="https://gluck3dprinting.github.io/gluck-ui/dist/gluck.js" defer></script>
+<script>
+/* ============================================================
+   BRC Admin — 등록·발행 로직
+   원칙(소재/조직도 시스템 계약): 단일 상태 → 전체 리렌더 · JSON 스냅숏 더티 추적 ·
+   Ctrl+S · beforeunload 가드 · 토스트 결과 알림 · 인라인 오류 · 파괴 확인은 안전한 쪽 권장
+   발행: GitHub Git Data API로 파일 blob → tree → commit → ref 갱신 (한 커밋)
+   ============================================================ */
+(function () {
+'use strict';
+
+/* ---------- 상수 ---------- */
+const REPO = { owner: 'gluck3dprinting', repo: 'gluck-brand-resource-center', branch: 'main' };
+const API = 'https://api.github.com';
+const ASSETS_PATH = 'brand-assets/assets.js';
+const DRAFT_KEY = 'gluck-brc-admin-draft';
+const TOKEN_KEY = 'gluck-brc-gh-token';
+const LASTPUB_KEY = 'gluck-brc-last-publish';
+const MAX_FILE_MB = 20;
+
+/* ---------- 상태 ---------- */
+const state = normalize(JSON.parse(JSON.stringify(GLUCK_BRAND)));
+let snapshot = JSON.stringify(state);
+let baseline = JSON.parse(snapshot);          // 변경 내역 비교 기준(마지막 발행 상태)
+let selected = null;                          // { gi, ii }
+let editing = null;                           // 모달 편집 대상 { gi, ii } | null
+let editingGroup = null;                      // 그룹 모달 편집 대상 index | null
+const pending = new Map();                    // path → File (업로드 대기 실물 파일)
+const objectUrls = new Map();                 // path → blob URL (미리보기)
+let remoteAssetsSha = null;                   // 저장소의 assets.js blob sha (충돌 감지)
+let loadedAssetsSha = null;                   // 이 페이지가 읽은 assets.js의 blob sha
+let dragSrc = null;
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const toast = (type, title, msg) => { if (window.gluckToast) window.gluckToast(type, title, msg || ''); };
+const today = () => new Date().toISOString().slice(0, 10);
+const fmtSize = (bytes) => bytes >= 1024 * 1024 ? (bytes / 1048576).toFixed(1).replace(/\.0$/, '') + 'MB' : Math.max(1, Math.round(bytes / 1024)) + 'KB';
+function guessDir(g) { return g.dir || (/guideline|보드/i.test(g.title) ? 'guideline/' : 'logo/'); }
+
+function normalize(d) {
+  d.groups = (d.groups || []).map(g => ({ ...g, dir: guessDir(g), items: (g.items || []).map(it => ({ ...it, formats: it.formats || [] })) }));
+  d.keyFacts = d.keyFacts || []; d.assetDir = d.assetDir || 'brand-assets/';
+  return d;
+}
+const isDirty = () => JSON.stringify(state) !== snapshot || pending.size > 0;
+
+/* ---------- 변경 내역 (baseline 대비) ---------- */
+function diffChanges() {
+  const before = new Map(); baseline.groups.forEach(g => g.items.forEach(it => before.set(it.name, { ...it, group: g.title })));
+  const after = new Map(); state.groups.forEach(g => g.items.forEach(it => after.set(it.name, { ...it, group: g.title })));
+  const out = [];
+  after.forEach((it, name) => {
+    if (!before.has(name)) out.push({ kind: 'add', name });
+    else {
+      const a = before.get(name), b = it;
+      if (a.group !== b.group) out.push({ kind: 'move', name, detail: `${a.group} → ${b.group}` });
+      else if (JSON.stringify({ ...a, group: 0 }) !== JSON.stringify({ ...b, group: 0 })) out.push({ kind: 'edit', name });
+    }
+  });
+  before.forEach((it, name) => { if (!after.has(name)) out.push({ kind: 'del', name }); });
+  if (JSON.stringify(baseline.keyFacts) !== JSON.stringify(state.keyFacts)) out.push({ kind: 'edit', name: 'Key Facts' });
+  const gb = baseline.groups.map(g => g.title + '|' + g.note + '|' + g.dir).join('\n'), ga = state.groups.map(g => g.title + '|' + g.note + '|' + g.dir).join('\n');
+  if (gb !== ga) out.push({ kind: 'edit', name: '그룹 구성' });
+  return out;
+}
+
+/* ---------- 미리보기 조각 ---------- */
+function srcOf(rel) { return objectUrls.get(rel) || (state.assetDir + rel); }
+function miniHTML(item, cls) {
+  const bg = esc(item.prevBg || 'light');
+  if (item.prev === 'img' || !item.prev) return `<span class="${cls || 'brc-mini'} ${bg}">${item.src ? `<img src="${esc(srcOf(item.src))}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">` : ''}</span>`;
+  const sym = item.prev === 'sym';
+  return `<span class="${cls || 'brc-mini'} ${bg}${sym ? ' sym' : ''}"><svg viewBox="${sym ? '0 0 81 87' : '0 0 407 87'}" style="color:${esc(item.prevColor || '#000')}" aria-hidden="true"><use href="${sym ? '#lg-symbol' : '#lg-wordmark'}"/></svg></span>`;
+}
+function stageHTML(item) {
+  const bg = esc(item.prevBg || 'light'); const tag = `<span class="tag">${bg === 'light' ? 'On Light' : bg === 'gray' ? 'On Gray' : bg === 'blue' ? 'On Blue' : 'On Dark'}</span>`;
+  if (item.prev === 'img' || !item.prev) return `<div class="brc-stage ${bg}">${tag}${item.src ? `<img src="${esc(srcOf(item.src))}" alt="" onerror="this.style.visibility='hidden'">` : '<span class="gluck-text-caption" style="color:#6B7280">미리보기 이미지 없음</span>'}</div>`;
+  const sym = item.prev === 'sym';
+  return `<div class="brc-stage ${bg}${sym ? ' sym' : ''}">${tag}<svg viewBox="${sym ? '0 0 81 87' : '0 0 407 87'}" style="color:${esc(item.prevColor || '#000')}" aria-hidden="true"><use href="${sym ? '#lg-symbol' : '#lg-wordmark'}"/></svg></div>`;
+}
+function rowHTML(item) {
+  const isNew = item.added && (Date.now() - new Date(item.added).getTime()) < 45 * 86400000;
+  const fmts = (item.formats || []).map(f => `<span class="gluck-btn gluck-btn--outline gluck-btn--xs">${esc(f.ext)} <span class="gluck-text-tertiary t-num">${esc(f.size)}</span></span>`).join('');
+  return `<div class="brc-prow">${miniHTML(item)}<div><div class="nm"><span class="t-num">${esc(item.name || '자산 이름')}</span>${isNew ? '<span class="brc-newtag">NEW</span>' : ''}</div><div class="ds">${esc(item.desc || '설명')}</div></div><div class="fmts">${fmts}</div></div>`;
+}
+
+/* ---------- 목록 렌더 ---------- */
+function render() {
+  const root = $('groupsRoot');
+  let items = 0, files = 0;
+  root.innerHTML = state.groups.map((g, gi) => {
+    items += g.items.length;
+    const rows = g.items.map((it, ii) => {
+      files += it.formats.length;
+      const pend = it.formats.some(f => pending.has(f.path));
+      const fmts = it.formats.map(f => `<span class="gluck-badge gluck-badge--no-dot${pending.has(f.path) ? ' gluck-badge--info' : ''}" title="${esc(f.path)}">${esc(f.ext)} <span class="t-num">${esc(f.size)}</span></span>`).join(' ');
+      const sel = selected && selected.gi === gi && selected.ii === ii;
+      return `<tr aria-selected="${sel}" data-gi="${gi}" data-ii="${ii}" draggable="true">
+        <td style="width:36px;padding-right:0"><span class="brc-grip" title="드래그하여 순서 변경 · 다른 그룹으로 이동"><svg class="gluck-icon gluck-icon--sm" aria-hidden="true"><use href="#i-menu"/></svg></span></td>
+        <td style="width:88px">${miniHTML(it)}</td>
+        <td class="is-primary brc-name-cell is-wrap"><span class="nm"><span class="t-num">${esc(it.name)}</span>${pend ? '<span class="gluck-badge gluck-badge--info gluck-badge--no-dot">업로드 대기</span>' : ''}</span><div class="ds">${esc(it.desc)}</div></td>
+        <td class="is-wrap"><div class="gluck-row" style="--row-gap:4px; flex-wrap: wrap">${fmts}</div></td>
+        <td class="t-num gluck-text-tertiary" style="font-size:12px">${esc(it.added || '—')}</td>
+        <td class="col-actions">
+          <details class="gluck-menu"><summary class="gluck-btn gluck-btn--ghost gluck-btn--icon gluck-btn--sm" aria-label="${esc(it.name)} 액션"><svg class="gluck-icon" aria-hidden="true"><use href="#i-ellipsis"/></svg></summary>
+            <ul class="gluck-menu__list gluck-menu__list--right">
+              <li><button type="button" class="gluck-menu__item" data-act="edit">수정</button></li>
+              <li><button type="button" class="gluck-menu__item" data-act="dup">복제</button></li>
+              <li><button type="button" class="gluck-menu__item" data-act="up" ${ii === 0 ? 'disabled' : ''}>위로</button></li>
+              <li><button type="button" class="gluck-menu__item" data-act="down" ${ii === g.items.length - 1 ? 'disabled' : ''}>아래로</button></li>
+              <li><hr></li>
+              <li><button type="button" class="gluck-menu__item is-danger" data-act="del">삭제</button></li>
+            </ul></details>
+        </td></tr>`;
+    }).join('');
+    const empty = `<tr class="is-empty"><td colspan="6"><div class="gluck-empty gluck-empty--compact"><div class="gluck-empty__title">이 그룹에 자산이 없습니다</div><p class="gluck-empty__desc">파일을 여기로 끌어다 놓거나 등록 버튼을 누르세요.</p><button type="button" class="gluck-btn gluck-btn--outline gluck-btn--sm" data-addto="${gi}">첫 자산 등록</button></div></td></tr>`;
+    return `<div class="brc-group" data-group="${gi}">
+      <div class="brc-hd"><h2>${esc(g.title)}</h2><span class="note">${esc(g.note || '')}${g.note ? ' · ' : ''}${g.items.length}개 · ${esc(g.dir)}</span>
+        <button type="button" class="gluck-btn gluck-btn--ghost gluck-btn--xs" data-addto="${gi}"><svg class="gluck-icon" aria-hidden="true"><use href="#i-plus"/></svg> 추가</button>
+        <details class="gluck-menu"><summary class="gluck-btn gluck-btn--ghost gluck-btn--icon gluck-btn--xs" aria-label="그룹 설정"><svg class="gluck-icon" aria-hidden="true"><use href="#i-ellipsis"/></svg></summary>
+          <ul class="gluck-menu__list gluck-menu__list--right">
+            <li><button type="button" class="gluck-menu__item" data-gact="edit">이름·폴더 수정</button></li>
+            <li><button type="button" class="gluck-menu__item" data-gact="up" ${gi === 0 ? 'disabled' : ''}>위로</button></li>
+            <li><button type="button" class="gluck-menu__item" data-gact="down" ${gi === state.groups.length - 1 ? 'disabled' : ''}>아래로</button></li>
+          </ul></details>
+      </div>
+      <div class="gluck-card gluck-card--flush"><div class="gluck-table-wrap" data-density="default">
+        <table class="gluck-table"><caption class="sr-only">${esc(g.title)} 자산 목록</caption>
+          <thead><tr><th scope="col"><span class="sr-only">순서</span></th><th scope="col">미리보기</th><th scope="col">이름 · 설명</th><th scope="col">파일</th><th scope="col">등록일</th><th class="col-actions" scope="col"><span class="sr-only">액션</span></th></tr></thead>
+          <tbody>${rows || empty}</tbody></table>
+      </div></div></div>`;
+  }).join('');
+
+  const changes = diffChanges();
+  $('kpiItems').textContent = items; $('kpiGroups').textContent = `그룹 ${state.groups.length}`;
+  $('kpiFiles').textContent = files; $('kpiPkg').textContent = state.package ? `패키지 ${state.package.size}` : '패키지 —';
+  $('kpiPending').textContent = changes.length; $('kpiPendingFiles').textContent = `업로드 파일 ${pending.size}`;
+  $('kpiUpdated').textContent = state.updated || '—';
+  let last = null; try { last = JSON.parse(localStorage.getItem(LASTPUB_KEY) || 'null'); } catch (e) {}
+  $('kpiLastPub').textContent = last ? `마지막 발행 ${new Date(last.at).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}` : '마지막 발행 —';
+  $('navCount').textContent = items; $('footCounts').textContent = `자산 ${items}개 · 파일 ${files}건`;
+  const dirty = isDirty();
+  $('dirtyHint').hidden = !dirty; $('dirtyCount').textContent = changes.length + (pending.size ? ` · 파일 ${pending.size}` : '');
+  $('btnPublishLabel').textContent = dirty ? `GitHub에 발행 (${changes.length || pending.size})` : 'GitHub에 발행';
+  $('btnPublish').classList.toggle('gluck-btn--primary', dirty); $('btnPublish').classList.toggle('gluck-btn--outline', !dirty);
+  renderChanges(changes); renderFacts(); renderPreview();
+  try { dirty ? localStorage.setItem(DRAFT_KEY, JSON.stringify({ ts: Date.now(), data: state })) : localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+}
+function renderChanges(changes) {
+  const root = $('changesRoot'); const K = { add: ['success', '신규'], edit: ['info', '수정'], move: ['warning', '이동'], del: ['danger', '삭제'] };
+  const files = [...pending.entries()].map(([p, f]) => `<div class="brc-change"><span class="gluck-badge gluck-badge--info gluck-badge--no-dot">파일</span><span class="nm t-num" title="${esc(p)}">${esc(p)}</span><span class="sz t-num">${fmtSize(f.size)}</span></div>`).join('');
+  const rows = changes.map(c => `<div class="brc-change"><span class="gluck-badge gluck-badge--${K[c.kind][0]} gluck-badge--no-dot">${K[c.kind][1]}</span><span class="nm">${esc(c.name)}</span>${c.detail ? `<span class="sz">${esc(c.detail)}</span>` : ''}</div>`).join('');
+  root.innerHTML = (rows + files) || '<div class="gluck-text-caption gluck-text-tertiary">발행 후 상태와 같습니다.</div>';
+  $('changesNote').textContent = changes.length || pending.size ? `${changes.length}건 · 파일 ${pending.size}` : '없음';
+}
+function renderFacts() {
+  $('factsRoot').innerHTML = state.keyFacts.map((f, i) => `<div class="brc-fact-edit">
+      <input class="gluck-input gluck-input--sm" value="${esc(f.k)}" data-fact="${i}" data-key="k" aria-label="항목 ${i + 1} 이름" placeholder="예: 설립">
+      <input class="gluck-input gluck-input--sm t-num" value="${esc(f.v)}" data-fact="${i}" data-key="v" aria-label="항목 ${i + 1} 값" placeholder="예: 2013">
+      <label class="gluck-check" style="white-space:nowrap"><input type="checkbox" ${f.plus ? 'checked' : ''} data-fact="${i}" data-key="plus"> + 표시</label>
+      <button type="button" class="gluck-btn gluck-btn--ghost gluck-btn--icon gluck-btn--sm" data-factdel="${i}" aria-label="항목 삭제"><svg class="gluck-icon" aria-hidden="true"><use href="#i-trash-2"/></svg></button></div>`).join('') || '<div class="gluck-text-caption gluck-text-tertiary">항목이 없습니다.</div>';
+  $('factsPrev').innerHTML = state.keyFacts.map(f => `<div class="row"><span class="k">${esc(f.k)}</span><span class="v t-num">${esc(f.v)}${f.plus ? '<span class="plus">+</span>' : ''}</span></div>`).join('');
+}
+function renderPreview() {
+  const root = $('previewRoot');
+  const it = selected && state.groups[selected.gi] && state.groups[selected.gi].items[selected.ii];
+  if (!it) { selected = null; root.innerHTML = `<div class="gluck-empty gluck-empty--compact"><svg class="gluck-icon gluck-icon--lg" aria-hidden="true"><use href="#i-eye"/></svg><div class="gluck-empty__title">자산을 선택하세요</div><p class="gluck-empty__desc">목록의 행을 클릭하면 공개 페이지에 보이는 모습이 여기에 표시됩니다.</p></div>`; return; }
+  root.innerHTML = stageHTML(it) + rowHTML(it) + `<div class="gluck-row" style="justify-content:flex-end"><button type="button" class="gluck-btn gluck-btn--outline gluck-btn--sm" data-edit-selected><svg class="gluck-icon" aria-hidden="true"><use href="#i-pencil"/></svg> 수정</button></div>`;
+}
+
+/* ---------- 알림 영역 ---------- */
+function notice(id, type, html, actions) {
+  const root = $('notices'); let el = document.getElementById('n-' + id);
+  if (!html) { if (el) el.remove(); return; }
+  if (!el) { el = document.createElement('div'); el.id = 'n-' + id; root.appendChild(el); }
+  const icon = { info: 'info', warning: 'triangle-alert', danger: 'circle-alert', success: 'circle-check' }[type] || 'info';
+  el.innerHTML = `<div class="gluck-alert gluck-alert--${type === 'info' ? 'info' : type}" role="status"><svg class="gluck-icon" aria-hidden="true"><use href="#i-${icon}"/></svg><div style="flex:1">${html}</div>${actions ? `<div class="gluck-btn-group">${actions}</div>` : ''}</div>`;
+}
+
+/* ---------- 자산 모달 ---------- */
+const modal = $('assetModal');
+let mFormats = [];
+let mGroupIndex = 0;
+function openModal(gi, ii, preset) {
+  editing = ii != null ? { gi, ii } : null;
+  mGroupIndex = gi;
+  const it = editing ? JSON.parse(JSON.stringify(state.groups[gi].items[ii])) : Object.assign({ name: '', desc: '', prev: 'img', prevBg: 'light', prevColor: '#000', src: '', added: today(), formats: [] }, preset || {});
+  $('modalTitle').textContent = editing ? '자산 수정' : '자산 등록';
+  $('fGroup').innerHTML = state.groups.map((g, i) => `<option value="${i}" ${i === gi ? 'selected' : ''}>${esc(g.title)}</option>`).join('');
+  $('fName').value = it.name; $('fDesc').value = it.desc; $('fAdded').value = it.added || '';
+  $('fPrev').value = it.prev || 'img'; $('fPrevBg').value = it.prevBg || 'light'; $('fPrevColor').value = it.prevColor || '#000';
+  mFormats = JSON.parse(JSON.stringify(it.formats || []));
+  $('fPrevSrc').dataset.value = it.src || '';
+  syncPrevRows(); renderFmtRows(); showAlert('modalAlert', null); $('btnModalDelete').hidden = !editing;
+  if (!modal.open) modal.showModal();
+  renderModalPreview();
+  (it.name ? $('fDesc') : $('fName')).focus();
+}
+function syncPrevRows() {
+  const img = $('fPrev').value === 'img';
+  $('rowPrevColor').hidden = img; $('rowPrevSrc').hidden = !img;
+  const sel = $('fPrevSrc'); const cur = sel.dataset.value || sel.value;
+  const opts = mFormats.filter(f => f.path && /\.(png|jpe?g|webp|svg|gif)$/i.test(f.path));
+  sel.innerHTML = opts.length ? opts.map(f => `<option value="${esc(f.path)}" ${f.path === cur ? 'selected' : ''}>${esc(f.path)}</option>`).join('') : '<option value="">(이미지 파일을 먼저 추가하세요)</option>';
+  if (cur && !opts.some(f => f.path === cur) && cur) { const o = document.createElement('option'); o.value = cur; o.textContent = cur + ' (직접 지정)'; o.selected = true; sel.appendChild(o); }
+  sel.dataset.value = sel.value;
+}
+function renderFmtRows() {
+  $('fmtCount').textContent = mFormats.length ? `${mFormats.length}개` : '';
+  $('fmtRows').innerHTML = mFormats.map((f, i) => {
+    const st = pending.has(f.path) ? '<span class="gluck-badge gluck-badge--info gluck-badge--no-dot">업로드 대기</span>' : (f.path ? '<span class="gluck-badge gluck-badge--no-dot">저장소</span>' : '');
+    return `<div class="brc-frow">
+      <input class="gluck-input gluck-input--sm" value="${esc(f.ext)}" data-fmt="${i}" data-key="ext" placeholder="SVG" aria-label="파일 ${i + 1} 포맷" ${pending.has(f.path) ? 'readonly' : ''}>
+      <input class="gluck-input gluck-input--sm t-num" value="${esc(f.path)}" data-fmt="${i}" data-key="path" placeholder="logo/GLUCK_….svg" aria-label="파일 ${i + 1} 경로" spellcheck="false" ${pending.has(f.path) ? 'readonly' : ''}>
+      <input class="gluck-input gluck-input--sm t-num" value="${esc(f.size)}" data-fmt="${i}" data-key="size" placeholder="2KB" aria-label="파일 ${i + 1} 용량" ${pending.has(f.path) ? 'readonly' : ''}>
+      <span>${st}</span>
+      <button type="button" class="gluck-btn gluck-btn--ghost gluck-btn--icon gluck-btn--sm" data-fmtdel="${i}" aria-label="파일 ${i + 1} 제거"><svg class="gluck-icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>`;
+  }).join('') || '<div class="gluck-text-caption gluck-text-tertiary">위 영역에 파일을 놓으면 자동으로 추가됩니다.</div>';
+}
+function showAlert(id, msgs, type) {
+  const el = $(id);
+  if (!msgs || !msgs.length) { el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  el.innerHTML = `<div class="gluck-alert gluck-alert--${type || 'danger'}" role="alert" style="margin-bottom: var(--space-4)"><svg class="gluck-icon" aria-hidden="true"><use href="#i-circle-alert"/></svg><div>${msgs.map(esc).join('<br>')}</div></div>`;
+}
+function collectModal() {
+  const prev = $('fPrev').value;
+  const item = { name: $('fName').value.trim(), desc: $('fDesc').value.trim(), prev, prevBg: $('fPrevBg').value, formats: mFormats.map(f => ({ ext: (f.ext || '').trim().toUpperCase(), path: (f.path || '').trim(), size: (f.size || '').trim() })).filter(f => f.ext || f.path) };
+  if (prev === 'img') item.src = ($('fPrevSrc').value || '').trim(); else item.prevColor = $('fPrevColor').value;
+  if ($('fAdded').value) item.added = $('fAdded').value;
+  return { gi: parseInt($('fGroup').value, 10), item };
+}
+function validateModal(gi, item) {
+  const errs = [];
+  if (!item.name) errs.push('자산 이름을 입력해 주세요.');
+  else if (!/^GLUCK_[A-Za-z0-9_\-]+$/.test(item.name)) errs.push('이름은 GLUCK_ 로 시작하고 영문·숫자·_·- 만 사용합니다. (규칙 GLUCK_{자산}_{변형})');
+  if (!item.desc) errs.push('설명을 입력해 주세요. 공개 페이지 목록에 그대로 표시됩니다.');
+  if (!item.formats.length) errs.push('다운로드 파일을 1개 이상 추가해 주세요.');
+  item.formats.forEach((f, i) => { if (!f.path) errs.push(`파일 ${i + 1}: 경로가 비어 있습니다.`); if (!f.ext) errs.push(`파일 ${i + 1}: 포맷이 비어 있습니다. (예: SVG)`); if (f.path && /^\/|\.\./.test(f.path)) errs.push(`파일 ${i + 1}: 경로는 brand-assets/ 아래 상대 경로여야 합니다.`); });
+  const paths = item.formats.map(f => f.path); if (new Set(paths).size !== paths.length) errs.push('같은 경로의 파일이 중복되었습니다.');
+  state.groups.forEach((g, xg) => g.items.forEach((it, xi) => { if (editing && editing.gi === xg && editing.ii === xi) return; if (it.name === item.name) errs.push(`같은 이름의 자산이 이미 있습니다: ${it.name} (${g.title})`); }));
+  if (item.prev === 'img' && !item.src) errs.push('미리보기 이미지를 선택해 주세요. (PNG·SVG·WEBP 파일 하나)');
+  return errs;
+}
+function renderModalPreview() {
+  const { item } = collectModal();
+  $('modalPrev').innerHTML = stageHTML(item).replace('brc-stage', 'brc-stage') + '<div style="height: var(--space-3)"></div>' + rowHTML(item);
+}
+function addFiles(list) {
+  const files = [...list]; if (!files.length) return;
+  const gi = parseInt($('fGroup').value, 10); const dir = state.groups[gi] ? state.groups[gi].dir : 'logo/';
+  const bad = [], big = [];
+  files.forEach(f => {
+    if (f.size > MAX_FILE_MB * 1048576) { big.push(f.name); return; }
+    const safe = f.name.replace(/[^\w.\-]/g, '_');
+    const path = dir + safe;
+    if (objectUrls.has(path)) URL.revokeObjectURL(objectUrls.get(path));
+    pending.set(path, f); objectUrls.set(path, URL.createObjectURL(f));
+    const ext = (safe.split('.').pop() || '').toUpperCase();
+    const ex = mFormats.findIndex(x => x.path === path);
+    const row = { ext, path, size: fmtSize(f.size) };
+    if (ex >= 0) mFormats[ex] = row; else mFormats.push(row);
+    if (!/^GLUCK_/.test(safe)) bad.push(safe);
+    if (!$('fName').value) $('fName').value = safe.replace(/\.[^.]+$/, '').replace(/_(\d+px|\d+x\d+)$/i, '');
+  });
+  if (!$('fPrevSrc').dataset.value) { const img = mFormats.find(f => /\.(png|jpe?g|webp|svg)$/i.test(f.path)); if (img) $('fPrevSrc').dataset.value = img.path; }
+  if (!$('fAdded').value) $('fAdded').value = today();
+  syncPrevRows(); renderFmtRows(); renderModalPreview();
+  if (big.length) toast('danger', '너무 큰 파일', `${big[0]} — ${MAX_FILE_MB}MB 이하만 올릴 수 있습니다.`);
+  if (bad.length) toast('warning', '파일명 규칙 확인', `${bad[0]} — GLUCK_{자산}_{변형}.{포맷} 규칙을 권장합니다.`);
+  else if (files.length && !big.length) toast('success', `${files.length}개 파일 추가`, '발행할 때 함께 업로드됩니다.');
+}
+
+/* ---------- 그룹 모달 ---------- */
+const gModal = $('groupModal');
+function openGroupModal(gi) {
+  editingGroup = gi != null ? gi : null;
+  const g = editingGroup != null ? state.groups[gi] : { title: '', note: '', dir: '' };
+  $('groupTitle').textContent = editingGroup != null ? '그룹 수정' : '그룹 추가';
+  $('gTitle').value = g.title; $('gNote').value = g.note || ''; $('gDir').value = g.dir || '';
+  $('btnGroupDelete').hidden = !(editingGroup != null && state.groups[gi].items.length === 0);
+  showAlert('groupAlert', null); gModal.showModal(); $('gTitle').focus();
+}
+$('btnGroupSave').addEventListener('click', () => {
+  const title = $('gTitle').value.trim(), note = $('gNote').value.trim(); let dir = $('gDir').value.trim().replace(/^\/+/, '');
+  const errs = [];
+  if (!title) errs.push('그룹 이름을 입력해 주세요.');
+  if (!dir) errs.push('파일 폴더를 입력해 주세요. (예: photo/)'); else if (!/^[a-z0-9_\-]+\/$/i.test(dir + (dir.endsWith('/') ? '' : '/'))) errs.push('폴더는 영문·숫자로, 끝에 / 를 붙입니다. (예: photo/)');
+  if (state.groups.some((g, i) => g.title === title && i !== editingGroup)) errs.push('같은 이름의 그룹이 있습니다.');
+  if (errs.length) { showAlert('groupAlert', errs); return; }
+  if (!dir.endsWith('/')) dir += '/';
+  if (editingGroup != null) { Object.assign(state.groups[editingGroup], { title, note, dir }); toast('success', '그룹 수정됨', ''); }
+  else { state.groups.push({ title, note, dir, items: [] }); toast('success', '그룹 추가됨', '이제 이 그룹에 자산을 등록하세요.'); }
+  gModal.close(); render();
+});
+$('btnGroupDelete').addEventListener('click', () => {
+  if (editingGroup == null || state.groups[editingGroup].items.length) return;
+  if (!confirm(`'${state.groups[editingGroup].title}' 그룹을 삭제할까요? (비어 있는 그룹만 삭제됩니다)`)) return;
+  state.groups.splice(editingGroup, 1); gModal.close(); render();
+});
+$('btnAddGroup').addEventListener('click', () => openGroupModal(null));
+
+/* ---------- 직렬화 · 다운로드 ---------- */
+function serialize() {
+  const out = JSON.parse(JSON.stringify(state)); out.updated = today();
+  const header = `/* ============================================================
+   GLUCK Brand Asset Data — 단일 소스 (Single Source of Truth)
+   ------------------------------------------------------------
+   index.html(공개 리소스 센터)과 admin.html(자산 등록 관리)이 함께 읽습니다.
+   자산 등록·수정은 admin.html에서 하고 [GitHub에 발행]하면 이 파일과
+   실물 파일이 함께 커밋되어 1~2분 내 공개 페이지에 반영됩니다.
+   (직접 편집도 가능 — 구조는 brand-assets/README.md 참조 · 마지막 저장 ${out.updated})
+   ============================================================ */
+`;
+  return { text: header + 'const GLUCK_BRAND = ' + JSON.stringify(out, null, 2) + ';\n', data: out };
+}
+function downloadText(name, content, type) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([content], { type: type || 'text/javascript' })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+$('btnDownload').addEventListener('click', () => {
+  const { text } = serialize(); downloadText('assets.js', text);
+  if (pending.size) { pending.forEach((f, p) => { const a = document.createElement('a'); a.href = objectUrls.get(p); a.download = p.split('/').pop(); a.click(); }); }
+  toast('success', 'assets.js 다운로드됨', pending.size ? `실물 파일 ${pending.size}개도 함께 내려받았습니다. 저장소 brand-assets/ 에 넣고 push 하세요.` : '저장소 brand-assets/assets.js 를 교체한 뒤 git push 하세요.');
+});
+
+/* ---------- GitHub 연결 ---------- */
+const gh = { token: null, user: null, remember: true };
+function loadToken() {
+  try { const l = localStorage.getItem(TOKEN_KEY); if (l) { gh.token = l; gh.remember = true; return; } } catch (e) {}
+  try { const s = sessionStorage.getItem(TOKEN_KEY); if (s) { gh.token = s; gh.remember = false; } } catch (e) {}
+}
+function storeToken(tok, remember) {
+  try { localStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem(TOKEN_KEY); if (tok) (remember ? localStorage : sessionStorage).setItem(TOKEN_KEY, tok); } catch (e) {}
+  gh.token = tok || null; gh.remember = remember;
+}
+async function ghFetch(path, opts, auth) {
+  const headers = Object.assign({ 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }, (opts && opts.headers) || {});
+  if (auth !== false && gh.token) headers['Authorization'] = 'Bearer ' + gh.token;
+  if (opts && opts.body && typeof opts.body !== 'string') { opts.body = JSON.stringify(opts.body); headers['Content-Type'] = 'application/json'; }
+  const res = await fetch(API + path, Object.assign({}, opts, { headers }));
+  if (!res.ok) {
+    let msg = res.status + ' ' + res.statusText; try { const j = await res.json(); if (j.message) msg = j.message; } catch (e) {}
+    const map = { 401: '토큰이 유효하지 않습니다. 연결 설정에서 다시 등록하세요.', 403: 'API 권한이 없거나 호출 한도를 넘었습니다. 토큰 권한(Contents: Read and write)을 확인하세요.', 404: '저장소·브랜치 또는 경로를 찾을 수 없습니다. 토큰의 Repository access에 이 저장소가 포함되어 있는지 확인하세요.', 409: '저장소가 방금 바뀌었습니다. 새로고침 후 다시 시도하세요.', 422: '요청을 처리할 수 없습니다: ' + msg };
+    const err = new Error(map[res.status] || msg); err.status = res.status; throw err;
+  }
+  return res.status === 204 ? null : res.json();
+}
+async function testConnection() {
+  const user = await ghFetch('/user'); const repo = await ghFetch(`/repos/${REPO.owner}/${REPO.repo}`);
+  if (!repo.permissions || !repo.permissions.push) throw new Error(`${user.login} 계정에 이 저장소 쓰기 권한이 없습니다. 토큰 권한 Contents: Read and write 를 확인하세요.`);
+  gh.user = user.login; return user;
+}
+function renderConn() {
+  const dot = $('connDot'), t = $('connTitle'), d = $('connDetail');
+  if (gh.token && gh.user) { dot.className = 'dot ok'; t.textContent = 'GitHub 연결됨'; d.textContent = `${gh.user} · ${REPO.repo} · ${REPO.branch}${gh.remember ? '' : ' · 이 탭에서만'}`; $('btnConn').innerHTML = '<svg class="gluck-icon" aria-hidden="true"><use href="#i-settings"/></svg> 연결 관리'; }
+  else if (gh.token) { dot.className = 'dot bad'; t.textContent = '연결 확인 실패'; d.textContent = '토큰을 다시 확인하세요'; }
+  else { dot.className = 'dot'; t.textContent = 'GitHub 미연결'; d.textContent = '발행하려면 연결이 필요합니다 (토큰 1회)'; }
+  $('ghDisconnect').hidden = !gh.token;
+}
+$('ghToggle').addEventListener('click', () => { const i = $('ghToken'); const show = i.type === 'password'; i.type = show ? 'text' : 'password'; $('ghToggle').setAttribute('aria-pressed', String(show)); });
+$('ghModal').addEventListener('close', () => { $('ghToken').value = ''; $('ghToken').type = 'password'; $('ghResult').innerHTML = ''; });
+$('ghSave').addEventListener('click', async () => {
+  const tok = $('ghToken').value.trim(); if (!tok) { showAlert('ghAlert', ['토큰을 붙여 넣어 주세요.']); return; }
+  const btn = $('ghSave'); btn.dataset.loading = 'true'; showAlert('ghAlert', null);
+  const prev = gh.token; gh.token = tok;
+  try {
+    const user = await testConnection(); storeToken(tok, $('ghRemember').checked); renderConn();
+    $('ghResult').innerHTML = `<div class="gluck-alert gluck-alert--success"><svg class="gluck-icon" aria-hidden="true"><use href="#i-circle-check"/></svg><div><strong>${esc(user.login)}</strong> 계정으로 연결되었습니다. 이제 발행할 수 있습니다.</div></div>`;
+    toast('success', 'GitHub 연결됨', `${user.login} · ${REPO.repo}`);
+    setTimeout(() => $('ghModal').close(), 900);
+  } catch (e) { gh.token = prev; gh.user = null; renderConn(); showAlert('ghAlert', [e.message]); }
+  finally { delete btn.dataset.loading; }
+});
+$('ghDisconnect').addEventListener('click', () => { storeToken(null, true); gh.user = null; renderConn(); $('ghModal').close(); toast('info', '연결 해제됨', '토큰이 이 브라우저에서 삭제되었습니다.'); });
+
+/* ---------- 충돌 감지 (assets.js blob sha) ---------- */
+async function gitBlobSha(text) {
+  const enc = new TextEncoder(); const body = enc.encode(text); const head = enc.encode(`blob ${body.length}\0`);
+  const buf = new Uint8Array(head.length + body.length); buf.set(head); buf.set(body, head.length);
+  const h = await crypto.subtle.digest('SHA-1', buf); return [...new Uint8Array(h)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+async function checkRemote() {
+  try {
+    const [local, remote] = await Promise.all([fetch('brand-assets/assets.js', { cache: 'no-store' }).then(r => r.text()), ghFetch(`/repos/${REPO.owner}/${REPO.repo}/contents/${ASSETS_PATH}?ref=${REPO.branch}`)]);
+    loadedAssetsSha = await gitBlobSha(local); remoteAssetsSha = remote.sha;
+    if (loadedAssetsSha !== remoteAssetsSha) {
+      notice('stale', 'warning', '<strong>저장소에 더 새로운 데이터가 있습니다.</strong> 방금 발행한 내용이 아직 공개 페이지(Pages)에 반영 중이거나, 다른 사용자가 먼저 발행했습니다. 편집 전에 최신 데이터를 불러오세요.', '<button class="gluck-btn gluck-btn--outline gluck-btn--xs" id="btnLoadRemote">저장소 최신 불러오기</button>');
+      $('btnLoadRemote').addEventListener('click', loadRemote);
+    }
+  } catch (e) { /* 오프라인·한도 초과 시 조용히 무시 */ }
+}
+async function loadRemote() {
+  try {
+    const remote = await ghFetch(`/repos/${REPO.owner}/${REPO.repo}/contents/${ASSETS_PATH}?ref=${REPO.branch}`);
+    const text = new TextDecoder().decode(Uint8Array.from(atob(remote.content.replace(/\n/g, '')), c => c.charCodeAt(0)));
+    let data; try { data = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1)); } catch (e) { data = new Function(text + '; return GLUCK_BRAND;')(); }
+    Object.keys(state).forEach(k => delete state[k]); Object.assign(state, normalize(data));
+    snapshot = JSON.stringify(state); baseline = JSON.parse(snapshot); pending.clear(); objectUrls.forEach(u => URL.revokeObjectURL(u)); objectUrls.clear();
+    remoteAssetsSha = remote.sha; loadedAssetsSha = remote.sha; notice('stale', null); render();
+    toast('success', '최신 데이터 불러옴', `저장소 기준 ${state.updated || ''}`);
+  } catch (e) { toast('danger', '불러오기 실패', e.message); }
+}
+
+/* ---------- 발행 ---------- */
+const pub = $('pubModal');
+function stepEl(id, label) { return `<div class="brc-step" id="st-${id}"><span class="ic"><svg class="gluck-icon" aria-hidden="true"><use href="#i-check"/></svg></span><span>${label}</span><span class="st"></span></div>`; }
+function setStep(id, status, note) { const el = $('st-' + id); if (!el) return; el.className = 'brc-step is-' + status; el.querySelector('.st').textContent = note || ''; if (status === 'doing') el.querySelector('.ic').innerHTML = '<span class="gluck-spinner gluck-spinner--sm" style="--sp:12px;border-width:2px"></span>'; if (status === 'done') el.querySelector('.ic').innerHTML = '<svg class="gluck-icon" aria-hidden="true"><use href="#i-check"/></svg>'; if (status === 'fail') el.querySelector('.ic').innerHTML = '<svg class="gluck-icon" aria-hidden="true"><use href="#i-x"/></svg>'; }
+function openPublish() {
+  if (!isDirty()) { toast('info', '변경 없음', '발행할 변경 사항이 없습니다.'); return; }
+  if (!gh.token || !gh.user) { $('ghModal').showModal(); toast('warning', 'GitHub 연결이 필요합니다', '토큰을 한 번 등록하면 이후엔 버튼 한 번으로 발행됩니다. 토큰 없이는 우상단 다운로드로 수동 반영하세요.'); return; }
+  const changes = diffChanges(); const K = { add: ['success', '신규'], edit: ['info', '수정'], move: ['warning', '이동'], del: ['danger', '삭제'] };
+  $('pubChanges').innerHTML = changes.map(c => `<div class="brc-change"><span class="gluck-badge gluck-badge--${K[c.kind][0]} gluck-badge--no-dot">${K[c.kind][1]}</span><span class="nm">${esc(c.name)}</span>${c.detail ? `<span class="sz">${esc(c.detail)}</span>` : ''}</div>`).join('') + [...pending.entries()].map(([p, f]) => `<div class="brc-change"><span class="gluck-badge gluck-badge--info gluck-badge--no-dot">파일</span><span class="nm t-num">${esc(p)}</span><span class="sz t-num">${fmtSize(f.size)}</span></div>`).join('');
+  const parts = []; const n = k => changes.filter(c => c.kind === k).length;
+  if (n('add')) parts.push(`신규 ${n('add')}`); if (n('edit')) parts.push(`수정 ${n('edit')}`); if (n('move')) parts.push(`이동 ${n('move')}`); if (n('del')) parts.push(`삭제 ${n('del')}`); if (pending.size) parts.push(`파일 ${pending.size}`);
+  $('pubMsg').value = `brand assets: ${parts.join(' · ') || '갱신'} (${today()})`;
+  $('pubZip').checked = pending.size > 0 || n('del') > 0;
+  $('pubForm').hidden = false; $('pubSteps').hidden = true; $('pubDone').hidden = true; $('pubDone').innerHTML = ''; $('pubSteps').innerHTML = ''; showAlert('pubAlert', null);
+  $('pubGo').hidden = false; $('pubCancel').textContent = '취소'; delete $('pubGo').dataset.loading;
+  pub.showModal();
+}
+async function buildZip(files) {
+  if (!window.JSZip) throw new Error('ZIP 라이브러리를 불러오지 못했습니다 (네트워크 확인). ZIP 옵션을 끄고 다시 시도하세요.');
+  const zip = new JSZip();
+  for (const rel of files) {
+    let blob; if (pending.has(rel)) blob = pending.get(rel); else { const r = await fetch(state.assetDir + rel, { cache: 'no-store' }); if (!r.ok) throw new Error(`ZIP 구성 실패: ${rel} 파일을 읽을 수 없습니다 (${r.status}).`); blob = await r.blob(); }
+    zip.file(rel, blob);
+  }
+  return zip.generateAsync({ type: 'base64', compression: 'DEFLATE', compressionOptions: { level: 6 } });
+}
+const toB64 = (blob) => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(blob); });
+async function publish() {
+  const msg = $('pubMsg').value.trim() || `brand assets 갱신 (${today()})`; const withZip = $('pubZip').checked;
+  const R = `/repos/${REPO.owner}/${REPO.repo}`;
+  $('pubForm').hidden = true; $('pubSteps').hidden = false; $('pubGo').dataset.loading = 'true'; $('pubCancel').textContent = '닫기'; $('pubCancel').disabled = true; $('pubClose').disabled = true;
+  const steps = [['check', '저장소 상태 확인 (충돌 검사)'], ['files', `실물 파일 업로드 (${pending.size}개)`], ['data', 'assets.js 갱신'], ...(withZip ? [['zip', 'ZIP 패키지 재생성']] : []), ['commit', '커밋 · 브랜치 갱신'], ['pages', 'GitHub Pages 반영 대기']];
+  $('pubSteps').innerHTML = steps.map(s => stepEl(s[0], s[1])).join('');
+  const done = (id, note) => setStep(id, 'done', note), doing = (id, note) => setStep(id, 'doing', note);
+  try {
+    doing('check');
+    const ref = await ghFetch(`${R}/git/ref/heads/${REPO.branch}`); const headSha = ref.object.sha;
+    const headCommit = await ghFetch(`${R}/git/commits/${headSha}`); const baseTree = headCommit.tree.sha;
+    let remote = null; try { remote = await ghFetch(`${R}/contents/${ASSETS_PATH}?ref=${REPO.branch}`); } catch (e) { if (e.status !== 404) throw e; } // 404 = 저장소에 아직 assets.js 없음 (첫 발행)
+    if (remote && remoteAssetsSha && remote.sha !== remoteAssetsSha) throw Object.assign(new Error('다른 사용자가 먼저 발행했습니다. "저장소 최신 불러오기" 후 변경을 다시 적용해 주세요.'), { conflict: true });
+    if (remote && !remoteAssetsSha && loadedAssetsSha && remote.sha !== loadedAssetsSha) throw Object.assign(new Error('저장소의 assets.js가 이 페이지가 읽은 것과 다릅니다. 새로고침 후 다시 편집해 주세요.'), { conflict: true });
+    done('check', headSha.slice(0, 7));
+
+    doing('files'); const tree = []; let i = 0;
+    for (const [rel, file] of pending) {
+      i++; doing('files', `${i}/${pending.size} · ${rel.split('/').pop()}`);
+      const blob = await ghFetch(`${R}/git/blobs`, { method: 'POST', body: { content: await toB64(file), encoding: 'base64' } });
+      tree.push({ path: state.assetDir + rel, mode: '100644', type: 'blob', sha: blob.sha });
+    }
+    done('files', pending.size ? `${pending.size}개` : '없음');
+
+    let zipSize = null;
+    if (withZip) {
+      doing('zip'); const all = []; state.groups.forEach(g => g.items.forEach(it => it.formats.forEach(f => { if (f.path && !all.includes(f.path)) all.push(f.path); })));
+      const b64 = await buildZip(all); zipSize = fmtSize(Math.floor(b64.length * 0.75));
+      const zb = await ghFetch(`${R}/git/blobs`, { method: 'POST', body: { content: b64, encoding: 'base64' } });
+      const pkgPath = (state.package && state.package.path) || 'GLUCK_Brand_Assets.zip';
+      tree.push({ path: state.assetDir + pkgPath, mode: '100644', type: 'blob', sha: zb.sha });
+      state.package = Object.assign({ path: pkgPath, desc: '로고 전체(SVG·PNG) + 파비콘 + CI 가이드라인 보드 원본' }, state.package || {}, { size: zipSize });
+      done('zip', `${all.length}개 파일 · ${zipSize}`);
+    }
+
+    doing('data'); const { text, data } = serialize();
+    const db = await ghFetch(`${R}/git/blobs`, { method: 'POST', body: { content: text, encoding: 'utf-8' } });
+    tree.push({ path: ASSETS_PATH, mode: '100644', type: 'blob', sha: db.sha }); done('data', data.updated);
+
+    doing('commit');
+    const newTree = await ghFetch(`${R}/git/trees`, { method: 'POST', body: { base_tree: baseTree, tree } });
+    const commit = await ghFetch(`${R}/git/commits`, { method: 'POST', body: { message: msg, tree: newTree.sha, parents: [headSha] } });
+    await ghFetch(`${R}/git/refs/heads/${REPO.branch}`, { method: 'PATCH', body: { sha: commit.sha, force: false } });
+    done('commit', commit.sha.slice(0, 7));
+
+    // 로컬 상태 정리
+    state.updated = data.updated; snapshot = JSON.stringify(state); baseline = JSON.parse(snapshot);
+    pending.clear(); remoteAssetsSha = db.sha; loadedAssetsSha = db.sha;
+    try { localStorage.setItem(LASTPUB_KEY, JSON.stringify({ at: Date.now(), sha: commit.sha })); localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+    render(); notice('stale', null);
+    const url = `https://github.com/${REPO.owner}/${REPO.repo}/commit/${commit.sha}`;
+    $('pubDone').hidden = false;
+    $('pubDone').innerHTML = `<div class="gluck-alert gluck-alert--success" style="margin-top: var(--space-4)"><svg class="gluck-icon" aria-hidden="true"><use href="#i-circle-check"/></svg><div><strong>발행 완료</strong> — 커밋 <a href="${url}" target="_blank" rel="noopener" class="t-num">${commit.sha.slice(0, 7)}</a>. 공개 페이지에는 1~2분 뒤 반영됩니다. <a href="index.html?v=${Date.now()}" target="_blank" rel="noopener">공개 페이지 열기</a></div></div>`;
+    toast('success', '발행 완료', `커밋 ${commit.sha.slice(0, 7)} · 1~2분 뒤 공개 페이지에 반영`);
+    $('pubGo').hidden = true; $('pubCancel').disabled = false; $('pubClose').disabled = false;
+
+    // Pages 반영 폴링 (권한 없으면 조용히 종료)
+    doing('pages', '대기 중…'); const started = Date.now();
+    const poll = async () => {
+      try {
+        const b = await ghFetch(`${R}/pages/builds/latest`);
+        if (b.status === 'built' && new Date(b.updated_at).getTime() > started - 60000 && (b.commit === commit.sha || Date.now() - started > 90000)) { done('pages', '반영 완료'); toast('success', '공개 페이지 반영 완료', '새로고침하면 최신 자산이 보입니다.'); return; }
+        if (b.status === 'errored') { setStep('pages', 'fail', 'Pages 빌드 오류'); return; }
+      } catch (e) { setStep('pages', 'done', '상태 확인 불가 — 1~2분 뒤 확인'); return; }
+      if (Date.now() - started < 240000) setTimeout(poll, 8000); else setStep('pages', 'done', '시간 초과 — 페이지에서 직접 확인');
+    };
+    setTimeout(poll, 6000);
+  } catch (e) {
+    const cur = document.querySelector('.brc-step.is-doing'); if (cur) { cur.className = 'brc-step is-fail'; cur.querySelector('.ic').innerHTML = '<svg class="gluck-icon" aria-hidden="true"><use href="#i-x"/></svg>'; }
+    showAlert('pubAlert', [e.message], e.conflict ? 'warning' : 'danger');
+    $('pubForm').hidden = false; delete $('pubGo').dataset.loading; $('pubCancel').disabled = false; $('pubClose').disabled = false;
+    toast('danger', '발행 실패', e.message);
+  }
+}
+$('btnPublish').addEventListener('click', openPublish);
+$('pubGo').addEventListener('click', publish);
+
+/* ---------- 이벤트: 목록 ---------- */
+document.addEventListener('click', (e) => {
+  const addto = e.target.closest('[data-addto]'); if (addto) { openModal(parseInt(addto.dataset.addto, 10), null); return; }
+  const gact = e.target.closest('[data-gact]');
+  if (gact) {
+    const gi = +gact.closest('.brc-group').dataset.group; gact.closest('details')?.removeAttribute('open');
+    if (gact.dataset.gact === 'edit') openGroupModal(gi);
+    if (gact.dataset.gact === 'up' && gi > 0) { state.groups.splice(gi - 1, 0, state.groups.splice(gi, 1)[0]); selected = null; render(); }
+    if (gact.dataset.gact === 'down' && gi < state.groups.length - 1) { state.groups.splice(gi + 1, 0, state.groups.splice(gi, 1)[0]); selected = null; render(); }
+    return;
+  }
+  const act = e.target.closest('[data-act]');
+  if (act) {
+    const tr = act.closest('tr'); const gi = +tr.dataset.gi, ii = +tr.dataset.ii; const g = state.groups[gi]; const it = g.items[ii];
+    act.closest('details')?.removeAttribute('open');
+    if (act.dataset.act === 'edit') openModal(gi, ii);
+    if (act.dataset.act === 'dup') { const copy = JSON.parse(JSON.stringify(it)); copy.name = it.name + '_Copy'; copy.added = today(); openModal(gi, null, copy); toast('info', '복제', '이름·파일 경로를 새 자산에 맞게 바꾸세요.'); }
+    if (act.dataset.act === 'up' && ii > 0) { g.items.splice(ii - 1, 0, g.items.splice(ii, 1)[0]); selected = { gi, ii: ii - 1 }; render(); }
+    if (act.dataset.act === 'down' && ii < g.items.length - 1) { g.items.splice(ii + 1, 0, g.items.splice(ii, 1)[0]); selected = { gi, ii: ii + 1 }; render(); }
+    if (act.dataset.act === 'del') {
+      if (confirm(`'${it.name}' 자산을 목록에서 삭제할까요?\n\n공개 페이지에서 사라지며, 실물 파일은 저장소에 남습니다 (되돌리기 가능).`)) {
+        it.formats.forEach(f => { if (pending.has(f.path)) { pending.delete(f.path); URL.revokeObjectURL(objectUrls.get(f.path)); objectUrls.delete(f.path); } });
+        g.items.splice(ii, 1); selected = null; render(); toast('success', `${it.name} 삭제됨`, '발행하면 공개 페이지에 반영됩니다.');
+      }
+    }
+    return;
+  }
+  if (e.target.closest('[data-edit-selected]') && selected) { openModal(selected.gi, selected.ii); return; }
+  const tr = e.target.closest('#groupsRoot tbody tr[data-gi]');
+  if (tr && !e.target.closest('.gluck-menu')) { selected = { gi: +tr.dataset.gi, ii: +tr.dataset.ii }; render(); }
+});
+document.addEventListener('dblclick', (e) => { const tr = e.target.closest('#groupsRoot tbody tr[data-gi]'); if (tr && !e.target.closest('.gluck-menu')) openModal(+tr.dataset.gi, +tr.dataset.ii); });
+
+/* 드래그 정렬 (행 → 행 / 행 → 그룹) · 파일 드롭 → 해당 그룹에 등록 */
+const groupsRoot = $('groupsRoot');
+groupsRoot.addEventListener('dragstart', (e) => { const tr = e.target.closest('tr[data-gi]'); if (!tr) return; dragSrc = { gi: +tr.dataset.gi, ii: +tr.dataset.ii }; tr.classList.add('is-dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', 'row'); });
+groupsRoot.addEventListener('dragend', () => { dragSrc = null; groupsRoot.querySelectorAll('.is-dragging,.is-over-before').forEach(x => x.classList.remove('is-dragging', 'is-over-before')); groupsRoot.querySelectorAll('.is-dropover').forEach(x => x.classList.remove('is-dropover')); });
+groupsRoot.addEventListener('dragover', (e) => {
+  const grp = e.target.closest('.brc-group'); if (!grp) return; e.preventDefault();
+  const isFile = e.dataTransfer.types && [...e.dataTransfer.types].includes('Files');
+  groupsRoot.querySelectorAll('.is-dropover').forEach(x => x.classList.remove('is-dropover')); groupsRoot.querySelectorAll('.is-over-before').forEach(x => x.classList.remove('is-over-before'));
+  if (isFile) { grp.classList.add('is-dropover'); return; }
+  const tr = e.target.closest('tr[data-gi]'); if (tr && dragSrc && !(tr.dataset.gi == dragSrc.gi && tr.dataset.ii == dragSrc.ii)) tr.classList.add('is-over-before'); else if (!tr) grp.classList.add('is-dropover');
+});
+groupsRoot.addEventListener('drop', (e) => {
+  const grp = e.target.closest('.brc-group'); if (!grp) return; e.preventDefault();
+  const gi = +grp.dataset.group;
+  if (e.dataTransfer.files && e.dataTransfer.files.length) { openModal(gi, null); setTimeout(() => addFiles(e.dataTransfer.files), 30); return; }
+  if (!dragSrc) return;
+  const [row] = state.groups[dragSrc.gi].items.splice(dragSrc.ii, 1);
+  const tr = e.target.closest('tr[data-gi]'); let to = state.groups[gi].items.length;
+  if (tr) { to = +tr.dataset.ii; if (dragSrc.gi === gi && dragSrc.ii < to) to -= 1; }
+  state.groups[gi].items.splice(to, 0, row); selected = { gi, ii: to }; dragSrc = null; render();
+  toast('success', gi === selected.gi ? '순서 변경됨' : '그룹 이동됨', '발행하면 공개 페이지에 반영됩니다.');
+});
+
+/* ---------- 이벤트: 모달 ---------- */
+$('btnAdd').addEventListener('click', () => openModal(selected ? selected.gi : 0, null));
+$('fPrev').addEventListener('change', () => { syncPrevRows(); renderModalPreview(); });
+['fName', 'fDesc', 'fPrevBg', 'fPrevColor', 'fAdded'].forEach(id => $(id).addEventListener('input', renderModalPreview));
+$('fPrevSrc').addEventListener('change', () => { $('fPrevSrc').dataset.value = $('fPrevSrc').value; renderModalPreview(); });
+$('fGroup').addEventListener('change', () => { mGroupIndex = parseInt($('fGroup').value, 10); });
+$('btnAddFmt').addEventListener('click', () => { const dir = state.groups[parseInt($('fGroup').value, 10)]?.dir || 'logo/'; mFormats.push({ ext: '', path: dir, size: '' }); renderFmtRows(); const inputs = $('fmtRows').querySelectorAll('[data-key="path"]'); inputs[inputs.length - 1]?.focus(); });
+$('fmtRows').addEventListener('input', (e) => { const i = e.target.dataset.fmt; if (i == null) return; mFormats[i][e.target.dataset.key] = e.target.value; if (e.target.dataset.key === 'path' && !mFormats[i].ext) { const ext = (e.target.value.split('.').pop() || ''); if (ext && ext.length <= 5 && !ext.includes('/')) { mFormats[i].ext = ext.toUpperCase(); e.target.closest('.brc-frow').querySelector('[data-key="ext"]').value = mFormats[i].ext; } } syncPrevRows(); renderModalPreview(); });
+$('fmtRows').addEventListener('click', (e) => { const del = e.target.closest('[data-fmtdel]'); if (!del) return; const i = +del.dataset.fmtdel; const p = mFormats[i].path; if (pending.has(p) && !state.groups.some(g => g.items.some(it => it.formats.some(f => f.path === p)))) { pending.delete(p); URL.revokeObjectURL(objectUrls.get(p)); objectUrls.delete(p); } mFormats.splice(i, 1); syncPrevRows(); renderFmtRows(); renderModalPreview(); });
+$('btnModalSave').addEventListener('click', () => {
+  const { gi, item } = collectModal(); const errs = validateModal(gi, item);
+  if (errs.length) { showAlert('modalAlert', errs); $('modalAlert').scrollIntoView({ block: 'nearest' }); return; }
+  if (editing) {
+    const from = state.groups[editing.gi].items;
+    if (editing.gi === gi) { from[editing.ii] = item; selected = { gi, ii: editing.ii }; }
+    else { from.splice(editing.ii, 1); state.groups[gi].items.push(item); selected = { gi, ii: state.groups[gi].items.length - 1 }; }
+    toast('success', `${item.name} 수정됨`, '우상단 발행으로 공개 페이지에 반영하세요.');
+  } else { state.groups[gi].items.push(item); selected = { gi, ii: state.groups[gi].items.length - 1 }; toast('success', `${item.name} 등록됨`, '목록에 반영 — 우상단 발행으로 공개 페이지에 올리세요.'); }
+  modal.close(); render(); document.querySelector(`tr[data-gi="${selected.gi}"][data-ii="${selected.ii}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+});
+$('btnModalDelete').addEventListener('click', () => {
+  if (!editing) return; const it = state.groups[editing.gi].items[editing.ii];
+  if (confirm(`'${it.name}' 자산을 삭제할까요?\n공개 페이지에서 사라지며 실물 파일은 저장소에 남습니다.`)) { state.groups[editing.gi].items.splice(editing.ii, 1); selected = null; modal.close(); render(); toast('success', `${it.name} 삭제됨`, ''); }
+});
+modal.addEventListener('close', () => { // 반영 안 한 업로드 대기 파일 정리
+  pending.forEach((f, p) => { if (!state.groups.some(g => g.items.some(it => it.formats.some(x => x.path === p)))) { pending.delete(p); URL.revokeObjectURL(objectUrls.get(p)); objectUrls.delete(p); } });
+  render();
+});
+const dz = $('dropzone');
+$('dzInput').addEventListener('change', (e) => { addFiles(e.target.files); e.target.value = ''; });
+['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, (e) => { e.preventDefault(); dz.classList.add('is-dragover'); }));
+['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, (e) => { e.preventDefault(); dz.classList.remove('is-dragover'); }));
+dz.addEventListener('drop', (e) => addFiles(e.dataTransfer.files));
+modal.addEventListener('dragover', (e) => e.preventDefault()); modal.addEventListener('drop', (e) => { if (!e.target.closest('#dropzone')) { e.preventDefault(); addFiles(e.dataTransfer.files); } });
+
+/* ---------- Key Facts ---------- */
+$('factsRoot').addEventListener('input', (e) => { const i = e.target.dataset.fact; if (i == null) return; const key = e.target.dataset.key; if (key === 'plus') { if (e.target.checked) state.keyFacts[i].plus = true; else delete state.keyFacts[i].plus; } else state.keyFacts[i][key] = e.target.value; $('factsPrev').innerHTML = state.keyFacts.map(f => `<div class="row"><span class="k">${esc(f.k)}</span><span class="v t-num">${esc(f.v)}${f.plus ? '<span class="plus">+</span>' : ''}</span></div>`).join(''); renderChanges(diffChanges()); render_light(); });
+function render_light() { const dirty = isDirty(); $('dirtyHint').hidden = !dirty; const c = diffChanges().length; $('dirtyCount').textContent = c; $('kpiPending').textContent = c; $('btnPublishLabel').textContent = dirty ? `GitHub에 발행 (${c || pending.size})` : 'GitHub에 발행'; try { dirty ? localStorage.setItem(DRAFT_KEY, JSON.stringify({ ts: Date.now(), data: state })) : localStorage.removeItem(DRAFT_KEY); } catch (e) {} }
+$('factsRoot').addEventListener('click', (e) => { const del = e.target.closest('[data-factdel]'); if (!del) return; state.keyFacts.splice(+del.dataset.factdel, 1); render(); });
+$('btnAddFact').addEventListener('click', () => { state.keyFacts.push({ k: '', v: '' }); render(); $('factsRoot').querySelector('.brc-fact-edit:last-child input')?.focus(); });
+
+/* ---------- 사이드바 앵커 · 단축키 · 이탈 가드 ---------- */
+document.querySelectorAll('[data-nav]').forEach(a => a.addEventListener('click', () => { document.querySelectorAll('[data-nav]').forEach(x => x.removeAttribute('aria-current')); a.setAttribute('aria-current', 'page'); }));
+window.addEventListener('keydown', (e) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); if (!document.querySelector('dialog[open]')) openPublish(); } });
+window.addEventListener('beforeunload', (e) => { if (isDirty()) { e.preventDefault(); e.returnValue = ''; } });
+
+/* ---------- 초안 복원 ---------- */
+(function restoreDraft() {
+  let draft = null; try { draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) {}
+  if (!draft || JSON.stringify(normalize(draft.data)) === snapshot) return;
+  notice('draft', 'info', `저장하지 않은 편집 초안이 있습니다 (${esc(new Date(draft.ts).toLocaleString('ko-KR'))}). 업로드 대기 파일은 초안에 포함되지 않으므로 다시 놓아야 합니다.`,
+    '<button class="gluck-btn gluck-btn--outline gluck-btn--xs" id="draftUse">복원</button><button class="gluck-btn gluck-btn--ghost gluck-btn--xs" id="draftDrop">버리기</button>');
+  $('draftUse').addEventListener('click', () => { Object.keys(state).forEach(k => delete state[k]); Object.assign(state, normalize(JSON.parse(JSON.stringify(draft.data)))); notice('draft', null); render(); toast('info', '초안 복원됨', '확인 후 발행하세요.'); });
+  $('draftDrop').addEventListener('click', () => { try { localStorage.removeItem(DRAFT_KEY); } catch (e) {} notice('draft', null); });
+})();
+
+/* ---------- 시작 ---------- */
+loadToken(); renderConn(); render();
+if (new URLSearchParams(location.search).get('open') === 'new') setTimeout(() => openModal(0, null), 200);
+if (gh.token) testConnection().then(renderConn).catch(() => { gh.user = null; renderConn(); });
+checkRemote();
+})();
+</script>
+</body>
+</html>
